@@ -1,0 +1,64 @@
+
+body {
+    background: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+  
+}
+
+/* لایه دود اول */
+body::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.3) 0%, transparent 70%);
+    animation: smokeMove1 60s linear infinite;
+    filter: blur(100px);
+    pointer-events: none;
+}
+
+/* لایه دود دوم */
+body::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 70%);
+    animation: smokeMove2 90s linear infinite;
+    filter: blur(120px);
+    pointer-events: none;
+}
+
+/* انیمیشن حرکت دود */
+@keyframes smokeMove1 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(100px, -100px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes smokeMove2 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-150px, 150px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}

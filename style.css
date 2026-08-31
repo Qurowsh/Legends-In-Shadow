@@ -1,0 +1,234 @@
+@import url('https://fonts.cdnfonts.com/css/metal-lord');
+@import url('https://fonts.cdnfonts.com/css/black-metal');
+@import url('https://fonts.cdnfonts.com/css/death-crow');
+
+
+body {
+    background: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+  
+}
+
+/* لایه دود اول */
+body::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.3) 0%, transparent 70%);
+    animation: smokeMove1 60s linear infinite;
+    filter: blur(100px);
+    pointer-events: none;
+}
+
+/* لایه دود دوم */
+body::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 70%);
+    animation: smokeMove2 90s linear infinite;
+    filter: blur(120px);
+    pointer-events: none;
+}
+
+/* انیمیشن حرکت دود */
+@keyframes smokeMove1 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(100px, -100px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes smokeMove2 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-150px, 150px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+h1 {
+    text-align: center;
+    color: red;
+    font-size: 50px;
+    font-family: 'Death Crow';
+    letter-spacing: 10px;
+    font-weight: lighter;
+    padding-top: 50px;
+
+}
+
+.gallery {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    flex-grow: inherit;
+}
+
+.card {
+    width: 300px;
+    min-height: 450px;
+    background-color: #100;
+    padding: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(30px);
+    animation: cardEnter 0.8s ease forwards;
+    transition: 0.3s;
+}
+
+@keyframes cardEnter {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+.card:hover {
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.35);
+    transform: translateY(-5px);
+    transition: 0.3s ease;
+}
+
+.band-img {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+    filter: grayscale(100%);
+    transition: 0.4s ease;
+}
+
+.band-img:hover {
+
+    transform: scale(1.07);
+    filter: brightness(1.25) drop-shadow(0 0 12px rgba(255, 0, 0, 0.4));
+}
+
+.quote {
+    text-align: center;
+    font-family: 'Metal Mania', cursive;
+    letter-spacing: 3px;
+    font-size: 16px;
+    font-weight: lighter;
+    color: rgb(233, 233, 233);
+    padding-top: 10px;
+
+}
+
+.info {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    color: snow;
+    padding: 2px;
+    transition: all 0.3 ease;
+}
+
+.info:hover {
+    filter: brightness(1.5);
+    transition:  color  0.6s ease;
+    transform: scale(1.06);
+    color: red;
+}
+
+.Bio {
+    display: block;
+    width: fit-content;
+    margin: 15px auto 0;
+    padding: 8px 16px;
+    border: 1px solid snow;
+    border-radius: 1px solid #555;
+    text-decoration: none;
+    text-align: center;
+    color: snow;
+    transition: 0.3s ease;
+    font-weight: bolder;
+}
+
+.Bio:hover {
+    border-color: red;
+    color: red;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.72);
+    filter: brightness(1.5);
+    transform: scale(1.06);
+}
+
+.main-header {
+    width: 100%;
+    padding: 20px 0px 20px 0px;
+    display: flex;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(7px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    transition: 0.4s ease;
+    border-bottom: 2px solid red;
+    animation: headerGlow 3s ease;
+}
+@keyframes headerGlow {
+    0% {box-shadow: 0 0 0px red;}
+    50% {box-shadow: 0 0 80px red;}
+    100% {box-shadow: 0 0 0px red;}
+}
+
+
+.nav a {
+    color: snow;
+    margin: 0px 25px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.nav a:hover {
+    font-size: large;
+    color: red;
+    text-shadow: 0 0 8px red;
+}
+
+.main-footer{
+    width: 100%;
+    padding: 20px 0px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    opacity: 0.5;
+   
+}
+.main-footer p{
+    color: #bbb;
+    font-size: 14px;
+}
