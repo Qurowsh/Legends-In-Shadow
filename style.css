@@ -92,7 +92,7 @@ h1 {
 
 .gallery {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 25px;
     max-width: 1300px;
     margin: 40px auto 0;
@@ -254,49 +254,26 @@ h1 {
     font-size: 14px;
 }
 
-/* ریسپانسیو موبایل - همچنان ۴ کارت در هر ردیف */
+/* ریسپانسیو موبایل - چیدمان خودکار، متن‌ها خونا */
 @media (max-width: 600px) {
     body {
         padding-top: 130px;
     }
 
     h1 {
-        font-size: 22px;
-        letter-spacing: 3px;
+        font-size: 32px;
+        letter-spacing: 5px;
         padding-top: 10px;
     }
 
     .nav a {
         margin: 0 8px;
-        font-size: 13px;
+        font-size: 14px;
     }
 
     .gallery {
-        gap: 8px;
-        padding: 0 8px;
+        gap: 20px;
+        padding: 0 16px;
         margin-top: 20px;
-    }
-
-    .card {
-        min-height: auto;
-        padding: 6px;
-        border-radius: 6px;
-    }
-
-    .quote {
-        font-size: 8px;
-        letter-spacing: 0px;
-        padding-top: 4px;
-    }
-
-    .info {
-        font-size: 7px;
-        padding: 1px;
-    }
-
-    .Bio {
-        font-size: 8px;
-        padding: 4px 6px;
-        margin-top: 6px;
     }
 }
