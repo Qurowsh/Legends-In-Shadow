@@ -1,279 +1,292 @@
-@import url('https://fonts.cdnfonts.com/css/metal-lord');
-@import url('https://fonts.cdnfonts.com/css/black-metal');
-@import url('https://fonts.cdnfonts.com/css/death-crow');
+@import url("https://fonts.cdnfonts.com/css/metal-lord");
+@import url("https://fonts.cdnfonts.com/css/black-metal");
+@import url("https://fonts.cdnfonts.com/css/death-crow");
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html {
-    width: 100%;
-    overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 body {
-    margin: 0;
-    background: #000;
-    color: white;
-    font-family: Arial, sans-serif;
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    padding-top: 100px;
+  margin: 0;
+  background: #000;
+  color: white;
+  font-family: Arial, sans-serif;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 /* لایه دود اول */
 body::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 0, 0, 0.3) 0%, transparent 70%);
-    animation: smokeMove1 60s linear infinite;
-    filter: blur(100px);
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 0, 0, 0.3) 0%, transparent 70%);
+  animation: smokeMove1 60s linear infinite;
+  filter: blur(100px);
+  pointer-events: none;
 }
 
 /* لایه دود دوم */
 body::after {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 70%);
-    animation: smokeMove2 90s linear infinite;
-    filter: blur(120px);
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 70%);
+  animation: smokeMove2 90s linear infinite;
+  filter: blur(120px);
+  pointer-events: none;
 }
 
 /* انیمیشن حرکت دود */
 @keyframes smokeMove1 {
-    0% {
-        transform: translate(0, 0);
-    }
+  0% {
+    transform: translate(0, 0);
+  }
 
-    50% {
-        transform: translate(100px, -100px);
-    }
+  50% {
+    transform: translate(100px, -100px);
+  }
 
-    100% {
-        transform: translate(0, 0);
-    }
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 @keyframes smokeMove2 {
-    0% {
-        transform: translate(0, 0);
-    }
+  0% {
+    transform: translate(0, 0);
+  }
 
-    50% {
-        transform: translate(-150px, 150px);
-    }
+  50% {
+    transform: translate(-150px, 150px);
+  }
 
-    100% {
-        transform: translate(0, 0);
-    }
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 h1 {
-    text-align: center;
-    color: red;
-    font-size: 50px;
-    font-family: 'Death Crow';
-    letter-spacing: 10px;
-    font-weight: lighter;
-    padding-top: 20px;
+  text-align: center;
+  color: red;
+  font-size: 50px;
+  font-family: "Death Crow";
+  letter-spacing: 10px;
+  font-weight: lighter;
+  padding-top: 20px;
 }
 
 .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-    max-width: 1300px;
-    margin: 40px auto 0;
-    padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  max-width: 1300px;
+  margin: 40px auto 0;
+  padding: 0 20px;
 }
 
 .card {
-    width: 100%;
-    min-height: 450px;
-    background-color: #100;
-    padding: 20px;
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.15);
-    opacity: 0;
-    transform: translateY(30px);
-    animation: cardEnter 0.8s ease forwards;
-    transition: 0.3s;
+  width: 100%;
+  min-height: 450px;
+  background-color: #100;
+  padding: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: cardEnter 0.8s ease forwards;
+  transition: 0.3s;
 }
 
 @keyframes cardEnter {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .card:hover {
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.35);
-    transform: translateY(-5px);
-    transition: 0.3s ease;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.35);
+  transform: translateY(-5px);
+  transition: 0.3s ease;
 }
 
 .band-img {
-    width: 100%;
-    border-radius: 8px;
-    display: block;
-    filter: grayscale(100%);
-    transition: 0.4s ease;
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+  filter: grayscale(100%);
+  transition: 0.4s ease;
 }
 
 .band-img:hover {
-    transform: scale(1.07);
-    filter: brightness(1.25) drop-shadow(0 0 12px rgba(255, 0, 0, 0.4));
+  transform: scale(1.07);
+  filter: brightness(1.25) drop-shadow(0 0 12px rgba(255, 0, 0, 0.4));
 }
 
 .quote {
-    text-align: center;
-    font-family: 'Metal Mania', cursive;
-    letter-spacing: 3px;
-    font-size: 16px;
-    font-weight: lighter;
-    color: rgb(233, 233, 233);
-    padding-top: 10px;
+  text-align: center;
+  font-family: "Metal Mania", cursive;
+  letter-spacing: 3px;
+  font-size: 16px;
+  font-weight: lighter;
+  color: rgb(233, 233, 233);
+  padding-top: 10px;
 }
 
 .info {
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    color: snow;
-    padding: 2px;
-    transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  color: snow;
+  padding: 2px;
+  transition: all 0.3s ease;
 }
 
 .info:hover {
-    filter: brightness(1.5);
-    transition: color 0.6s ease;
-    transform: scale(1.06);
-    color: red;
+  filter: brightness(1.5);
+  transition: color 0.6s ease;
+  transform: scale(1.06);
+  color: red;
 }
 
 .Bio {
-    display: block;
-    width: fit-content;
-    margin: 15px auto 0;
-    padding: 8px 16px;
-    border: 1px solid snow;
-    border-radius: 4px;
-    text-decoration: none;
-    text-align: center;
-    color: snow;
-    transition: 0.3s ease;
-    font-weight: bolder;
+  display: block;
+  width: fit-content;
+  margin: 15px auto 0;
+  padding: 8px 16px;
+  border: 1px solid snow;
+  border-radius: 4px;
+  text-decoration: none;
+  text-align: center;
+  color: snow;
+  transition: 0.3s ease;
+  font-weight: bolder;
 }
 
 .Bio:hover {
-    border-color: red;
-    color: red;
-    text-shadow: 0 0 8px rgba(255, 0, 0, 0.72);
-    filter: brightness(1.5);
-    transform: scale(1.06);
+  border-color: red;
+  color: red;
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.72);
+  filter: brightness(1.5);
+  transform: scale(1.06);
 }
 
 .main-header {
-    width: 100%;
-    padding: 20px 0px;
-    display: flex;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(7px);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    transition: 0.4s ease;
-    border-bottom: 2px solid red;
-    animation: headerGlow 3s ease;
+  width: 100%;
+  padding: 20px 0px;
+  display: flex;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(7px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  transition: 0.4s ease;
+  border-bottom: 2px solid red;
+  animation: headerGlow 3s ease;
 }
 
 @keyframes headerGlow {
-    0% {box-shadow: 0 0 0px red;}
-    50% {box-shadow: 0 0 80px red;}
-    100% {box-shadow: 0 0 0px red;}
+  0% {
+    box-shadow: 0 0 0px red;
+  }
+  50% {
+    box-shadow: 0 0 80px red;
+  }
+  100% {
+    box-shadow: 0 0 0px red;
+  }
 }
 
 .nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
 .nav a {
-    color: snow;
-    margin: 0px 25px;
-    text-decoration: none;
-    font-size: 16px;
-    transition: 0.3s;
+  color: snow;
+  margin: 0px 25px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: 0.3s;
 }
 
 .nav a:hover {
-    font-size: large;
-    color: red;
-    text-shadow: 0 0 8px red;
+  font-size: large;
+  color: red;
+  text-shadow: 0 0 8px red;
 }
 
 .nav a.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-    cursor: not-allowed;
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .main-footer {
-    width: 100%;
-    padding: 20px 0px;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(5px);
-    position: static;
-    margin-top: 40px;
-    opacity: 0.7;
+  width: 100%;
+  padding: 20px 0px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+  position: static;
+  margin-top: 40px;
+  opacity: 0.7;
 }
 
 .main-footer p {
-    color: #bbb;
-    font-size: 14px;
+  color: #bbb;
+  font-size: 14px;
 }
 
 /* ریسپانسیو موبایل - چیدمان خودکار، متن‌ها خونا */
 @media (max-width: 600px) {
-    body {
-        padding-top: 130px;
-    }
+  body {
+    padding-top: 130px;
+  }
 
-    h1 {
-        font-size: 32px;
-        letter-spacing: 5px;
-        padding-top: 10px;
-    }
+  h1 {
+    font-size: 32px;
+    letter-spacing: 5px;
+    padding-top: 10px;
+  }
 
-    .nav a {
-        margin: 0 8px;
-        font-size: 14px;
-    }
+  .nav a {
+    margin: 0 8px;
+    font-size: 14px;
+  }
 
-    .gallery {
-        gap: 20px;
-        padding: 0 16px;
-        margin-top: 20px;
-    }
+  .gallery {
+    gap: 20px;
+    padding: 0 16px;
+    margin-top: 20px;
+  }
 }
