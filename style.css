@@ -9,6 +9,7 @@
 html {
   width: 100%;
   height: 100%;
+  height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -20,7 +21,8 @@ body {
   position: relative;
   width: 100%;
   max-width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; /* fallback برای مرورگرهای قدیمی */
+  min-height: 100dvh; /* ارتفاع واقعی و پویا، مخصوص موبایل */
   overflow-x: hidden;
   padding-top: 100px;
   display: flex;
