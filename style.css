@@ -8,59 +8,57 @@
 
 html {
   width: 100%;
-  height: 100%;
-  height: 100dvh;
   overflow-x: hidden;
 }
 
 body {
   margin: 0;
-  background: #000;
-  color: white;
+  background: #010101;
+  color: #f5f5f5;
   font-family: Arial, sans-serif;
   position: relative;
   width: 100%;
   max-width: 100%;
-  min-height: 100vh; /* fallback برای مرورگرهای قدیمی */
-  min-height: 100dvh; /* ارتفاع واقعی و پویا، مخصوص موبایل */
   overflow-x: hidden;
   padding-top: 100px;
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1 0 auto;
 }
 
 /* لایه دود اول */
 body::before {
   content: "";
-  position: fixed;
+  position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 0, 0, 0.3) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 40, 40, 0.14) 0%,
+    transparent 72%
+  );
   animation: smokeMove1 60s linear infinite;
-  filter: blur(100px);
+  filter: blur(60px);
+  opacity: 0.75;
   pointer-events: none;
-  z-index: -1;
 }
 
 /* لایه دود دوم */
 body::after {
   content: "";
-  position: fixed;
+  position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 80, 80, 0.08) 0%,
+    transparent 74%
+  );
   animation: smokeMove2 90s linear infinite;
-  filter: blur(120px);
+  filter: blur(90px);
+  opacity: 0.5;
   pointer-events: none;
-  z-index: -1;
 }
 
 /* انیمیشن حرکت دود */
@@ -111,19 +109,33 @@ h1 {
   padding: 0 20px;
 }
 
+/* =========================
+   LEGEND CARDS
+========================= */
+
 .card {
   width: 100%;
   min-height: 450px;
-  background-color: #100;
-  padding: 20px;
-  border-radius: 10px;
-  overflow: hidden;
+  padding: 1.2em;
   position: relative;
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.15);
+  overflow: hidden;
+
+  background: linear-gradient(145deg, rgba(35, 0, 0, 0.9), rgba(8, 0, 0, 0.98));
+
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  border-radius: 6px;
+
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.12);
+
   opacity: 0;
   transform: translateY(30px);
+
   animation: cardEnter 0.8s ease forwards;
-  transition: 0.3s;
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
 }
 
 @keyframes cardEnter {
@@ -133,71 +145,145 @@ h1 {
   }
 }
 
+.card::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border: 1px solid rgba(255, 0, 0, 0.12);
+
+  pointer-events: none;
+
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.card:hover::before {
+  border-color: rgba(255, 0, 0, 0.55);
+
+  box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.08);
+}
+
 .card:hover {
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.35);
-  transform: translateY(-5px);
-  transition: 0.3s ease;
+  transform: translateY(-8px);
+
+  border-color: rgba(255, 0, 0, 0.7);
+
+  box-shadow:
+    0 0 20px rgba(255, 0, 0, 0.2),
+    0 0 50px rgba(255, 0, 0, 0.12);
 }
 
 .band-img {
   width: 100%;
-  border-radius: 8px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
   display: block;
-  filter: grayscale(100%);
-  transition: 0.4s ease;
-}
 
-.band-img:hover {
-  transform: scale(1.07);
-  filter: brightness(1.25) drop-shadow(0 0 12px rgba(255, 0, 0, 0.4));
+  border-radius: 4px;
+
+  filter: grayscale(100%) brightness(0.75) contrast(1.15);
+
+  transition:
+    transform 0.5s ease,
+    filter 0.5s ease;
+}
+.card:hover .band-img {
+  transform: scale(1.04);
+
+  filter: grayscale(0%) brightness(1) contrast(1.1)
+    drop-shadow(0 0 12px rgba(255, 0, 0, 0.45));
 }
 
 .quote {
+  margin: 1em 0 0.7em;
   text-align: center;
+
   font-family: "Metal Mania", cursive;
-  letter-spacing: 3px;
-  font-size: 16px;
-  font-weight: lighter;
-  color: rgb(233, 233, 233);
-  padding-top: 10px;
-}
+  font-size: 1.05em;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
 
+  color: #f1f1f1;
+
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+.card:hover .quote {
+  color: #fff;
+
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+}
 .info {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  color: snow;
-  padding: 2px;
-  transition: all 0.3s ease;
-}
+  margin: 0;
 
-.info:hover {
-  filter: brightness(1.5);
-  transition: color 0.6s ease;
-  transform: scale(1.06);
-  color: red;
+  text-align: center;
+
+  font-size: 0.85em;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+
+  color: #ddd;
+
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+.card:hover .info {
+  color: #ff3333;
+
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.45);
 }
 
 .Bio {
   display: block;
   width: fit-content;
-  margin: 15px auto 0;
-  padding: 8px 16px;
-  border: 1px solid snow;
-  border-radius: 4px;
+
+  margin: 1.2em auto 0;
+  padding: 0.55em 1.2em;
+
+  border: 1px solid rgba(255, 0, 0, 0.45);
+  border-radius: 3px;
+
+  background: rgba(255, 0, 0, 0.04);
+
+  color: #eee;
   text-decoration: none;
   text-align: center;
-  color: snow;
-  transition: 0.3s ease;
-  font-weight: bolder;
+
+  font-size: 0.85em;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
 .Bio:hover {
+  color: #fff;
+
+  background: rgba(255, 0, 0, 0.12);
+
   border-color: red;
-  color: red;
-  text-shadow: 0 0 8px rgba(255, 0, 0, 0.72);
-  filter: brightness(1.5);
-  transform: scale(1.06);
+
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+
+  box-shadow:
+    0 0 12px rgba(255, 0, 0, 0.25),
+    inset 0 0 10px rgba(255, 0, 0, 0.08);
+
+  transform: translateY(-2px);
 }
 
 .main-header {
@@ -205,8 +291,8 @@ h1 {
   padding: 20px 0px;
   display: flex;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(7px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
   position: fixed;
   top: 0;
   left: 0;
@@ -271,6 +357,125 @@ h1 {
   font-size: 14px;
 }
 
+.hero {
+  min-height: 650px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  position: relative;
+  overflow: hidden;
+}
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+.hero-content {
+  max-width: 1100px;
+  padding: 10px 20px;
+
+  animation: heroEnter 1.5s ease forwards;
+}
+
+.hero-title {
+  margin: 0;
+
+  font-family: "Death Crow";
+  font-size: 90px;
+  font-weight: lighter;
+
+  letter-spacing: 15px;
+  line-height: 0.9;
+
+  color: #fff;
+
+  text-shadow:
+    0 0 8px rgba(255, 60, 60, 0.7),
+    0 0 16px rgba(255, 60, 60, 0.35);
+}
+
+.hero-title span {
+  color: #fff;
+
+  font-size: 90px;
+
+  margin-left: 18px;
+
+  text-shadow:
+    0 0 8px rgba(255, 60, 60, 0.7),
+    0 0 22px rgba(255, 60, 60, 0.3);
+}
+
+.hero-subtitle {
+  margin: 18px 0 22px;
+}
+
+/* =========================
+   INTRO SECTION
+========================= */
+
+.intro {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4em 1.5em;
+  text-align: center;
+}
+
+.intro h2 {
+  margin: 0 0 0.6em;
+  font-family: "Death Crow";
+  font-size: 3em;
+  font-weight: lighter;
+  letter-spacing: 0.15em;
+  color: #fff;
+  text-shadow:
+    0 0 8px red,
+    0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+.intro p {
+  margin: 0;
+  font-size: 1em;
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+  color: #f5f5f5;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  opacity: 1;
+}
+/* =========================
+   FEATURED LEGENDS
+========================= */
+
+.bands-section {
+  width: 100%;
+  padding: 3em 0 2em;
+}
+
+.bands-section h2 {
+  margin: 0;
+  text-align: center;
+  font-family: "Death Crow";
+  font-size: 2.5em;
+  font-weight: lighter;
+  letter-spacing: 0.18em;
+  color: #fff;
+  text-shadow:
+    0 0 8px red,
+    0 0 25px rgba(255, 0, 0, 0.5);
+}
 /* ریسپانسیو موبایل - چیدمان خودکار، متن‌ها خونا */
 @media (max-width: 600px) {
   body {
