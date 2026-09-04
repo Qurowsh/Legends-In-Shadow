@@ -345,15 +345,13 @@ h1 {
   color: snow;
   margin: 0 25px;
   text-decoration: none;
-  font-size: 16px;
-
+  font-size: 1em;
   transition:
     color 0.35s ease,
     text-shadow 0.35s ease,
     opacity 0.35s ease,
     transform 0.35s ease;
 }
-
 .nav a:hover {
   color: red;
   text-shadow: 0 0 8px red;
@@ -520,64 +518,117 @@ h1 {
   body {
     padding-top: 105px;
   }
+
   .main-header {
-    padding: 1em 0.5em;
+    padding: 0.9em 0.5em;
   }
+
   .nav {
-    gap: 0.3em;
+    width: 100%;
+    gap: 0.2em;
   }
+
   .nav a {
-    margin: 0 0.45em;
-    font-size: 0.85em;
+    margin: 0 0.4em;
+    font-size: 0.8em;
   }
+
   .hero {
     min-height: 500px;
     padding: 2em 1em 3em;
   }
+
   .hero-content {
     width: 100%;
     padding: 0;
   }
+
   .hero-title {
     font-size: 3em;
     letter-spacing: 0.08em;
     line-height: 1;
   }
+
   .hero-title span {
     margin-left: 0.1em;
     font-size: 0.8em;
   }
+
   .hero-subtitle {
     margin: 1em 0 1.3em;
     font-size: 0.95em;
   }
-  .hero-button {
-    font-size: 0.8em;
-  }
+
   .intro {
     padding: 2em 1.2em;
   }
+
   .intro h2 {
     font-size: 2.2em;
     letter-spacing: 0.1em;
   }
+
   .intro p {
     font-size: 0.95em;
     line-height: 1.7;
   }
+
   .bands-section {
     padding: 1.5em 0 2em;
   }
+
   .bands-section h2 {
     font-size: 2em;
     letter-spacing: 0.1em;
   }
+
   .gallery {
     grid-template-columns: 1fr;
     gap: 1.5em;
     padding: 0 1em;
   }
+
   .card {
     min-height: 0;
+    padding: 1em;
+    border-radius: 5px;
+  }
+
+  .band-img {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .quote {
+    margin: 0.9em 0 0.6em;
+    font-size: 0.95em;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+  }
+
+  .info {
+    font-size: 0.8em;
+    line-height: 1.5;
+    letter-spacing: 0.1em;
+  }
+
+  .Bio {
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    font-size: 0.8em;
+    letter-spacing: 0.06em;
+  }
+
+  .main-footer {
+    margin-top: 2em;
+    padding: 1.2em 1em;
+  }
+
+  .main-footer p {
+    margin: 0;
+    font-size: 0.75em;
+    line-height: 1.6;
+    letter-spacing: 0.03em;
   }
 }
+
