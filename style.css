@@ -11,26 +11,19 @@ html {
   height: 100%;
   height: 100dvh;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background: #000;
-  color: white;
+  background: #010101;
+  color: #f5f5f5;
   font-family: Arial, sans-serif;
   position: relative;
   width: 100%;
   max-width: 100%;
-  min-height: 100vh; /* fallback برای مرورگرهای قدیمی */
-  min-height: 100dvh; /* ارتفاع واقعی و پویا، مخصوص موبایل */
   overflow-x: hidden;
   padding-top: 100px;
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1 0 auto;
 }
 
 /* لایه دود اول */
@@ -43,13 +36,13 @@ body::before {
   height: 200%;
   background: radial-gradient(
     circle,
-    rgba(109, 255, 0, 0.16) 0%,
-    transparent 70%
+    rgba(109, 255, 0, 0.18) 0%,
+    transparent 72%
   );
   animation: smokeMove1 60s linear infinite;
-  filter: blur(100px);
+  filter: blur(60px);
+  opacity: 0.75;
   pointer-events: none;
-  z-index: -1;
 }
 
 /* لایه دود دوم */
@@ -62,13 +55,13 @@ body::after {
   height: 200%;
   background: radial-gradient(
     circle,
-    rgba(109, 255, 0, 0.09) 0%,
-    transparent 70%
+    rgba(75, 255, 0, 0.1) 0%,
+    transparent 74%
   );
   animation: smokeMove2 90s linear infinite;
-  filter: blur(120px);
+  filter: blur(90px);
+  opacity: 0.5;
   pointer-events: none;
-  z-index: -1;
 }
 
 /* انیمیشن حرکت دود */
@@ -115,162 +108,230 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 25px;
   max-width: 1300px;
-  margin: 40px auto 0;
+  margin: 2em auto 0;
   padding: 0 20px;
 }
+
+/* ========================= LEGEND CARDS ========================= */
 
 .card {
   width: 100%;
   min-height: 450px;
+  padding: 1.2em;
+  position: relative;
+  overflow: hidden;
+
   background: linear-gradient(
     145deg,
     rgba(10, 24, 5, 0.92),
     rgba(3, 8, 2, 0.98)
   );
-  padding: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 0 30px rgba(109, 255, 0, 0.12);
+
+  border: 1px solid rgba(109, 255, 0, 0.25);
+  border-radius: 6px;
+
+  box-shadow: 0 0 20px rgba(109, 255, 0, 0.12);
+
   opacity: 0;
   transform: translateY(30px);
-  animation: cardEnter 0.8s ease forwards;
-  transition: 0.3s;
+
+  animation: cardEnter 0.8s ease both;
+  will-change: transform, opacity;
+  transition: transform 0.45s ease, box-shadow 0.45s ease,
+    border-color 0.45s ease;
+}
+.card:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.card:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.card:nth-child(4) {
+  animation-delay: 0.24s;
 }
 
 @keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+.card::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border: 1px solid rgba(109, 255, 0, 0.12);
+
+  pointer-events: none;
+
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card:hover::before {
+  border-color: rgba(109, 255, 0, 0.55);
+
+  box-shadow: inset 0 0 20px rgba(109, 255, 0, 0.08);
+}
+
 .card:hover {
-  box-shadow: 0 0 30px rgba(109, 255, 0, 0.3);
-  transform: translateY(-5px);
-  transition: 0.3s ease;
+  transform: translateY(-8px);
+
+  border-color: rgba(109, 255, 0, 0.7);
+
+  box-shadow: 0 0 20px rgba(109, 255, 0, 0.2), 0 0 50px rgba(109, 255, 0, 0.12);
 }
 
 .band-img {
   width: 100%;
-  border-radius: 8px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
   display: block;
-  filter: grayscale(100%);
-  transition: 0.4s ease;
-}
 
-.band-img:hover {
-  transform: scale(1.07);
-  filter: brightness(1.25) drop-shadow(0 0 12px rgba(109, 255, 0, 0.4));
+  border-radius: 4px;
+
+  filter: grayscale(100%) brightness(0.75) contrast(1.15);
+
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+.card:hover .band-img {
+  transform: scale(1.04);
+
+  filter: grayscale(0%) brightness(1) contrast(1.1)
+    drop-shadow(0 0 14px rgba(109, 255, 0, 0.5));
 }
 
 .quote {
+  margin: 1em 0 0.7em;
   text-align: center;
+
   font-family: "Metal Mania", cursive;
-  letter-spacing: 3px;
-  font-size: 16px;
-  font-weight: lighter;
-  color: rgb(233, 233, 233);
-  padding-top: 10px;
-}
+  font-size: 1.05em;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
 
+  color: #f1f1f1;
+
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.card:hover .quote {
+  color: #fff;
+
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+}
 .info {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  color: snow;
-  padding: 2px;
-  transition: all 0.3s ease;
-}
+  margin: 0;
 
-.info:hover {
-  filter: brightness(1.5);
-  transition: color 0.6s ease;
-  transform: scale(1.06);
+  text-align: center;
+
+  font-size: 0.85em;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+
+  color: #ddd;
+
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.card:hover .info {
   color: #6dff00;
+
+  text-shadow: 0 0 8px rgba(109, 255, 0, 0.45);
 }
 
 .Bio {
   display: block;
   width: fit-content;
-  margin: 15px auto 0;
-  padding: 8px 16px;
-  border: 1px solid snow;
-  border-radius: 4px;
+
+  margin: 1.2em auto 0;
+  padding: 0.55em 1.2em;
+
+  border: 1px solid rgba(109, 255, 0, 0.45);
+  border-radius: 3px;
+
+  background: rgba(109, 255, 0, 0.04);
+
+  color: #eee;
   text-decoration: none;
   text-align: center;
-  color: snow;
-  transition: 0.3s ease;
-  font-weight: bolder;
+
+  font-size: 0.85em;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+
+  transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease,
+    box-shadow 0.4s ease, transform 0.4s ease;
 }
 
 .Bio:hover {
+  color: #fff;
+
+  background: rgba(109, 255, 0, 0.12);
+
   border-color: #6dff00;
-  color: #6dff00;
-  text-shadow: 0 0 8px rgba(109, 255, 0, 0.72);
-  filter: brightness(1.5);
-  transform: scale(1.06);
+
+  text-shadow: 0 0 8px rgba(109, 255, 0, 0.8);
+
+  box-shadow: 0 0 12px rgba(109, 255, 0, 0.25),
+    inset 0 0 10px rgba(109, 255, 0, 0.08);
+
+  transform: translateY(-2px);
 }
 
-/* ========================= HEADER + LOGO ========================= */
 .main-header {
   width: 100%;
-  min-height: 76px;
-  padding: 0.75em 1.5em;
+  padding: 20px 0px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(7px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10;
+  transition: background 0.7s ease, box-shadow 0.7s ease, border-color 0.7s ease;
   border-bottom: 2px solid #6dff00;
-  box-shadow: 0 0 22px rgba(109, 255, 0, 0.12);
-  transition: 0.4s ease;
+  animation: headerGlow 5s ease;
 }
 
-.header-inner {
-  width: min(1200px, 100%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2em;
-}
-
-.site-logo {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  flex: 0 0 auto;
-  filter: drop-shadow(0 0 5px rgba(109, 255, 0, 0.35))
-    drop-shadow(0 0 14px rgba(109, 255, 0, 0.18));
-  transition: transform 0.35s ease, filter 0.35s ease;
-}
-
-.site-logo:hover {
-  transform: scale(1.06) rotate(-1deg);
-  filter: drop-shadow(0 0 8px rgba(109, 255, 0, 0.65))
-    drop-shadow(0 0 22px rgba(109, 255, 0, 0.3));
+@keyframes headerGlow {
+  0% {
+    box-shadow: 0 0 0px red;
+  }
+  50% {
+    box-shadow: 0 0 80px #6dff00;
+  }
+  100% {
+    box-shadow: 0 0 0px red;
+  }
 }
 
 .nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
-  gap: 0.5em;
+  gap: 10px;
 }
-
 .nav a {
   color: snow;
-  margin: 0 1em;
+  margin: 0 25px;
   text-decoration: none;
   font-size: 1em;
-  transition: 0.3s ease;
+  transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.35s ease,
+    transform 0.35s ease;
 }
-
 .nav a:hover {
   color: #6dff00;
   text-shadow: 0 0 8px #6dff00;
@@ -299,27 +360,243 @@ h1 {
   font-size: 14px;
 }
 
+.hero {
+  min-height: 650px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  position: relative;
+  overflow: hidden;
+}
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+.hero-content {
+  max-width: 1100px;
+  padding: 10px 20px;
+
+  animation: heroEnter 1.5s ease forwards;
+}
+
+.hero-title {
+  margin: 0;
+
+  font-family: "Death Crow";
+  font-size: 90px;
+  font-weight: lighter;
+
+  letter-spacing: 15px;
+  line-height: 0.9;
+
+  color: #fff;
+
+  text-shadow: 0 0 8px rgba(109, 255, 0, 0.72), 0 0 16px rgba(109, 255, 0, 0.35);
+}
+
+.hero-title span {
+  color: #fff;
+
+  font-size: 90px;
+
+  margin-left: 18px;
+
+  text-shadow: 0 0 8px rgba(109, 255, 0, 0.72), 0 0 22px rgba(255, 60, 60, 0.3);
+}
+
+.hero-subtitle {
+  margin: 18px 0 22px;
+}
+
+/* ========================= INTRO SECTION ========================= */
+.intro {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5em 1.5em;
+  text-align: center;
+}
+.intro h2 {
+  margin: 0 0 0.6em;
+  font-family: "Death Crow";
+  font-size: 3em;
+  font-weight: lighter;
+  letter-spacing: 0.15em;
+  color: #fff;
+  text-shadow: 0 0 8px #6dff00, 0 0 20px rgba(109, 255, 0, 0.5);
+}
+
+.intro p {
+  margin: 0;
+  font-size: 1em;
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+  color: #f5f5f5;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  opacity: 1;
+}
+/* ========================= FEATURED LEGENDS ========================= */
+
+.bands-section {
+  width: 100%;
+  padding: 2em 0 2em;
+}
+.intro,
+.bands-section {
+  animation: sectionEnter 1s ease both;
+}
+
+@keyframes sectionEnter {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bands-section h2 {
+  margin: 0;
+  text-align: center;
+  font-family: "Death Crow";
+  font-size: 2.5em;
+  font-weight: lighter;
+  letter-spacing: 0.18em;
+  color: #fff;
+  text-shadow: 0 0 8px #6dff00, 0 0 25px rgba(109, 255, 0, 0.5);
+}
 /* ریسپانسیو موبایل - چیدمان خودکار، متن‌ها خونا */
 @media (max-width: 600px) {
   body {
-    padding-top: 130px;
+    padding-top: 105px;
   }
 
-  h1 {
-    font-size: 32px;
-    letter-spacing: 5px;
-    padding-top: 10px;
+  .main-header {
+    padding: 0.9em 0.5em;
+  }
+
+  .nav {
+    width: 100%;
+    gap: 0.2em;
   }
 
   .nav a {
-    margin: 0 8px;
-    font-size: 14px;
+    margin: 0 0.4em;
+    font-size: 0.8em;
+  }
+
+  .hero {
+    min-height: 500px;
+    padding: 2em 1em 3em;
+  }
+
+  .hero-content {
+    width: 100%;
+    padding: 0;
+  }
+
+  .hero-title {
+    font-size: 3em;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  .hero-title span {
+    margin-left: 0.1em;
+    font-size: 0.8em;
+  }
+
+  .hero-subtitle {
+    margin: 1em 0 1.3em;
+    font-size: 0.95em;
+  }
+
+  .intro {
+    padding: 2em 1.2em;
+  }
+
+  .intro h2 {
+    font-size: 2.2em;
+    letter-spacing: 0.1em;
+  }
+
+  .intro p {
+    font-size: 0.95em;
+    line-height: 1.7;
+  }
+
+  .bands-section {
+    padding: 1.5em 0 2em;
+  }
+
+  .bands-section h2 {
+    font-size: 2em;
+    letter-spacing: 0.1em;
   }
 
   .gallery {
-    gap: 20px;
-    padding: 0 16px;
-    margin-top: 20px;
+    grid-template-columns: 1fr;
+    gap: 1.5em;
+    padding: 0 1em;
+  }
+
+  .card {
+    min-height: 0;
+    padding: 1em;
+    border-radius: 5px;
+  }
+
+  .band-img {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .quote {
+    margin: 0.9em 0 0.6em;
+    font-size: 0.95em;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+  }
+
+  .info {
+    font-size: 0.8em;
+    line-height: 1.5;
+    letter-spacing: 0.1em;
+  }
+
+  .Bio {
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    font-size: 0.8em;
+    letter-spacing: 0.06em;
+  }
+
+  .main-footer {
+    margin-top: 2em;
+    padding: 1.2em 1em;
+  }
+
+  .main-footer p {
+    margin: 0;
+    font-size: 0.75em;
+    line-height: 1.6;
+    letter-spacing: 0.03em;
   }
 }
 
@@ -352,4 +629,4 @@ h1 {
     margin: 0 0.42em;
     font-size: 0.82em;
   }
-}
+  }
