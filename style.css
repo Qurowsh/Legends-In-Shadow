@@ -29,7 +29,7 @@ body {
 /* لایه دود اول */
 body::before {
   content: "";
-  position: absolute;
+  position: fixed;
   top: -50%;
   left: -50%;
   width: 200%;
@@ -48,7 +48,7 @@ body::before {
 /* لایه دود دوم */
 body::after {
   content: "";
-  position: absolute;
+  position: fixed;
   top: -50%;
   left: -50%;
   width: 200%;
@@ -112,9 +112,7 @@ h1 {
   padding: 0 20px;
 }
 
-/* =========================
-   LEGEND CARDS
-========================= */
+/* ========================= LEGEND CARDS ========================= */
 
 .card {
   width: 100%;
@@ -133,10 +131,9 @@ h1 {
   opacity: 0;
   transform: translateY(30px);
 
-  animation: cardEnter 1.2s ease both;
-  transition:
-    transform 0.45s ease,
-    box-shadow 0.45s ease,
+  animation: cardEnter 0.8s ease both;
+  will-change: transform, opacity;
+  transition: transform 0.45s ease, box-shadow 0.45s ease,
     border-color 0.45s ease;
 }
 .card:nth-child(2) {
@@ -173,9 +170,7 @@ h1 {
 
   pointer-events: none;
 
-  transition:
-    border-color 0.4s ease,
-    box-shadow 0.4s ease;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .card:hover::before {
@@ -189,9 +184,7 @@ h1 {
 
   border-color: rgba(255, 0, 0, 0.7);
 
-  box-shadow:
-    0 0 20px rgba(255, 0, 0, 0.2),
-    0 0 50px rgba(255, 0, 0, 0.12);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2), 0 0 50px rgba(255, 0, 0, 0.12);
 }
 
 .band-img {
@@ -204,9 +197,7 @@ h1 {
 
   filter: grayscale(100%) brightness(0.75) contrast(1.15);
 
-  transition:
-    transform 0.5s ease,
-    filter 0.5s ease;
+  transition: transform 0.5s ease, filter 0.5s ease;
 }
 .card:hover .band-img {
   transform: scale(1.04);
@@ -229,9 +220,7 @@ h1 {
 
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 
-  transition:
-    color 0.3s ease,
-    text-shadow 0.3s ease;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 .card:hover .quote {
   color: #fff;
@@ -250,9 +239,7 @@ h1 {
 
   color: #ddd;
 
-  transition:
-    color 0.3s ease,
-    text-shadow 0.3s ease;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 .card:hover .info {
   color: #ff3333;
@@ -280,12 +267,8 @@ h1 {
   font-weight: bold;
   letter-spacing: 0.08em;
 
-  transition:
-    color 0.4s ease,
-    background 0.4s ease,
-    border-color 0.4s ease,
-    box-shadow 0.4s ease,
-    transform 0.4s ease;
+  transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease,
+    box-shadow 0.4s ease, transform 0.4s ease;
 }
 
 .Bio:hover {
@@ -297,8 +280,7 @@ h1 {
 
   text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
 
-  box-shadow:
-    0 0 12px rgba(255, 0, 0, 0.25),
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.25),
     inset 0 0 10px rgba(255, 0, 0, 0.08);
 
   transform: translateY(-2px);
@@ -315,10 +297,7 @@ h1 {
   top: 0;
   left: 0;
   z-index: 10;
-  transition:
-    background 0.7s ease,
-    box-shadow 0.7s ease,
-    border-color 0.7s ease;
+  transition: background 0.7s ease, box-shadow 0.7s ease, border-color 0.7s ease;
   border-bottom: 2px solid red;
   animation: headerGlow 5s ease;
 }
@@ -346,10 +325,7 @@ h1 {
   margin: 0 25px;
   text-decoration: none;
   font-size: 1em;
-  transition:
-    color 0.35s ease,
-    text-shadow 0.35s ease,
-    opacity 0.35s ease,
+  transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.35s ease,
     transform 0.35s ease;
 }
 .nav a:hover {
@@ -425,9 +401,7 @@ h1 {
 
   color: #fff;
 
-  text-shadow:
-    0 0 8px rgba(255, 60, 60, 0.7),
-    0 0 16px rgba(255, 60, 60, 0.35);
+  text-shadow: 0 0 8px rgba(255, 60, 60, 0.7), 0 0 16px rgba(255, 60, 60, 0.35);
 }
 
 .hero-title span {
@@ -437,18 +411,14 @@ h1 {
 
   margin-left: 18px;
 
-  text-shadow:
-    0 0 8px rgba(255, 60, 60, 0.7),
-    0 0 22px rgba(255, 60, 60, 0.3);
+  text-shadow: 0 0 8px rgba(255, 60, 60, 0.7), 0 0 22px rgba(255, 60, 60, 0.3);
 }
 
 .hero-subtitle {
   margin: 18px 0 22px;
 }
 
-/* =========================
-   INTRO SECTION
-========================= */
+/* ========================= INTRO SECTION ========================= */
 .intro {
   max-width: 800px;
   margin: 0 auto;
@@ -462,9 +432,7 @@ h1 {
   font-weight: lighter;
   letter-spacing: 0.15em;
   color: #fff;
-  text-shadow:
-    0 0 8px red,
-    0 0 20px rgba(255, 0, 0, 0.5);
+  text-shadow: 0 0 8px red, 0 0 20px rgba(255, 0, 0, 0.5);
 }
 
 .intro p {
@@ -476,9 +444,7 @@ h1 {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
   opacity: 1;
 }
-/* =========================
-   FEATURED LEGENDS
-========================= */
+/* ========================= FEATURED LEGENDS ========================= */
 
 .bands-section {
   width: 100%;
@@ -509,9 +475,7 @@ h1 {
   font-weight: lighter;
   letter-spacing: 0.18em;
   color: #fff;
-  text-shadow:
-    0 0 8px red,
-    0 0 25px rgba(255, 0, 0, 0.5);
+  text-shadow: 0 0 8px red, 0 0 25px rgba(255, 0, 0, 0.5);
 }
 /* ریسپانسیو موبایل - چیدمان خودکار، متن‌ها خونا */
 @media (max-width: 600px) {
@@ -631,4 +595,3 @@ h1 {
     letter-spacing: 0.03em;
   }
 }
-
