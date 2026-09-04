@@ -105,7 +105,7 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 25px;
   max-width: 1300px;
-  margin: 40px auto 0;
+  margin: 2em auto 0;
   padding: 0 20px;
 }
 
@@ -428,10 +428,12 @@ h1 {
 ========================= */
 
 .intro {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 4em 1.5em;
-  text-align: center;
+  .intro {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2.5em 1.5em;
+    text-align: center;
+  }
 }
 
 .intro h2 {
@@ -461,7 +463,7 @@ h1 {
 
 .bands-section {
   width: 100%;
-  padding: 3em 0 2em;
+  padding: 2em 0 2em;
 }
 
 .bands-section h2 {
@@ -479,23 +481,49 @@ h1 {
 /* ریسپانسیو موبایل - چیدمان خودکار، متن‌ها خونا */
 @media (max-width: 600px) {
   body {
-    padding-top: 130px;
+    padding-top: 105px;
   }
 
-  h1 {
-    font-size: 32px;
-    letter-spacing: 5px;
-    padding-top: 10px;
+  .main-header {
+    padding: 1em 0.5em;
+  }
+
+  .nav {
+    gap: 0.3em;
   }
 
   .nav a {
-    margin: 0 8px;
-    font-size: 14px;
+    margin: 0 0.45em;
+    font-size: 0.85em;
   }
 
-  .gallery {
-    gap: 20px;
-    padding: 0 16px;
-    margin-top: 20px;
+  .hero {
+    min-height: 500px;
+    padding: 2em 1em 3em;
+  }
+
+  .hero-content {
+    width: 100%;
+    padding: 0;
+  }
+
+  .hero-title {
+    font-size: 3em;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  .hero-title span {
+    margin-left: 0.1em;
+    font-size: 0.8em;
+  }
+
+  .hero-subtitle {
+    margin: 1em 0 1.3em;
+    font-size: 0.95em;
+  }
+
+  .hero-button {
+    font-size: 0.8em;
   }
 }
