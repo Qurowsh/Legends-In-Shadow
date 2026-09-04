@@ -316,11 +316,11 @@ h1 {
   left: 0;
   z-index: 10;
   transition:
-    background 0.4s ease,
-    box-shadow 0.4s ease,
-    border-color 0.4s ease;
+    background 0.7s ease,
+    box-shadow 0.7s ease,
+    border-color 0.7s ease;
   border-bottom: 2px solid red;
-  animation: headerGlow 3s ease;
+  animation: headerGlow 5s ease;
 }
 
 @keyframes headerGlow {
@@ -343,19 +343,21 @@ h1 {
 }
 .nav a {
   color: snow;
-  margin: 0px 25px;
+  margin: 0 25px;
   text-decoration: none;
   font-size: 16px;
+
   transition:
     color 0.35s ease,
     text-shadow 0.35s ease,
-    opacity 0.35s ease;
+    opacity 0.35s ease,
+    transform 0.35s ease;
 }
 
 .nav a:hover {
-  font-size: large;
   color: red;
   text-shadow: 0 0 8px red;
+  transform: translateY(-1px);
 }
 
 .nav a.disabled {
@@ -449,16 +451,12 @@ h1 {
 /* =========================
    INTRO SECTION
 ========================= */
-
 .intro {
-  .intro {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2.5em 1.5em;
-    text-align: center;
-  }
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5em 1.5em;
+  text-align: center;
 }
-
 .intro h2 {
   margin: 0 0 0.6em;
   font-family: "Death Crow";
@@ -522,47 +520,64 @@ h1 {
   body {
     padding-top: 105px;
   }
-
   .main-header {
     padding: 1em 0.5em;
   }
-
   .nav {
     gap: 0.3em;
   }
-
   .nav a {
     margin: 0 0.45em;
     font-size: 0.85em;
   }
-
   .hero {
     min-height: 500px;
     padding: 2em 1em 3em;
   }
-
   .hero-content {
     width: 100%;
     padding: 0;
   }
-
   .hero-title {
     font-size: 3em;
     letter-spacing: 0.08em;
     line-height: 1;
   }
-
   .hero-title span {
     margin-left: 0.1em;
     font-size: 0.8em;
   }
-
   .hero-subtitle {
     margin: 1em 0 1.3em;
     font-size: 0.95em;
   }
-
   .hero-button {
     font-size: 0.8em;
+  }
+  .intro {
+    padding: 2em 1.2em;
+  }
+  .intro h2 {
+    font-size: 2.2em;
+    letter-spacing: 0.1em;
+  }
+  .intro p {
+    font-size: 0.95em;
+    line-height: 1.7;
+  }
+  .bands-section {
+    padding: 1.5em 0 2em;
+  }
+  .bands-section h2 {
+    font-size: 2em;
+    letter-spacing: 0.1em;
+  }
+  .gallery {
+    grid-template-columns: 1fr;
+    gap: 1.5em;
+    padding: 0 1em;
+  }
+  .card {
+    min-height: 0;
   }
 }
