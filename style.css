@@ -29,7 +29,7 @@ body {
 /* لایه دود اول */
 body::before {
   content: "";
-  position: absolute;
+  position: fixed;
   top: -50%;
   left: -50%;
   width: 200%;
@@ -48,7 +48,7 @@ body::before {
 /* لایه دود دوم */
 body::after {
   content: "";
-  position: absolute;
+  position: fixed;
   top: -50%;
   left: -50%;
   width: 200%;
@@ -112,9 +112,7 @@ h1 {
   padding: 0 20px;
 }
 
-/* =========================
-   LEGEND CARDS
-========================= */
+/* ========================= LEGEND CARDS ========================= */
 
 .card {
   width: 100%;
@@ -447,9 +445,7 @@ h1 {
   margin: 18px 0 22px;
 }
 
-/* =========================
-   INTRO SECTION
-========================= */
+/* ========================= INTRO SECTION ========================= */
 .intro {
   max-width: 800px;
   margin: 0 auto;
@@ -477,9 +473,7 @@ h1 {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
   opacity: 1;
 }
-/* =========================
-   FEATURED LEGENDS
-========================= */
+/* ========================= FEATURED LEGENDS ========================= */
 
 .bands-section {
   width: 100%;
@@ -626,8 +620,7 @@ h1 {
   }
 
   .main-footer p {
-    margin-top: 1em;
-    padding: 1em;
+    margin: 0;
     font-size: 0.75em;
     line-height: 1.6;
     letter-spacing: 0.03em;
