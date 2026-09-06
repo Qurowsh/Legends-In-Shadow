@@ -1,7 +1,3 @@
-// گالری کارت‌ها را از HTML پیدا می‌کنیم
-const bandsContainer = document.getElementById("bands-container");
-/* console.log("Gallery:", bandsContainer);
-console.log("Cards:", document.querySelectorAll(".card").length); */
 // لیست گروه‌های موسیقی را نگه می‌دارد
 // بعداً هر گروه جدید را فقط به همین لیست اضافه می‌کنیم
 const bands = [
@@ -231,71 +227,59 @@ const bands = [
   },
 ];
 
+// بهتر است یک بار container را بگیریم و سپس با DocumentFragment یک‌جا اضافه کنیم
+const bandsContainer = document.getElementById("bands-container");
+const fragment = document.createDocumentFragment();
+
+// کوچک، درجا و بدون درخواست شبکه وقتی تصویر آماده نیست
+const placeholder =
+  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%25" height="100%25" fill="%230a0a0a"/><text x="50%25" y="50%25" fill="%23ffffff" font-size="28" font-family="Arial" dominant-baseline="middle" text-anchor="middle">No Image</text></svg>';
+
 bands.forEach((band) => {
-  const bandsContainer = document.getElementById("bands-container");
   const newCard = document.createElement("div");
   newCard.classList.add("card");
-  // یک تگ img برای عکس گروه می‌سازیم
+
+  // تصویر: اگر مسیر موجود است از آن استفاده می‌کنیم وگرنه placeholder
   const bandImage = document.createElement("img");
-
-  // مسیر عکس را از Object همان گروه می‌گیریم
-  bandImage.src = band.image;
-
-  // متن جایگزین عکس را از اسم گروه می‌سازیم
-  bandImage.alt = band.name;
-
-  // کلاس band-img را اضافه می‌کنیم
-  // CSS فعلی ظاهر عکس را با همین کلاس کنترل می‌کند
   bandImage.classList.add("band-img");
-
-  // عکس را داخل کارت قرار می‌دهیم
+  bandImage.alt = band.name || "Band";
+  bandImage.decoding = "async";
+  bandImage.loading = "lazy";
+  bandImage.src =
+    band.image && band.image.trim() !== "" ? band.image : placeholder;
+  if (!band.image || band.image.trim() === "") {
+    bandImage.classList.add("no-image");
+  }
   newCard.appendChild(bandImage);
-  // یک تگ h3 برای اسم گروه می‌سازیم
+
   const bandName = document.createElement("h3");
-
-  // اسم گروه را از Object می‌گیریم
   bandName.textContent = band.name;
-
-  // اسم گروه را داخل کارت قرار می‌دهیم
   newCard.appendChild(bandName);
-  // یک تگ <p> برای جمله گروه می‌سازیم
+
   const bandQuote = document.createElement("p");
-
-  // متن Quote را از Object گروه می‌گیریم
   bandQuote.textContent = band.quote;
-
-  // کلاس quote را اضافه می‌کنیم
-  // CSS فعلی ظاهر این متن را کنترل می‌کند
   bandQuote.classList.add("quote");
-
-  // Quote را داخل کارت قرار می‌دهیم
   newCard.appendChild(bandQuote);
-  // یک تگ <p> برای اطلاعات گروه می‌سازیم
+
   const bandInfo = document.createElement("p");
-
-  // ژانر و سال را از Object گروه می‌گیریم
   bandInfo.textContent = `${band.genre} | ${band.year}`;
-
-  // کلاس info را اضافه می‌کنیم
-  // CSS فعلی ظاهر این بخش را کنترل می‌کند
   bandInfo.classList.add("info");
-
-  // اطلاعات را داخل کارت قرار می‌دهیم
   newCard.appendChild(bandInfo);
-  // یک تگ <a> برای لینک Biography می‌سازیم
+
   const bioLink = document.createElement("a");
-
-  // متن لینک را مشخص می‌کنیم
-  bioLink.textContent = "View Biography";
-
-  // مسیر Biography را از Object گروه می‌گیریم
-  bioLink.href = band.bio;
-
-  // کلاس Bio را اضافه می‌کنیم
-  // CSS فعلی ظاهر این لینک را کنترل می‌کند
   bioLink.classList.add("Bio");
-
-  // لینک را داخل کارت قرار می‌دهیم
+  if (band.bio) {
+    bioLink.href = band.bio;
+    bioLink.textContent = "View Biography";
+  } else {
+    bioLink.href = "#";
+    bioLink.textContent = "Biography coming soon";
+    bioLink.classList.add("disabled");
+    bioLink.setAttribute("aria-disabled", "true");
+  }
   newCard.appendChild(bioLink);
-  bandsContainer.appendChild(newCard);
+
+  fragment.appendChild(newCard);
 });
+
+bandsContainer.appendChild(fragment);
