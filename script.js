@@ -1,7 +1,7 @@
 const bands = [
   { name: "Metallica", image: "Images/14.jpg", quote: '"The music is our sacred ritual."', genre: "Thrash Metal", year: "Since 1981" },
   { name: "Slayer", image: "Images/3.jpg", quote: '"Riffs that cut like blades."', genre: "Thrash Metal", year: "Since 1981" },
-  { name: "Death", image: "Images/13.jpg", quote: '"The sound of rebellion."', genre: "Death Metal", year: "Since 1983" },
+  { name: "Death", image: "Images/13.png", quote: '"The sound of rebellion."', genre: "Death Metal", year: "Since 1983" },
   { name: "Iron Maiden", image: "Images/20.jpg", quote: '"The legends of heavy metal."', genre: "Heavy Metal", year: "Since 1980" },
   { name: "Black Sabbath", image: "Images/4.jpg", quote: '"The pioneers of darkness."', genre: "Heavy Metal", year: "Since 1968" },
   { name: "Judas Priest", image: "Images/22.jpeg", quote: '"The metal gods."', genre: "Heavy Metal", year: "Since 1969" },
@@ -17,7 +17,7 @@ const bands = [
   { name: "Dream Theater", image: "Images/9.png", quote: '"The virtuosos of progressive metal."', genre: "Progressive Metal", year: "Since 1985" },
   { name: "Linkin Park", image: "Images/10.jpeg", quote: '"The nu metal revolution."', genre: "Nu Metal", year: "Since 1996" },
   { name: "Radiohead", image: "Images/20.jpg", quote: '"The experimental rockers."', genre: "Alternative Rock", year: "Since 1989" },
-  { name: "Nirvana", image: "Images/11.jpg", quote: '"The grunge pioneers."', genre: "Grunge", year: "Since 1987" },
+  { name: "Nirvana", image: "Images/11.png", quote: '"The grunge pioneers."', genre: "Grunge", year: "Since 1987" },
   { name: "Pearl Jam", image: "", quote: '"The voice of a generation."', genre: "Grunge", year: "Since 1990" },
   { name: "The Beatles", image: "", quote: '"The legends of rock."', genre: "Rock", year: "Since 1960" },
   { name: "Queen", image: "", quote: '"The champions of rock."', genre: "Rock", year: "Since 1970" },
