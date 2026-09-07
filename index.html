@@ -1,89 +1,89 @@
+<!-- نوع سند را روی HTML5 قرار می‌دهد. -->
 <!doctype html>
+<!-- زبان اصلی صفحه را مشخص می‌کند. -->
 <html lang="en">
+  <!-- تنظیمات اولیه و فایل‌های مورد نیاز صفحه. -->
   <head>
+    <!-- پشتیبانی از UTF-8. -->
     <meta charset="UTF-8" />
-
+    <!-- تنظیم نمایش مناسب در مرورگرهای مختلف. -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
+    <!-- تنظیم نمایش واکنش‌گرا در موبایل و دسکتاپ. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <!-- عنوان تب مرورگر. -->
     <title>NICHERZ</title>
-
+    <!-- استایل اصلی صفحه را وصل می‌کند. -->
     <link rel="stylesheet" href="style.css" />
-
-    <link rel="icon" type="image/jpeg" href="./Images/Logo.jpg" />
-
+    <!-- تصویر لوگو را برای آیکن تب مرورگر استفاده می‌کند. -->
+    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+    <!-- فونت اصلی پروژه را اضافه می‌کند. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
       rel="stylesheet"
     />
   </head>
 
+  <!-- محتوایی که کاربر در صفحه می‌بیند. -->
   <body>
-    <!-- =========================
-        HEADER
-========================= -->
-
+    <!-- هدر و منوی اصلی سایت. -->
     <header class="main-header">
+      <!-- منوی جابه‌جایی بین بخش‌های سایت. -->
       <nav class="nav">
+        <!-- لینک صفحه محصولات. -->
         <a href="index-shop.html"> Products </a>
-
+        <!-- لینک رفتن به بخش گروه‌ها. -->
         <a href="#gallery"> Bands </a>
-
+        <!-- لینک تماس. -->
         <a href="contact.html" class=""> Contact </a>
-
+        <!-- بخش آلبوم که فعلاً غیرفعال است. -->
         <a href="#" class="disabled"> Albums </a>
       </nav>
     </header>
 
+    <!-- محتوای اصلی صفحه. -->
     <main>
-      <!-- =========================
-        HERO SECTION
-========================= -->
-
+      <!-- بخش Hero و معرفی اصلی برند. -->
       <section class="hero">
+        <!-- ظرف عنوان و زیرعنوان Hero. -->
         <div class="hero-content">
+          <!-- عنوان اصلی سایت. -->
           <h1 class="hero-title">
+            <!-- بخش اول عنوان. -->
             LEGENDS
-
+            <!-- بخش دوم عنوان که جداگانه استایل می‌گیرد. -->
             <span> IN SHADOWS </span>
           </h1>
-
+          <!-- شعار کوتاه سایت. -->
           <p class="hero-subtitle">Where Metal Becomes A Legend</p>
         </div>
       </section>
 
-      <!-- =========================
-        INTRO SECTION
-========================= -->
-
+      <!-- معرفی کوتاه آرشیو متال. -->
       <section class="intro">
+        <!-- عنوان بخش معرفی. -->
         <h2>THE METAL ARCHIVE</h2>
-
+        <!-- توضیح هدف سایت. -->
         <p>
           A dark archive dedicated to the legends, stories and sounds that
           shaped generations.
         </p>
       </section>
 
-      <!-- =========================
-        FEATURED BANDS
-========================= -->
-
+      <!-- بخش گروه‌های منتخب. -->
       <section class="bands-section" id="gallery">
+        <!-- عنوان بخش گروه‌ها. -->
         <h2>FEATURED LEGENDS</h2>
-
+        <!-- JavaScript کارت‌های گروه‌ها را داخل این ظرف قرار می‌دهد. -->
         <div class="gallery" id="bands-container"></div>
       </section>
     </main>
 
-    <!-- =========================
-        FOOTER
-========================= -->
-
+    <!-- فوتر صفحه. -->
     <footer class="main-footer">
+      <!-- متن کپی‌رایت. -->
       <p>2026 Legends In The Shadows - ALL Rights Reserved</p>
     </footer>
+    <!-- منطق ساخت کارت‌های گروه را اجرا می‌کند. -->
     <script src="script.js"></script>
   </body>
 </html>

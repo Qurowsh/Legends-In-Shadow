@@ -1,14 +1,17 @@
+/* ظرف اصلی صفحه جزئیات محصول را روی پس‌زمینه قرار می‌دهد. */
 .product-detail-page {
   position: relative;
   z-index: 1;
   padding: 3em 2em 5em;
 }
 
+/* عرض و فاصله دکمه برگشت را تنظیم می‌کند. */
 .back-button-wrapper {
   width: min(90%, 90em);
   margin: 0 auto 2em;
 }
 
+/* ظاهر دکمه برگشت به فروشگاه. */
 .back-button {
   display: inline-flex;
   align-items: center;
@@ -29,13 +32,14 @@
     border-color 0.3s ease;
 }
 
+/* افکت Hover دکمه برگشت. */
 .back-button:hover {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* Main product layout */
+/* چیدمان اصلی تصویر و اطلاعات محصول. */
 .product-detail-container {
   width: min(90%, 90em);
   margin: 0 auto 5em;
@@ -45,7 +49,7 @@
   align-items: start;
 }
 
-/* Left: Product Image */
+/* بخش تصویر محصول را در زمان اسکرول ثابت نگه می‌دارد. */
 .product-detail-image {
   position: sticky;
   top: 2em;
@@ -62,6 +66,7 @@
   animation-delay: 0.2s;
 }
 
+/* تصویر اصلی محصول را تنظیم می‌کند. */
 .detail-image {
   width: 100%;
   height: auto;
@@ -72,11 +77,12 @@
     filter 0.5s ease;
 }
 
+/* بزرگ‌نمایی نرم تصویر هنگام Hover. */
 .product-detail-image:hover .detail-image {
   transform: scale(1.05);
 }
 
-/* Right: Product Info */
+/* بخش اطلاعات محصول را به صورت ستونی می‌چیند. */
 .product-detail-info {
   display: flex;
   flex-direction: column;
@@ -85,11 +91,13 @@
   animation-delay: 0.3s;
 }
 
+/* بخش عنوان محصول و جداکننده زیر آن. */
 .detail-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 1.5em;
 }
 
+/* نام بزرگ محصول. */
 .detail-name {
   margin: 0 0 0.5em;
   font-size: 2.5em;
@@ -100,6 +108,7 @@
   color: #fff;
 }
 
+/* نام گروه مرتبط با محصول. */
 .detail-band {
   margin: 0;
   font-size: 0.9em;
@@ -109,26 +118,28 @@
   text-transform: uppercase;
 }
 
-/* Rating */
+/* ردیف نمایش امتیاز محصول. */
 .detail-rating {
   display: flex;
   align-items: center;
   gap: 1em;
 }
 
+/* ظاهر ستاره‌های امتیاز. */
 .stars {
   font-size: 1.3em;
   color: #ffd700;
   letter-spacing: 0.1em;
 }
 
+/* تعداد نظرهای نمایش‌داده‌شده. */
 .review-count {
   font-size: 0.85em;
   color: rgba(255, 255, 255, 0.5);
   font-family: Arial, sans-serif;
 }
 
-/* Description */
+/* توضیح متنی محصول. */
 .detail-description {
   margin: 0;
   font-size: 0.95em;
@@ -138,7 +149,7 @@
   letter-spacing: 0.02em;
 }
 
-/* Specs */
+/* جعبه مشخصات محصول مثل Type، Price و Stock. */
 .detail-specs {
   display: flex;
   flex-direction: column;
@@ -149,6 +160,7 @@
   border-radius: 0.8em;
 }
 
+/* چیدمان هر ردیف مشخصات. */
 .spec-item {
   display: flex;
   justify-content: space-between;
@@ -157,6 +169,7 @@
   font-family: Arial, sans-serif;
 }
 
+/* برچسب مشخصات. */
 .spec-label {
   color: rgba(255, 255, 255, 0.5);
   font-weight: 600;
@@ -164,24 +177,27 @@
   text-transform: uppercase;
 }
 
+/* مقدار مشخصات. */
 .spec-value {
   color: #fff;
   letter-spacing: 0.06em;
 }
 
+/* قیمت را برجسته‌تر از بقیه مشخصات می‌کند. */
 .price-highlight {
   font-size: 1.3em;
   color: rgba(255, 215, 0, 0.8);
   font-weight: bold;
 }
 
-/* Size Selection */
+/* بخش انتخاب سایز. */
 .size-section {
   display: flex;
   flex-direction: column;
   gap: 1em;
 }
 
+/* عنوان بخش‌هایی مثل Size و Quantity. */
 .section-label {
   font-size: 0.8em;
   font-family: Arial, sans-serif;
@@ -191,12 +207,14 @@
   font-weight: 600;
 }
 
+/* شبکه دکمه‌های سایز. */
 .size-options {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   gap: 0.8em;
 }
 
+/* ظاهر پایه دکمه سایز. */
 .size-btn {
   padding: 0.8em;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -212,12 +230,14 @@
   transition: all 0.3s ease;
 }
 
+/* افکت Hover دکمه سایز. */
 .size-btn:hover {
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
 }
 
+/* ظاهر سایزی که انتخاب شده است. */
 .size-btn.selected {
   border-color: rgba(255, 255, 255, 0.7);
   background: rgba(255, 255, 255, 0.12);
@@ -225,13 +245,14 @@
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
 }
 
-/* Quantity Selection */
+/* بخش انتخاب تعداد محصول. */
 .quantity-section {
   display: flex;
   flex-direction: column;
   gap: 1em;
 }
 
+/* قاب کنترل تعداد. */
 .quantity-selector {
   display: flex;
   align-items: center;
@@ -241,6 +262,7 @@
   overflow: hidden;
 }
 
+/* دکمه‌های کم و زیاد کردن تعداد. */
 .qty-btn {
   flex: 0 0 auto;
   width: 3em;
@@ -255,10 +277,12 @@
   font-family: Arial, sans-serif;
 }
 
+/* افکت Hover کنترل تعداد. */
 .qty-btn:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* ورودی عددی تعداد محصول. */
 .qty-input {
   flex: 1;
   border: none;
@@ -272,22 +296,24 @@
   font-family: Arial, sans-serif;
 }
 
+/* حذف خط دور پیش‌فرض ورودی هنگام Focus. */
 .qty-input:focus {
   outline: none;
 }
 
-/* Remove default number input arrows */
+/* حذف فلش‌های پیش‌فرض input عددی در WebKit. */
 .qty-input::-webkit-outer-spin-button,
 .qty-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
+/* حذف فلش‌های پیش‌فرض input عددی در Firefox. */
 .qty-input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Add to Cart Button */
+/* دکمه اصلی اضافه کردن به سبد. */
 .add-to-cart-btn {
   padding: 1.2em;
   border: none;
@@ -309,6 +335,7 @@
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
 }
 
+/* افکت Hover دکمه اضافه کردن به سبد. */
 .add-to-cart-btn:hover {
   border-color: rgba(255, 215, 0, 0.7);
   background: linear-gradient(
@@ -321,11 +348,12 @@
   transform: translateY(-2px);
 }
 
+/* حالت فشرده دکمه هنگام کلیک. */
 .add-to-cart-btn:active {
   transform: translateY(0);
 }
 
-/* Additional Info */
+/* اطلاعات تکمیلی ارسال، مرجوعی و پرداخت. */
 .additional-info {
   display: flex;
   flex-direction: column;
@@ -335,17 +363,20 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* چینش هر مورد اطلاعات تکمیلی. */
 .info-item {
   display: flex;
   gap: 1em;
   align-items: flex-start;
 }
 
+/* اندازه آیکن اطلاعات. */
 .info-icon {
   font-size: 1.4em;
   flex-shrink: 0;
 }
 
+/* متن اطلاعات تکمیلی. */
 .info-item p {
   margin: 0;
   font-size: 0.85em;
@@ -355,7 +386,7 @@
   letter-spacing: 0.05em;
 }
 
-/* Related Products */
+/* بخش محصولات مرتبط. */
 .related-products {
   width: min(90%, 90em);
   margin: 0 auto;
@@ -365,6 +396,7 @@
   animation-delay: 0.4s;
 }
 
+/* عنوان محصولات مرتبط. */
 .section-title {
   margin: 0 0 2em;
   font-family: "Metal Mania", cursive;
@@ -374,12 +406,14 @@
   color: #fff;
 }
 
+/* شبکه نمایش محصولات مرتبط. */
 .related-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.6em;
 }
 
+/* ظاهر پایه کارت محصول مرتبط. */
 .related-product-card {
   position: relative;
   display: flex;
@@ -402,6 +436,7 @@
     border-color 0.22s ease;
 }
 
+/* افکت Hover کارت محصول مرتبط. */
 .related-product-card:hover {
   transform: translateY(-8px) scale(1.015);
   border-color: rgba(255, 255, 255, 0.5);
@@ -410,6 +445,7 @@
     0 0 28px rgba(255, 255, 255, 0.12);
 }
 
+/* قاب تصویر محصول مرتبط. */
 .related-image {
   width: 100%;
   height: 250px;
@@ -417,6 +453,7 @@
   overflow: hidden;
 }
 
+/* تصویر داخل کارت مرتبط. */
 .related-image img {
   width: 100%;
   height: 100%;
@@ -424,10 +461,12 @@
   transition: transform 0.3s ease;
 }
 
+/* بزرگ‌نمایی تصویر کارت مرتبط هنگام Hover. */
 .related-product-card:hover .related-image img {
   transform: scale(1.08);
 }
 
+/* اطلاعات زیر تصویر محصول مرتبط. */
 .related-info {
   padding: 1.2em;
   display: flex;
@@ -435,6 +474,7 @@
   gap: 0.6em;
 }
 
+/* نام محصول مرتبط. */
 .related-name {
   margin: 0;
   font-family: "Metal Mania", cursive;
@@ -444,14 +484,14 @@
   line-height: 1.2;
 }
 
+/* قیمت محصول مرتبط. */
 .related-price {
   font-size: 0.9em;
   color: rgba(255, 215, 0, 0.8);
   font-weight: bold;
 }
 
-/* RESPONSIVE */
-
+/* تنظیمات کلی واکنش‌گرا برای صفحه محصول. */
 @media (max-width: 1024px) {
   .product-detail-container {
     grid-template-columns: 1fr;
@@ -471,6 +511,7 @@
   }
 }
 
+/* تنظیمات صفحه محصول برای تبلت و موبایل. */
 @media (max-width: 768px) {
   .product-detail-page {
     padding: 2em 1em 3em;
@@ -519,6 +560,7 @@
   }
 }
 
+/* تنظیمات صفحه‌های خیلی کوچک. */
 @media (max-width: 480px) {
   .product-detail-page {
     padding: 1.5em 1em 2em;

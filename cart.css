@@ -1,8 +1,4 @@
-/**
- * 🛒 SHOPPING CART — STYLING
- * صفحه‌ی سبد خریدی
- */
-
+/* ظرف اصلی صفحه سبد خرید را تنظیم می‌کند. */
 .cart-page {
   position: relative;
   z-index: 1;
@@ -10,7 +6,7 @@
   min-height: 60vh;
 }
 
-/* Cart Header */
+/* عنوان و توضیح بالای سبد خرید. */
 .cart-header {
   width: min(90%, 90em);
   margin: 0 auto 3em;
@@ -19,6 +15,7 @@
   animation-delay: 0.1s;
 }
 
+/* عنوان اصلی سبد خرید. */
 .cart-title {
   margin: 0 0 0.5em;
   font-family: "Metal Mania", cursive;
@@ -28,6 +25,7 @@
   color: #fff;
 }
 
+/* توضیح کوتاه زیر عنوان سبد. */
 .cart-subtitle {
   margin: 0;
   font-size: 0.95em;
@@ -36,7 +34,7 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* Main Cart Layout */
+/* چیدمان دو ستونه آیتم‌ها و خلاصه سفارش. */
 .cart-container {
   width: min(90%, 90em);
   margin: 0 auto;
@@ -47,20 +45,21 @@
   animation-delay: 0.2s;
 }
 
-/* Cart Items Section */
+/* بخش لیست کالاهای سبد. */
 .cart-items-section {
   display: flex;
   flex-direction: column;
   gap: 1.5em;
 }
 
+/* فاصله بین کارت‌های سبد. */
 .cart-items {
   display: flex;
   flex-direction: column;
   gap: 1.5em;
 }
 
-/* Cart Item Card */
+/* کارت هر محصول داخل سبد. */
 .cart-item {
   display: grid;
   grid-template-columns: 120px 1fr auto;
@@ -78,12 +77,13 @@
   animation: slideIn 0.5s ease forwards;
 }
 
+/* افکت Hover کارت محصول سبد. */
 .cart-item:hover {
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 20px 48px rgba(255, 255, 255, 0.08);
 }
 
-/* Item Image */
+/* قاب تصویر آیتم سبد. */
 .item-image {
   width: 120px;
   height: 120px;
@@ -92,13 +92,14 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* تصویر آیتم را کامل داخل قاب قرار می‌دهد. */
 .item-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* Item Details */
+/* بخش نام و مشخصات محصول. */
 .item-details {
   display: flex;
   flex-direction: column;
@@ -106,6 +107,7 @@
   gap: 0.8em;
 }
 
+/* نام محصول داخل سبد. */
 .item-name {
   margin: 0;
   font-family: "Metal Mania", cursive;
@@ -115,6 +117,7 @@
   line-height: 1.2;
 }
 
+/* گروه اطلاعاتی محصول مثل سایز و قیمت. */
 .item-meta {
   display: flex;
   flex-direction: column;
@@ -123,12 +126,14 @@
   font-family: Arial, sans-serif;
 }
 
+/* یک ردیف از اطلاعات محصول. */
 .item-meta-row {
   display: flex;
   gap: 1em;
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* برچسب هر ردیف اطلاعات. */
 .item-meta-label {
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -136,17 +141,19 @@
   min-width: 60px;
 }
 
+/* مقدار اطلاعات مثل سایز. */
 .item-meta-value {
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* قیمت هر محصول. */
 .item-price {
   font-size: 1.1em;
   color: rgba(255, 215, 0, 0.8);
   font-weight: bold;
 }
 
-/* Item Actions (Right Column) */
+/* ستون عملیات سمت راست کارت. */
 .item-actions {
   display: flex;
   flex-direction: column;
@@ -155,6 +162,7 @@
   gap: 1em;
 }
 
+/* مبلغ کل همان آیتم. */
 .item-total {
   font-size: 1.3em;
   color: rgba(255, 215, 0, 0.9);
@@ -162,13 +170,14 @@
   text-align: right;
 }
 
+/* ظرف کنترل تعداد و حذف. */
 .item-controls {
   display: flex;
   align-items: center;
   gap: 0.8em;
 }
 
-/* Quantity Controls */
+/* کنترل کم و زیاد کردن تعداد. */
 .qty-control {
   display: flex;
   align-items: center;
@@ -178,6 +187,7 @@
   overflow: hidden;
 }
 
+/* دکمه‌های کنترل تعداد. */
 .qty-control button {
   width: 2.5em;
   height: 2.5em;
@@ -190,10 +200,12 @@
   transition: background 0.2s ease;
 }
 
+/* افکت Hover دکمه‌های تعداد. */
 .qty-control button:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* ورودی تعداد داخل سبد. */
 .qty-control input {
   width: 2.5em;
   height: 2.5em;
@@ -206,17 +218,19 @@
   font-family: Arial, sans-serif;
 }
 
+/* حذف خط دور ورودی تعداد هنگام Focus. */
 .qty-control input:focus {
   outline: none;
 }
 
+/* حذف فلش‌های عددی ورودی در WebKit. */
 .qty-control input::-webkit-outer-spin-button,
 .qty-control input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Remove Button */
+/* دکمه حذف محصول. */
 .remove-btn {
   padding: 0.6em 1em;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -231,13 +245,14 @@
   transition: all 0.3s ease;
 }
 
+/* افکت Hover دکمه حذف. */
 .remove-btn:hover {
   border-color: rgba(255, 0, 0, 0.6);
   background: rgba(255, 0, 0, 0.1);
   color: rgba(255, 100, 100, 0.9);
 }
 
-/* Empty Cart */
+/* حالت ظاهری زمانی که سبد خالی است. */
 .empty-cart {
   text-align: center;
   padding: 3em 2em;
@@ -246,11 +261,13 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
+/* آیکن سبد خالی. */
 .empty-icon {
   font-size: 4em;
   margin: 0 0 1em;
 }
 
+/* عنوان پیام سبد خالی. */
 .empty-cart h2 {
   margin: 0 0 0.5em;
   font-family: "Metal Mania", cursive;
@@ -259,6 +276,7 @@
   color: #fff;
 }
 
+/* متن توضیح سبد خالی. */
 .empty-cart p {
   margin: 0 0 2em;
   font-size: 0.95em;
@@ -266,6 +284,7 @@
   font-family: Arial, sans-serif;
 }
 
+/* دکمه ادامه خرید در حالت سبد خالی. */
 .continue-shopping-btn {
   display: inline-block;
   padding: 0.8em 1.5em;
@@ -282,19 +301,21 @@
   transition: all 0.3s ease;
 }
 
+/* افکت Hover دکمه ادامه خرید. */
 .continue-shopping-btn:hover {
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
 }
 
-/* Cart Summary Section */
+/* بخش خلاصه سفارش. */
 .cart-summary-section {
   display: flex;
   flex-direction: column;
   gap: 1.5em;
 }
 
+/* کارت خلاصه مبلغ سفارش. */
 .cart-summary {
   padding: 2em;
   background: linear-gradient(
@@ -310,6 +331,7 @@
   height: fit-content;
 }
 
+/* عنوان خلاصه سفارش. */
 .summary-title {
   margin: 0 0 1.5em;
   font-family: "Metal Mania", cursive;
@@ -319,6 +341,7 @@
   color: #fff;
 }
 
+/* یک ردیف از مبلغ‌های خلاصه سفارش. */
 .summary-row {
   display: flex;
   justify-content: space-between;
@@ -328,17 +351,20 @@
   font-family: Arial, sans-serif;
 }
 
+/* برچسب مبلغ. */
 .summary-label {
   color: rgba(255, 255, 255, 0.6);
   letter-spacing: 0.05em;
   font-weight: 600;
 }
 
+/* مقدار مبلغ. */
 .summary-value {
   color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
 }
 
+/* ردیف مبلغ نهایی را برجسته می‌کند. */
 .summary-row.summary-total {
   padding: 1em 0;
   font-size: 1.3em;
@@ -346,6 +372,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* رنگ و وزن متن مبلغ نهایی. */
 .summary-row.summary-total .summary-label,
 .summary-row.summary-total .summary-value {
   color: rgba(255, 215, 0, 0.9);
@@ -353,13 +380,14 @@
   text-transform: uppercase;
 }
 
+/* خط جداکننده خلاصه سفارش. */
 .summary-divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.1);
   margin: 1em 0;
 }
 
-/* Checkout Button */
+/* دکمه ورود به مرحله Checkout. */
 .checkout-btn {
   padding: 1.2em;
   margin-top: 1em;
@@ -382,6 +410,7 @@
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
 }
 
+/* افکت Hover Checkout وقتی فعال باشد. */
 .checkout-btn:hover:not(:disabled) {
   border-color: rgba(255, 215, 0, 0.7);
   background: linear-gradient(
@@ -394,12 +423,13 @@
   transform: translateY(-2px);
 }
 
+/* حالت غیرفعال Checkout. */
 .checkout-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Continue Shopping Link */
+/* لینک ادامه خرید زیر خلاصه سفارش. */
 .continue-shopping-link {
   display: block;
   text-align: center;
@@ -411,16 +441,18 @@
   transition: color 0.3s ease;
 }
 
+/* افکت Hover لینک ادامه خرید. */
 .continue-shopping-link:hover {
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Promo Code Section */
+/* بخش وارد کردن کد تخفیف. */
 .promo-section {
   display: flex;
   gap: 0.8em;
 }
 
+/* ورودی کد تخفیف. */
 .promo-input {
   flex: 1;
   padding: 0.8em;
@@ -433,16 +465,19 @@
   transition: all 0.3s ease;
 }
 
+/* حالت Focus ورودی کد تخفیف. */
 .promo-input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.4);
   background: rgba(255, 255, 255, 0.05);
 }
 
+/* رنگ متن راهنمای ورودی کد تخفیف. */
 .promo-input::placeholder {
   color: rgba(255, 255, 255, 0.3);
 }
 
+/* دکمه اعمال کد تخفیف. */
 .promo-btn {
   padding: 0.8em 1.2em;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -458,13 +493,14 @@
   transition: all 0.3s ease;
 }
 
+/* افکت Hover دکمه promo. */
 .promo-btn:hover {
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
 }
 
-/* Animations */
+/* انیمیشن ورود کارت‌های سبد. */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -476,8 +512,7 @@
   }
 }
 
-/* RESPONSIVE */
-
+/* تنظیمات سبد برای صفحه‌های متوسط. */
 @media (max-width: 1024px) {
   .cart-container {
     grid-template-columns: 1fr;
@@ -498,6 +533,7 @@
   }
 }
 
+/* تنظیمات سبد برای موبایل و تبلت کوچک. */
 @media (max-width: 768px) {
   .cart-page {
     padding: 2em 1em 3em;
@@ -549,6 +585,7 @@
   }
 }
 
+/* تنظیمات برای صفحه‌های خیلی کوچک. */
 @media (max-width: 480px) {
   .cart-page {
     padding: 1.5em 1em 2em;
