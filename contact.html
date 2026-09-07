@@ -1,26 +1,36 @@
+<!-- نوع سند را روی HTML5 قرار می‌دهد. -->
 <!doctype html>
+<!-- زبان اصلی صفحه. -->
 <html lang="en">
+  <!-- تنظیمات اولیه و استایل‌های صفحه. -->
   <head>
+    <!-- پشتیبانی از UTF-8. -->
     <meta charset="UTF-8" />
+    <!-- تنظیم نمایش واکنش‌گرا. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- عنوان تب مرورگر. -->
     <title>Contact — NICHERZ</title>
 
-    <!-- Put your provided CSS file next to this HTML as style.css -->
+    <!-- فایل استایل مشترک صفحات فروشگاه. -->
     <link rel="stylesheet" href="style-shop.css" />
+    <!-- فونت اصلی سایت. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
       rel="stylesheet"
     />
+    <!-- آیکن تب مرورگر. -->
     <link rel="icon" type="image/jpeg" href="./Images/Logo.jpg" />
 
+    <!-- استایل‌های اختصاصی صفحه تماس. -->
     <style>
-      /* Contact page additions — keeps the visual language of your CSS */
+      /* صفحه تماس را نسبت به پس‌زمینه در لایه بالاتر نگه می‌دارد. */
       .contact-page {
         position: relative;
         z-index: 1;
         min-height: 100vh;
       }
 
+      /* بخش معرفی بالای صفحه را وسط‌چین می‌کند. */
       .contact-hero {
         min-height: 42vh;
         display: flex;
@@ -31,6 +41,7 @@
         padding: 4em 1.5em 2em;
       }
 
+      /* ظاهر عنوان بزرگ Contact. */
       .contact-title {
         margin: 0;
         font-family: "Metal Mania", cursive;
@@ -40,6 +51,7 @@
         text-shadow: 0 0 25px rgba(255, 255, 255, 0.12);
       }
 
+      /* ظاهر متن زیر عنوان. */
       .contact-subtitle {
         margin: 1em 0 0;
         color: rgba(255, 255, 255, 0.62);
@@ -49,10 +61,12 @@
         text-transform: uppercase;
       }
 
+      /* فاصله اطراف بخش کارت‌های تماس. */
       .contact-section {
         padding: 1em 1.5em 6em;
       }
 
+      /* کارت‌های تماس را در سه ستون قرار می‌دهد. */
       .contact-container {
         width: min(90%, 68em);
         margin: 0 auto;
@@ -61,6 +75,7 @@
         gap: 1.5em;
       }
 
+      /* ظاهر پایه هر کارت تماس. */
       .contact-card {
         position: relative;
         display: flex;
@@ -90,6 +105,7 @@
           background 0.25s ease;
       }
 
+      /* یک لایه نور برای افکت Hover روی کارت. */
       .contact-card::before {
         content: "";
         position: absolute;
@@ -105,6 +121,7 @@
         pointer-events: none;
       }
 
+      /* کارت را هنگام رفتن موس کمی بالا می‌برد. */
       .contact-card:hover {
         transform: translateY(-10px) scale(1.02);
         border-color: rgba(255, 255, 255, 0.65);
@@ -113,10 +130,12 @@
           0 0 28px rgba(255, 255, 255, 0.12);
       }
 
+      /* لایه نور کارت را در حالت Hover نشان می‌دهد. */
       .contact-card:hover::before {
         opacity: 1;
       }
 
+      /* قاب دایره‌ای آیکن تماس. */
       .contact-icon {
         width: 4em;
         height: 4em;
@@ -133,11 +152,13 @@
           background 0.25s ease;
       }
 
+      /* آیکن را در حالت Hover کمی بزرگ و چرخان می‌کند. */
       .contact-card:hover .contact-icon {
         transform: scale(1.1) rotate(-4deg);
         background: rgba(255, 255, 255, 0.1);
       }
 
+      /* متن کوچک نام راه ارتباطی. */
       .contact-label {
         margin: 0 0 0.45em;
         color: rgba(255, 255, 255, 0.55);
@@ -147,6 +168,7 @@
         text-transform: uppercase;
       }
 
+      /* مقدار اصلی مثل نام کاربری یا شماره تماس. */
       .contact-value {
         margin: 0;
         color: #fff;
@@ -155,6 +177,7 @@
         letter-spacing: 0.08em;
       }
 
+      /* توضیح کوچک زیر اطلاعات تماس. */
       .contact-note {
         margin: 0.8em 0 0;
         color: rgba(255, 255, 255, 0.45);
@@ -163,6 +186,7 @@
         letter-spacing: 0.08em;
       }
 
+      /* ظاهر فوتر اختصاصی صفحه تماس. */
       .contact-footer {
         position: relative;
         z-index: 1;
@@ -175,21 +199,26 @@
         letter-spacing: 0.16em;
       }
 
+      /* تنظیمات کارت‌ها برای صفحه‌های کوچک. */
       @media (max-width: 650px) {
+        /* کارت‌ها در موبایل تک‌ستونه می‌شوند. */
         .contact-container {
           width: 100%;
           grid-template-columns: 1fr;
           gap: 1em;
         }
 
+        /* ارتفاع بخش معرفی در موبایل کمتر می‌شود. */
         .contact-hero {
           min-height: 38vh;
         }
 
+        /* ارتفاع کارت‌ها در موبایل کاهش پیدا می‌کند. */
         .contact-card {
           min-height: 190px;
         }
 
+        /* فونت اصلی روی متن‌های صفحه حفظ می‌شود. */
         .contact-title,
         .contact-subtitle,
         .contact-value,
@@ -202,33 +231,45 @@
   </head>
 
   <body>
-    <!-- Animated smoke background from your CSS -->
+    <!-- لایه‌های دود متحرک پس‌زمینه. -->
     <div class="smoke-background" aria-hidden="true">
+      <!-- لایه اول دود. -->
       <div class="smoke smoke-one"></div>
+      <!-- لایه دوم دود. -->
       <div class="smoke smoke-two"></div>
+      <!-- لایه سوم دود. -->
       <div class="smoke smoke-three"></div>
     </div>
 
+    <!-- ظرف اصلی صفحه تماس. -->
     <div class="contact-page">
+      <!-- هدر صفحه تماس. -->
       <header class="shop-header">
         <div class="shop-header-inner">
+          <!-- لوگو به عنوان لینک برگشت به فروشگاه. -->
           <a
             href="index-shop.html"
             class="brand-wrap"
             style="text-decoration: none; color: inherit"
           >
+            <!-- علامت کوتاه برند. -->
             <div class="brand-mark">N</div>
+            <!-- نام برند و عنوان این صفحه. -->
             <div class="brand-copy">
               <span class="brand-name">NICHERZ</span>
               <small>CONTACT</small>
             </div>
           </a>
 
+          <!-- منوی ساده صفحه تماس. -->
           <nav class="header-nav" aria-label="Main navigation">
+            <!-- لینک صفحه اصلی. -->
             <a href="index.html">HOME</a>
+            <!-- لینک فروشگاه. -->
             <a href="index-shop.html">product</a>
           </nav>
 
+          <!-- لینک تماس مستقیم تلفنی. -->
           <a
             class="cart-pill"
             href="tel:09122159432"
@@ -238,20 +279,27 @@
         </div>
       </header>
 
+      <!-- محتوای اصلی صفحه. -->
       <main>
+        <!-- بخش معرفی صفحه تماس. -->
         <section class="contact-hero">
+          <!-- عنوان اصلی. -->
           <h1 class="contact-title">CONTACT</h1>
+          <!-- متن کوتاه زیر عنوان. -->
           <p class="contact-subtitle">GET IN TOUCH WITH NICHERZ</p>
         </section>
 
+        <!-- بخش کارت‌های راه‌های ارتباطی. -->
         <section class="contact-section" id="contact">
           <div class="contact-container">
+            <!-- کارت ارتباط از طریق Instagram. -->
             <a
               class="contact-card"
               href="https://instagram.com/nicherzz"
               target="_blank"
               rel="noopener noreferrer"
             >
+              <!-- آیکن Instagram. -->
               <div class="contact-icon" aria-hidden="true">
                 <img
                   src="Images/insta.jpg"
@@ -264,24 +312,31 @@
                   "
                 />
               </div>
+              <!-- نام سرویس. -->
               <p class="contact-label">Instagram</p>
+              <!-- نام کاربری. -->
               <h2 class="contact-value">@nicherzz</h2>
+              <!-- راهنمای کوتاه. -->
               <p class="contact-note">FOLLOW / DM</p>
             </a>
 
+            <!-- کارت ارتباط از طریق Telegram. -->
             <a
               class="contact-card"
               href="https://t.me/nicherz"
               target="_blank"
               rel="noopener noreferrer"
             >
+              <!-- آیکن ساده Telegram. -->
               <div class="contact-icon" aria-hidden="true">➤</div>
               <p class="contact-label">Telegram</p>
               <h2 class="contact-value">nicherz</h2>
               <p class="contact-note">CHANNEL</p>
             </a>
 
+            <!-- کارت تماس تلفنی. -->
             <a class="contact-card" href="tel:09122159432">
+              <!-- آیکن تلفن. -->
               <div class="contact-icon" aria-hidden="true">☎</div>
               <p class="contact-label">Phone</p>
               <h2 class="contact-value">09122159432</h2>
@@ -291,6 +346,7 @@
         </section>
       </main>
 
+      <!-- فوتر پایانی صفحه. -->
       <footer class="contact-footer">
         © NICHERZ 2026 — ALL RIGHTS RESERVED
       </footer>
