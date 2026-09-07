@@ -10,50 +10,39 @@
       href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" type="image/jpeg" href="./Images/Logo.JPG" />
+    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
   </head>
 
   <body>
-    <div class="smoke-background">
+    <div class="smoke-background" aria-hidden="true">
       <div class="smoke smoke-one"></div>
       <div class="smoke smoke-two"></div>
       <div class="smoke smoke-three"></div>
     </div>
 
-    <!-- ✅ Products database import -->
     <script src="products.js"></script>
 
     <header class="shop-header">
       <div class="shop-header-inner">
-        <div class="brand-wrap" aria-label="Brand logo">
+        <a class="brand-wrap" href="index-shop.html" aria-label="NICHERZ Shop">
           <div class="brand-mark">
-            <img
-              src="./Images/Logo.jpg"
-              alt="NICHERZ logo"
-              style="
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 2px;
-              "
-            />
+            <img src="./Images/logo.jpg" alt="NICHERZ logo" width="44" height="44" />
           </div>
           <div class="brand-copy">
             <span class="brand-name">NICHERZ</span>
             <small>ARCHIVE</small>
           </div>
-        </div>
+        </a>
 
         <nav class="header-nav" aria-label="Main navigation">
-          <a href="index.html" class="disabled">HOME</a>
-          <a href="index-shop.html" class="active-nav">SHOP</a>
-          <a href="index.html">BANDS</a>
-          <a href="#" class="disabled">APPAREL</a>
-          <a href="contact.html" class="disabled">CONTACT</a>
+          <a href="index.html">HOME</a>
+          <a href="index-shop.html" class="active-nav" aria-current="page">SHOP</a>
+          <a href="index.html#gallery">BANDS</a>
+          <a href="contact.html">CONTACT</a>
         </nav>
 
         <div class="header-actions">
-          <button class="cart-pill" type="button">CART (2)</button>
+          <button class="cart-pill" type="button" aria-label="Open cart">CART (0)</button>
         </div>
       </div>
     </header>
@@ -64,12 +53,10 @@
       </div>
 
       <section class="product-detail-container">
-        <!-- Product Image Section -->
         <div class="product-detail-image">
-          <img id="productImage" src="" alt="Product" class="detail-image" />
+          <img id="productImage" src="" alt="Product" class="detail-image" width="800" height="800" />
         </div>
 
-        <!-- Product Info Section -->
         <div class="product-detail-info">
           <div class="detail-header">
             <h1 id="productName" class="detail-name"></h1>
@@ -77,7 +64,7 @@
           </div>
 
           <div class="detail-rating">
-            <span class="stars">★★★★★</span>
+            <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
             <span class="review-count">(12 reviews)</span>
           </div>
 
@@ -98,50 +85,24 @@
             </div>
           </div>
 
-          <!-- Size Selection -->
           <div class="size-section">
-            <label class="section-label">SELECT SIZE</label>
+            <label class="section-label" for="sizeOptions">SELECT SIZE</label>
             <div class="size-options" id="sizeOptions"></div>
           </div>
 
-          <!-- Quantity Selection -->
           <div class="quantity-section">
-            <label class="section-label">QUANTITY</label>
-            <div class="quantity-selector">
-              <button class="qty-btn" id="qtyDecrease">−</button>
-              <input
-                type="number"
-                id="qtyInput"
-                class="qty-input"
-                value="1"
-                min="1"
-              />
-              <button class="qty-btn" id="qtyIncrease">+</button>
+            <span class="section-label">QUANTITY</span>
+            <div class="quantity-controls">
+              <button id="qtyDecrease" type="button" aria-label="Decrease quantity">−</button>
+              <input id="qtyInput" type="number" min="1" value="1" inputmode="numeric" aria-label="Quantity" />
+              <button id="qtyIncrease" type="button" aria-label="Increase quantity">+</button>
             </div>
           </div>
 
-          <!-- Add to Cart Button -->
-          <button id="addToCartBtn" class="add-to-cart-btn">ADD TO CART</button>
-
-          <!-- Additional Info -->
-          <div class="additional-info">
-            <div class="info-item">
-              <span class="info-icon">🚚</span>
-              <p>FREE SHIPPING ON ORDERS OVER $50</p>
-            </div>
-            <div class="info-item">
-              <span class="info-icon">↩️</span>
-              <p>30-DAY RETURNS & EXCHANGES</p>
-            </div>
-            <div class="info-item">
-              <span class="info-icon">🔒</span>
-              <p>SECURE CHECKOUT WITH SSL</p>
-            </div>
-          </div>
+          <button id="addToCartBtn" class="add-to-cart-btn" type="button">ADD TO CART</button>
         </div>
       </section>
 
-      <!-- Related Products Section -->
       <section class="related-products">
         <h2 class="section-title">RELATED PRODUCTS</h2>
         <div class="related-grid" id="relatedProductsGrid"></div>
@@ -160,9 +121,9 @@
 
         <div class="footer-links">
           <h4>SHOP</h4>
-          <a href="#">Band Merch</a>
-          <a href="#">Streetwear</a>
-          <a href="#">Accessories</a>
+          <a href="index-shop.html?category=band-merch">Band Merch</a>
+          <a href="index-shop.html?category=streetwear">Streetwear</a>
+          <a href="index-shop.html?category=accessories">Accessories</a>
         </div>
 
         <div class="footer-links">
@@ -174,8 +135,8 @@
 
         <div class="footer-links">
           <h4>FOLLOW</h4>
-          <a href="https://instagram.com/nicherzz" target="_blank">Instagram</a>
-          <a href="https://t.me/nicherz" target="_blank">Telegram</a>
+          <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a>
         </div>
       </div>
 
