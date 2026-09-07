@@ -7,21 +7,17 @@
     <link rel="stylesheet" href="style-shop.css" />
     <link rel="stylesheet" href="product-detail.css" />
     <link rel="stylesheet" href="toast.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="icon" type="image/jpeg" href="./Images/Logo.JPG" />
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
   </head>
 
   <body>
-    <div class="smoke-background">
+    <div class="smoke-background" aria-hidden="true">
       <div class="smoke smoke-one"></div>
       <div class="smoke smoke-two"></div>
       <div class="smoke smoke-three"></div>
     </div>
 
-    <!-- ✅ Products database import -->
     <script src="products.js"></script>
     <script src="toast.js"></script>
 
@@ -30,14 +26,9 @@
         <div class="brand-wrap" aria-label="Brand logo">
           <div class="brand-mark">
             <img
-              src="./Images/Logo.jpg"
+              src="./Images/logo.jpg"
               alt="NICHERZ logo"
-              style="
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 2px;
-              "
+              style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;"
             />
           </div>
           <div class="brand-copy">
@@ -47,11 +38,11 @@
         </div>
 
         <nav class="header-nav" aria-label="Main navigation">
-          <a href="index.html" class="disabled">HOME</a>
+          <a href="index.html">HOME</a>
           <a href="index-shop.html" class="active-nav">SHOP</a>
-          <a href="index.html">BANDS</a>
+          <a href="index.html#gallery">BANDS</a>
           <a href="#" class="disabled">APPAREL</a>
-          <a href="contact.html" class="disabled">CONTACT</a>
+          <a href="contact.html">CONTACT</a>
         </nav>
 
         <div class="header-actions">
@@ -66,12 +57,10 @@
       </div>
 
       <section class="product-detail-container">
-        <!-- Product Image Section -->
         <div class="product-detail-image">
           <img id="productImage" src="" alt="Product" class="detail-image" />
         </div>
 
-        <!-- Product Info Section -->
         <div class="product-detail-info">
           <div class="detail-header">
             <h1 id="productName" class="detail-name"></h1>
@@ -100,32 +89,22 @@
             </div>
           </div>
 
-          <!-- Size Selection -->
           <div class="size-section">
-            <label class="section-label">SELECT SIZE</label>
+            <span class="section-label">SELECT SIZE</span>
             <div class="size-options" id="sizeOptions"></div>
           </div>
 
-          <!-- Quantity Selection -->
           <div class="quantity-section">
-            <label class="section-label">QUANTITY</label>
+            <span class="section-label">QUANTITY</span>
             <div class="quantity-selector">
-              <button class="qty-btn" id="qtyDecrease">−</button>
-              <input
-                type="number"
-                id="qtyInput"
-                class="qty-input"
-                value="1"
-                min="1"
-              />
-              <button class="qty-btn" id="qtyIncrease">+</button>
+              <button class="qty-btn" id="qtyDecrease" type="button" aria-label="Decrease quantity">−</button>
+              <input type="number" id="qtyInput" class="qty-input" value="1" min="1" inputmode="numeric" aria-label="Quantity" />
+              <button class="qty-btn" id="qtyIncrease" type="button" aria-label="Increase quantity">+</button>
             </div>
           </div>
 
-          <!-- Add to Cart Button -->
-          <button id="addToCartBtn" class="add-to-cart-btn">ADD TO CART</button>
+          <button id="addToCartBtn" class="add-to-cart-btn" type="button">ADD TO CART</button>
 
-          <!-- Additional Info -->
           <div class="additional-info">
             <div class="info-item">
               <span class="info-icon">🚚</span>
@@ -133,7 +112,7 @@
             </div>
             <div class="info-item">
               <span class="info-icon">↩️</span>
-              <p>30-DAY RETURNS & EXCHANGES</p>
+              <p>30-DAY RETURNS &amp; EXCHANGES</p>
             </div>
             <div class="info-item">
               <span class="info-icon">🔒</span>
@@ -143,7 +122,6 @@
         </div>
       </section>
 
-      <!-- Related Products Section -->
       <section class="related-products">
         <h2 class="section-title">RELATED PRODUCTS</h2>
         <div class="related-grid" id="relatedProductsGrid"></div>
@@ -162,9 +140,9 @@
 
         <div class="footer-links">
           <h4>SHOP</h4>
-          <a href="#">Band Merch</a>
-          <a href="#">Streetwear</a>
-          <a href="#">Accessories</a>
+          <a href="index-shop.html?category=band-merch">Band Merch</a>
+          <a href="index-shop.html?category=streetwear">Streetwear</a>
+          <a href="index-shop.html?category=accessories">Accessories</a>
         </div>
 
         <div class="footer-links">
@@ -176,8 +154,8 @@
 
         <div class="footer-links">
           <h4>FOLLOW</h4>
-          <a href="https://instagram.com/nicherzz" target="_blank">Instagram</a>
-          <a href="https://t.me/nicherz" target="_blank">Telegram</a>
+          <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a>
         </div>
       </div>
 

@@ -1,33 +1,17 @@
-/**
- * 🔔 TOAST NOTIFICATIONS — LOGIC
- * سیستم پیغام‌های زیبا
- */
-
-/* Create container if it doesn't exist */
 if (!document.querySelector(".toast-container")) {
   const container = document.createElement("div");
   container.className = "toast-container";
+  container.setAttribute("aria-live", "polite");
+  container.setAttribute("aria-atomic", "true");
   document.body.appendChild(container);
 }
 
-/**
- * Toast notification system
- *
- * استفاده:
- * showToast("پیغام", "success")
- * showToast("خرابی!", "error")
- * showToast("احتیاط", "warning")
- * showToast("معلومات", "info")
- */
-
 function showToast(message, type = "info", duration = 3000, title = null) {
   const container = document.querySelector(".toast-container");
+  const safeType = ["success", "error", "warning", "info", "loading"].includes(type)
+    ? type
+    : "info";
 
-  /* Toast element بنائیں */
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-
-  /* Icon selection */
   const icons = {
     success: "✓",
     error: "✕",
@@ -36,42 +20,47 @@ function showToast(message, type = "info", duration = 3000, title = null) {
     loading: "⟳",
   };
 
-  const icon = icons[type] || "•";
+  const toast = document.createElement("div");
+  toast.className = `toast ${safeType}`;
+  toast.setAttribute("role", safeType === "error" ? "alert" : "status");
 
-  /* Toast content */
-  const titleText = title || getDefaultTitle(type);
+  const icon = document.createElement("div");
+  icon.className = "toast-icon";
+  icon.textContent = icons[safeType];
 
-  toast.innerHTML = `
-    <div class="toast-icon">${icon}</div>
-    <div class="toast-message">
-      ${titleText ? `<p class="toast-title">${titleText}</p>` : ""}
-      <p class="toast-text">${message}</p>
-    </div>
-    <button class="toast-close" aria-label="Close notification">×</button>
-  `;
+  const messageWrap = document.createElement("div");
+  messageWrap.className = "toast-message";
 
-  /* Add to container */
+  const titleText = title || getDefaultTitle(safeType);
+  if (titleText) {
+    const titleElement = document.createElement("p");
+    titleElement.className = "toast-title";
+    titleElement.textContent = titleText;
+    messageWrap.appendChild(titleElement);
+  }
+
+  const textElement = document.createElement("p");
+  textElement.className = "toast-text";
+  textElement.textContent = String(message ?? "");
+  messageWrap.appendChild(textElement);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "toast-close";
+  closeBtn.setAttribute("aria-label", "Close notification");
+  closeBtn.textContent = "×";
+  closeBtn.addEventListener("click", () => removeToast(toast));
+
+  toast.append(icon, messageWrap, closeBtn);
   container.appendChild(toast);
 
-  /* Close button listener */
-  const closeBtn = toast.querySelector(".toast-close");
-  closeBtn.addEventListener("click", () => {
-    removeToast(toast);
-  });
-
-  /* Auto remove after duration */
   if (duration > 0) {
-    setTimeout(() => {
-      removeToast(toast);
-    }, duration);
+    window.setTimeout(() => removeToast(toast), duration);
   }
 
   return toast;
 }
 
-/**
- * Get default title based on type
- */
 function getDefaultTitle(type) {
   const titles = {
     success: "✓ Success",
@@ -83,19 +72,12 @@ function getDefaultTitle(type) {
   return titles[type] || "Notification";
 }
 
-/**
- * Remove toast smoothly
- */
 function removeToast(toast) {
+  if (!toast || toast.dataset.removing === "true") return;
+  toast.dataset.removing = "true";
   toast.style.animation = "slideOutRight 0.3s ease forwards";
-  setTimeout(() => {
-    toast.remove();
-  }, 300);
+  window.setTimeout(() => toast.remove(), 300);
 }
-
-/**
- * Specific toast functions
- */
 
 function showSuccess(message, title = "✓ Success") {
   return showToast(message, "success", 3000, title);
@@ -117,9 +99,6 @@ function showLoading(message, title = "Loading...") {
   return showToast(message, "loading", 0, title);
 }
 
-/**
- * Replace loading toast with result
- */
 function replaceLoading(loadingToast, message, type = "success", title = null) {
   removeToast(loadingToast);
   return showToast(message, type, 3000, title);

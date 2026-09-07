@@ -7,21 +7,17 @@
     <link rel="stylesheet" href="style-shop.css" />
     <link rel="stylesheet" href="cart.css" />
     <link rel="stylesheet" href="toast.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="icon" type="image/jpeg" href="./Images/Logo.JPG" />
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
   </head>
 
   <body>
-    <div class="smoke-background">
+    <div class="smoke-background" aria-hidden="true">
       <div class="smoke smoke-one"></div>
       <div class="smoke smoke-two"></div>
       <div class="smoke smoke-three"></div>
     </div>
 
-    <!-- ✅ Products database import -->
     <script src="products.js"></script>
     <script src="toast.js"></script>
 
@@ -29,16 +25,7 @@
       <div class="shop-header-inner">
         <div class="brand-wrap" aria-label="Brand logo">
           <div class="brand-mark">
-            <img
-              src="./Images/Logo.jpg"
-              alt="NICHERZ logo"
-              style="
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 2px;
-              "
-            />
+            <img src="./Images/logo.jpg" alt="NICHERZ logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;" />
           </div>
           <div class="brand-copy">
             <span class="brand-name">NICHERZ</span>
@@ -47,15 +34,15 @@
         </div>
 
         <nav class="header-nav" aria-label="Main navigation">
-          <a href="index.html" class="disabled">HOME</a>
-          <a href="index-shop.html" class="active-nav">SHOP</a>
-          <a href="index.html">BANDS</a>
+          <a href="index.html">HOME</a>
+          <a href="index-shop.html">SHOP</a>
+          <a href="index.html#gallery">BANDS</a>
           <a href="#" class="disabled">APPAREL</a>
-          <a href="contact.html" class="disabled">CONTACT</a>
+          <a href="contact.html">CONTACT</a>
         </nav>
 
         <div class="header-actions">
-          <button class="cart-pill" type="button">CART (0)</button>
+          <a href="cart.html" class="cart-pill" aria-current="page">CART (0)</a>
         </div>
       </div>
     </header>
@@ -67,68 +54,48 @@
       </div>
 
       <div class="cart-container">
-        <!-- Cart Items Section -->
-        <section class="cart-items-section">
-          <div id="cartItemsContainer" class="cart-items">
-            <!-- Items will be rendered here by JavaScript -->
-          </div>
+        <section class="cart-items-section" aria-label="Cart items">
+          <div id="cartItemsContainer" class="cart-items"></div>
 
-          <!-- Empty Cart Message -->
-          <div id="emptyCartMessage" class="empty-cart" style="display: none">
-            <p class="empty-icon">🛒</p>
+          <div id="emptyCartMessage" class="empty-cart" hidden>
+            <p class="empty-icon" aria-hidden="true">🛒</p>
             <h2>Your Cart is Empty</h2>
             <p>Time to discover some legendary gear!</p>
-            <a href="index-shop.html" class="continue-shopping-btn"
-              >← CONTINUE SHOPPING</a
-            >
+            <a href="index-shop.html" class="continue-shopping-btn">← CONTINUE SHOPPING</a>
           </div>
         </section>
 
-        <!-- Cart Summary Section -->
-        <section class="cart-summary-section">
+        <section class="cart-summary-section" aria-label="Order summary">
           <div class="cart-summary">
             <h2 class="summary-title">ORDER SUMMARY</h2>
-
             <div class="summary-row">
               <span class="summary-label">Subtotal</span>
               <span class="summary-value" id="subtotalAmount">$0.00</span>
             </div>
-
             <div class="summary-row">
               <span class="summary-label">Shipping</span>
               <span class="summary-value" id="shippingAmount">FREE</span>
             </div>
-
             <div class="summary-row">
               <span class="summary-label">Tax (10%)</span>
               <span class="summary-value" id="taxAmount">$0.00</span>
             </div>
-
+            <div class="summary-row" id="discountRow" hidden>
+              <span class="summary-label">Discount</span>
+              <span class="summary-value" id="discountAmount">-$0.00</span>
+            </div>
             <div class="summary-divider"></div>
-
             <div class="summary-row summary-total">
               <span class="summary-label">TOTAL</span>
               <span class="summary-value" id="totalAmount">$0.00</span>
             </div>
-
-            <button class="checkout-btn" id="checkoutBtn">
-              PROCEED TO CHECKOUT
-            </button>
-
-            <a href="index-shop.html" class="continue-shopping-link"
-              >← Continue Shopping</a
-            >
+            <button class="checkout-btn" id="checkoutBtn" type="button" disabled>PROCEED TO CHECKOUT</button>
+            <a href="index-shop.html" class="continue-shopping-link">← Continue Shopping</a>
           </div>
 
-          <!-- Promo Code Section -->
           <div class="promo-section">
-            <input
-              type="text"
-              id="promoInput"
-              class="promo-input"
-              placeholder="Enter promo code"
-            />
-            <button id="promoBtn" class="promo-btn">APPLY</button>
+            <input type="text" id="promoInput" class="promo-input" placeholder="Enter promo code" aria-label="Promo code" autocomplete="off" />
+            <button id="promoBtn" class="promo-btn" type="button">APPLY</button>
           </div>
         </section>
       </div>
@@ -143,28 +110,24 @@
             <p>Curated chaos for the loudest souls.</p>
           </div>
         </div>
-
         <div class="footer-links">
           <h4>SHOP</h4>
-          <a href="#">Band Merch</a>
-          <a href="#">Streetwear</a>
-          <a href="#">Accessories</a>
+          <a href="index-shop.html?category=band-merch">Band Merch</a>
+          <a href="index-shop.html?category=streetwear">Streetwear</a>
+          <a href="index-shop.html?category=accessories">Accessories</a>
         </div>
-
         <div class="footer-links">
           <h4>INFO</h4>
           <a href="contact.html">About</a>
           <a href="#">Shipping</a>
           <a href="#">Support</a>
         </div>
-
         <div class="footer-links">
           <h4>FOLLOW</h4>
-          <a href="https://instagram.com/nicherzz" target="_blank">Instagram</a>
-          <a href="https://t.me/nicherz" target="_blank">Telegram</a>
+          <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a>
         </div>
       </div>
-
       <div class="footer-bottom">
         <span>© 2026 NICHERZ</span>
         <span>WEAR THE LEGEND</span>
