@@ -11,13 +11,38 @@ function readCart() {
 }
 
 function saveCart(cart) {
-  localStorage.setItem("cart", JSON.stringify(cart));
+  try {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function getProductQuantity(cart, productId) {
   return cart.reduce((total, item) => {
-    return item.productId === productId ? total + (Number(item.quantity) || 0) : total;
+    return Number(item.productId) === productId ? total + (Number(item.quantity) || 0) : total;
   }, 0);
+}
+
+function normalizeBand(value) {
+  return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function getRequestedFilters() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    category: params.get("category") || "all",
+    band: normalizeBand(params.get("band")),
+  };
+}
+
+function filterProducts(category, band) {
+  return products.filter((product) => {
+    const categoryMatch = category === "all" || product.category === category;
+    const bandMatch = !band || normalizeBand(product.band) === band;
+    return categoryMatch && bandMatch;
+  });
 }
 
 function renderProducts(productsToRender) {
@@ -100,7 +125,7 @@ function renderProducts(productsToRender) {
       }
 
       const existingItem = cart.find(
-        (item) => item.productId === product.id && !item.size,
+        (item) => Number(item.productId) === product.id && !item.size,
       );
 
       if (existingItem) {
@@ -115,7 +140,11 @@ function renderProducts(productsToRender) {
         });
       }
 
-      saveCart(cart);
+      if (!saveCart(cart)) {
+        showError("Your cart could not be saved in this browser.", "Cart Error");
+        return;
+      }
+
       showSuccess(`${product.name} added to cart.`, "✓ Added to Cart");
       updateCartCount();
 
@@ -134,20 +163,15 @@ function renderProducts(productsToRender) {
   productsContainer.appendChild(fragment);
 }
 
-function applyCategoryFromUrl() {
-  const category = new URLSearchParams(window.location.search).get("category");
+function applyFiltersFromUrl() {
+  const { category, band } = getRequestedFilters();
   const selectedButton = [...categoryButtons].find(
-    (button) => button.dataset.category === (category || "all"),
+    (button) => button.dataset.category === category,
   );
 
   categoryButtons.forEach((button) => button.classList.remove("active"));
   (selectedButton || categoryButtons[0])?.classList.add("active");
-
-  if (category && category !== "all") {
-    renderProducts(products.filter((product) => product.category === category));
-  } else {
-    renderProducts(products);
-  }
+  renderProducts(filterProducts(category === "all" || selectedButton ? category : "all", band));
 }
 
 categoryButtons.forEach((button) => {
@@ -165,11 +189,8 @@ categoryButtons.forEach((button) => {
     }
     window.history.replaceState({}, "", url);
 
-    renderProducts(
-      selectedCategory === "all"
-        ? products
-        : products.filter((product) => product.category === selectedCategory),
-    );
+    const band = normalizeBand(url.searchParams.get("band"));
+    renderProducts(filterProducts(selectedCategory, band));
   });
 });
 
@@ -180,5 +201,9 @@ function updateCartCount() {
   if (cartPill) cartPill.textContent = `CART (${totalItems})`;
 }
 
-applyCategoryFromUrl();
+window.addEventListener("storage", (event) => {
+  if (event.key === "cart") updateCartCount();
+});
+
+applyFiltersFromUrl();
 updateCartCount();
