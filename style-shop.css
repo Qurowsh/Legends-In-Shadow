@@ -2,12 +2,10 @@
 SHOP — GLOBAL RESET
 */
 
-/* برای همه عناصر، محاسبه عرض و ارتفاع را قابل کنترل می‌کنیم */
 * {
   box-sizing: border-box;
 }
 
-/* فاصله پیش‌فرض مرورگر را حذف می‌کنیم */
 html {
   scroll-behavior: smooth;
 }
@@ -18,20 +16,12 @@ body {
   padding: 0;
 }
 
-/* ظاهر کلی صفحه Shop */
 body {
-  /* پس‌زمینه کاملاً مشکی */
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 26%),
     #000;
-
-  /* رنگ پیش‌فرض متن */
   color: #fff;
-
-  /* فونت اصلی پروژه */
   font-family: "Metal Mania", cursive;
-
-  /* جلوگیری از اسکرول افقی ناخواسته */
   overflow-x: hidden;
 }
 
@@ -40,21 +30,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(
-      circle at 50% 12%,
-      rgba(255, 255, 255, 0.22),
-      transparent 20%
-    ),
-    radial-gradient(
-      circle at 50% 35%,
-      rgba(220, 220, 220, 0.14),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(255, 255, 255, 0.08),
-      transparent 18%
-    ),
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.22), transparent 20%),
+    radial-gradient(circle at 50% 35%, rgba(220, 220, 220, 0.14), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08), transparent 18%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 36%);
   pointer-events: none;
   z-index: 0;
@@ -94,146 +72,67 @@ body::before {
 }
 
 @keyframes ambientGlow {
-  0% {
-    opacity: 0.5;
-    filter: blur(12px);
+  0%,
+  100% {
+    opacity: 0.65;
   }
   50% {
     opacity: 1;
-    filter: blur(20px);
-  }
-  100% {
-    opacity: 0.7;
-    filter: blur(15px);
   }
 }
 
-/* 
-   SMOKE BACKGROUND
-  */
-
-/*
-   این لایه کل صفحه را می‌پوشاند.
-   دود داخل این لایه قرار می‌گیرد و
-   محتوای Shop روی آن نمایش داده می‌شود.
-*/
 .smoke-background {
   position: fixed;
-
-  /* از گوشه بالا-چپ صفحه شروع می‌شود */
   inset: 0;
-
-  /* اجازه نمی‌دهد دود جلوی کلیک روی محصولات را بگیرد */
   pointer-events: none;
-
-  /* دود پشت تمام محتوای Shop قرار می‌گیرد */
-  z-index: -1;
-
-  /* هر چیزی که از محدوده بیرون بزند مخفی می‌شود */
+  z-index: 0;
   overflow: hidden;
-
-  /* زمینه اصلی دود */
   background: #000;
 }
 
-/*
-   هر عنصر smoke یک توده‌ی دود است.
-   سه توده داریم تا حرکت پس‌زمینه مصنوعی و تکراری نباشد.
-*/
 .smoke {
   position: absolute;
-
-  /* شکل اولیه دود */
   width: 35em;
   height: 35em;
-
-  /* دود کاملاً گرد و نرم می‌شود */
   border-radius: 50%;
-
-  /*
-     سفید خالص نیست.
-     شفافیت پایین باعث می‌شود
-     دود مثل نور سفید روی سیاهی دیده شود.
-  */
   background: rgba(255, 255, 255, 0.08);
-
-  /*
-     این قسمت مهم است:
-     blur باعث می‌شود لبه‌های دود محو و طبیعی شوند.
-  */
-  filter: blur(5em);
-
-  /*
-     animation حرکت دود را کنترل می‌کند.
-  */
+  filter: blur(4em);
+  will-change: transform;
   animation: smokeMove 18s ease-in-out infinite alternate;
 }
 
-/* جای توده اول دود */
 .smoke-one {
   top: -10em;
   left: -8em;
-
-  /* سرعت متفاوت برای طبیعی‌تر شدن حرکت */
   animation-duration: 20s;
 }
 
-/* جای توده دوم دود */
 .smoke-two {
   right: -12em;
   bottom: -10em;
-
-  /* اندازه متفاوت */
   width: 42em;
   height: 42em;
-
-  /* سرعت متفاوت */
   animation-duration: 24s;
-
-  /* شروع Animation با تأخیر */
   animation-delay: -7s;
 }
 
-/* جای توده سوم دود */
 .smoke-three {
   top: 35%;
   left: 40%;
-
-  /* کوچک‌تر از دو توده قبلی */
   width: 25em;
   height: 25em;
-
-  /* شدت کمتر */
   opacity: 0.5;
-
-  /* حرکت آرام‌تر */
   animation-duration: 28s;
-
-  /* باعث می‌شود از همان ابتدا در نقطه متفاوتی باشد */
   animation-delay: -12s;
 }
 
-/* 
-   SMOKE ANIMATION
-   */
-
-/*
-   توده‌های دود هم‌زمان حرکت می‌کنند،
-   اما با زمان‌بندی متفاوت به خاطر
-   animation-duration و animation-delay.
-*/
 @keyframes smokeMove {
-  /* نقطه شروع */
   0% {
     transform: translate(-5em, 3em) scale(1);
   }
-
-  /* وسط حرکت */
   50% {
     transform: translate(8em, -6em) scale(1.15);
   }
-
-  /* نقطه پایان */
   100% {
     transform: translate(-3em, -10em) scale(0.95);
   }
@@ -265,10 +164,11 @@ body::before {
     rgba(180, 180, 180, 0.14),
     transparent 72%
   );
-  filter: blur(24px);
-  opacity: 1;
+  filter: blur(18px);
+  opacity: 0.65;
   pointer-events: none;
   animation: headerGlow 4.2s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
 
 @keyframes headerGlow {
@@ -277,8 +177,8 @@ body::before {
     transform: translateX(-50%) scaleX(0.9);
   }
   50% {
-    opacity: 0.9;
-    transform: translateX(-50%) scaleX(1.06);
+    opacity: 0.8;
+    transform: translateX(-50%) scaleX(1.04);
   }
   100% {
     opacity: 0.45;
@@ -300,6 +200,8 @@ body::before {
   display: flex;
   align-items: center;
   gap: 0.8em;
+  color: inherit;
+  text-decoration: none;
 }
 
 .brand-mark,
@@ -318,6 +220,13 @@ body::before {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
 }
 
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .brand-mark::before,
 .footer-logo::before,
 .cart-pill::before {
@@ -332,6 +241,7 @@ body::before {
   );
   transform: translateX(-120%) rotate(14deg);
   animation: shimmer 4s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .brand-copy {
@@ -381,6 +291,10 @@ body::before {
   color: #fff;
 }
 
+.active-nav {
+  color: #fff !important;
+}
+
 .cart-pill {
   position: relative;
   overflow: hidden;
@@ -391,7 +305,7 @@ body::before {
   font-size: 0.68em;
   letter-spacing: 0.14em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 0 14px rgba(255, 255, 255, 0.05);
 }
 
@@ -422,11 +336,7 @@ body::before {
 
 .shop-page {
   position: relative;
-
-  /* محتوای Shop بالای لایه دود */
   z-index: 1;
-
-  /* حداقل ارتفاع صفحه */
   min-height: 100vh;
 }
 
@@ -487,29 +397,22 @@ body::before {
   transition:
     transform 0.22s ease,
     box-shadow 0.22s ease,
-    border-color 0.22s ease,
-    filter 0.22s ease;
-  animation: cardFloat 3.5s ease-in-out infinite;
+    border-color 0.22s ease;
   isolation: isolate;
 }
 
-.product-card:nth-child(2n) {
-  animation-delay: 0.15s;
-}
-
-.product-card:nth-child(3n) {
-  animation-delay: 0.35s;
-}
-
 .product-card:hover {
-  transform: translateY(-16px) scale(1.025);
+  transform: translateY(-10px) scale(1.015);
   border-color: rgba(255, 255, 255, 0.7);
-  filter: brightness(1.16);
   box-shadow:
     0 20px 48px rgba(255, 255, 255, 0.12),
-    0 0 28px rgba(255, 255, 255, 0.18),
-    0 26px 60px rgba(0, 0, 0, 0.88),
-    0 0 24px rgba(255, 255, 255, 0.1);
+    0 0 28px rgba(255, 255, 255, 0.14),
+    0 26px 60px rgba(0, 0, 0, 0.88);
+}
+
+.product-card:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 3px;
 }
 
 .product-card::before {
@@ -535,7 +438,7 @@ body::before {
 .product-image {
   position: relative;
   width: 100%;
-  height: 290px;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: #0d0d0d;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -546,15 +449,12 @@ body::before {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition:
-    transform 0.55s ease,
-    filter 0.55s ease,
-    opacity 0.55s ease;
+  transition: transform 0.45s ease, filter 0.45s ease;
 }
 
 .product-card:hover .product-image img {
-  transform: scale(1.16);
-  filter: saturate(1.2) contrast(1.16) brightness(1.15);
+  transform: scale(1.1);
+  filter: saturate(1.15) contrast(1.1) brightness(1.08);
 }
 
 .product-info {
@@ -613,26 +513,21 @@ body::before {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
-.add-cart:hover {
+.add-cart:hover:not(:disabled) {
   transform: translateY(-3px) scale(1.05);
-  background: linear-gradient(135deg, #ffffff, #d9d9d9);
+  background: linear-gradient(135deg, #fff, #d9d9d9);
   color: #000;
   box-shadow:
     0 0 22px rgba(255, 255, 255, 0.36),
     0 0 34px rgba(255, 255, 255, 0.14);
 }
 
-@keyframes cardFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+.add-cart:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .shop-footer {
@@ -700,88 +595,69 @@ body::before {
 .shop-categories {
   width: min(90%, 80em);
   margin: 0 auto 3em;
-
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 0.8em;
 }
 
 .category-btn {
   position: relative;
-
   padding: 0.7em 1.3em;
-
   border: 1px solid rgba(255, 255, 255, 0.18);
-
   background: rgba(255, 255, 255, 0.025);
-
   color: rgba(255, 255, 255, 0.65);
-
   font-family: Arial, sans-serif;
-
   font-size: 0.8em;
-
   letter-spacing: 0.12em;
-
   cursor: pointer;
-
   transition:
-    color 0.35s ease,
-    background 0.35s ease,
-    border-color 0.35s ease,
-    box-shadow 0.35s ease,
-    transform 0.35s ease;
+    color 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
 }
+
 .category-btn::after {
   content: "";
-
   position: absolute;
-
   left: 50%;
   bottom: -1px;
-
   width: 0;
   height: 1px;
-
   background: #fff;
-
   transform: translateX(-50%);
-
-  transition: width 0.35s ease;
+  transition: width 0.25s ease;
 }
-.category-btn:hover {
+
+.category-btn:hover,
+.category-btn:focus-visible {
   color: #fff;
-
   border-color: rgba(255, 255, 255, 0.5);
-
   background: rgba(255, 255, 255, 0.06);
-
   transform: translateY(-2px);
-
   box-shadow:
-    0 0 18px rgba(255, 255, 255, 0.283),
+    0 0 18px rgba(255, 255, 255, 0.12),
     inset 0 0 12px rgba(255, 255, 255, 0.025);
 }
-.category-btn:hover::after {
+
+.category-btn:hover::after,
+.category-btn:focus-visible::after,
+.category-btn.active::after {
   width: 70%;
 }
+
 .category-btn.active {
   color: #fff;
-
   border-color: rgba(255, 255, 255, 0.75);
-
   background: rgba(255, 255, 255, 0.08);
-
   box-shadow:
     0 0 20px rgba(255, 255, 255, 0.08),
     inset 0 0 15px rgba(255, 255, 255, 0.03);
 }
-.category-btn.active::after {
-  width: 70%;
-}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -805,7 +681,6 @@ body::before {
   }
 }
 
-/* Tablet: 4 Columns */
 @media (max-width: 1024px) {
   .products-container {
     grid-template-columns: repeat(4, 1fr);
@@ -813,11 +688,18 @@ body::before {
   }
 }
 
-/* Mobile Tablet: 3 Columns */
 @media (max-width: 768px) {
   .products-container {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.2em;
+  }
+
+  .product-image {
+    aspect-ratio: 1 / 1;
+  }
+
+  .product-card:hover {
+    transform: translateY(-6px) scale(1.005);
   }
 }
 
@@ -860,62 +742,63 @@ body::before {
 
   .products-container {
     width: 100%;
-    grid-template-columns: 1fr;
-    gap: 1em;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65em;
   }
 
   .product-card {
-    border-radius: 1em;
+    border-radius: 0.8em;
     box-shadow:
-      0 12px 24px rgba(0, 0, 0, 0.48),
+      0 8px 18px rgba(0, 0, 0, 0.42),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    animation: none;
   }
 
   .product-card:hover {
-    transform: translateY(-6px) scale(1.005);
+    transform: translateY(-4px);
   }
 
   .product-image {
-    height: 220px;
-    min-height: 220px;
+    aspect-ratio: 1 / 1;
   }
 
-  .product-image img {
-    transform: none !important;
-    filter: none !important;
+  .product-card:hover .product-image img {
+    transform: scale(1.05);
+    filter: none;
   }
 
   .product-info {
-    gap: 0.45em;
-    padding: 0.95em 0.9em 1em;
+    gap: 0.35em;
+    padding: 0.7em 0.65em 0.8em;
   }
 
   .product-band,
   .product-type {
-    font-size: 0.62em;
-    line-height: 1.35;
-    letter-spacing: 0.12em;
+    font-size: 0.5em;
+    line-height: 1.25;
+    letter-spacing: 0.08em;
   }
 
   .product-name {
-    font-size: clamp(1.35em, 5vw, 1.6em);
-    line-height: 1.12;
+    font-size: clamp(0.78em, 3vw, 1.05em);
+    line-height: 1.1;
   }
 
   .product-bottom {
-    gap: 0.55em;
-    padding-top: 0.7em;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45em;
+    padding-top: 0.45em;
   }
 
   .product-price {
-    font-size: 1.05em;
+    font-size: 0.82em;
   }
 
   .add-cart {
-    padding: 0.7em 0.7em;
-    font-size: 0.58em;
-    letter-spacing: 0.12em;
+    width: 100%;
+    padding: 0.55em 0.4em;
+    font-size: 0.46em;
+    letter-spacing: 0.08em;
   }
 
   .shop-footer {
@@ -936,17 +819,11 @@ body::before {
 
   .shop-categories {
     width: 94%;
-
     justify-content: flex-start;
-
     flex-wrap: nowrap;
-
     overflow-x: auto;
-
     padding: 0.5em 0.2em 1em;
-
     margin-bottom: 2em;
-
     scrollbar-width: none;
   }
 
@@ -956,9 +833,7 @@ body::before {
 
   .category-btn {
     flex: 0 0 auto;
-
     font-size: 0.72em;
-
     padding: 0.65em 1em;
   }
 }
