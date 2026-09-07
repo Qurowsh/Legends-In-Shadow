@@ -1,254 +1,257 @@
-/**
- * 🖼️ PRODUCT DETAIL PAGE — LOGIC
- * صفحه‌ی جزئیات محصول
- */
-
-/* 
-   ✅ URL سے Product ID نکالیں
-   مثلاً: product-detail.html?id=1 → id = "1"
-*/
 const urlParams = new URLSearchParams(window.location.search);
-const productId = parseInt(urlParams.get("id"));
-
-/* اگر ID نہیں ملا یا غلط ہے، shop پر واپس جائیں */
-if (!productId || !getProductById(productId)) {
-  console.error("Product not found! Redirecting to shop...");
-  window.location.href = "index-shop.html";
-}
-
-/* Product object حاصل کریں */
+const productId = Number(urlParams.get("id"));
 const product = getProductById(productId);
 
-/* 
-   ✅ DOM Elements حاصل کریں
-*/
-const productImage = document.getElementById("productImage");
-const productName = document.getElementById("productName");
-const productBand = document.getElementById("productBand");
-const productDescription = document.getElementById("productDescription");
-const productType = document.getElementById("productType");
-const productPrice = document.getElementById("productPrice");
-const productStock = document.getElementById("productStock");
-const sizeOptions = document.getElementById("sizeOptions");
-const qtyDecrease = document.getElementById("qtyDecrease");
-const qtyIncrease = document.getElementById("qtyIncrease");
-const qtyInput = document.getElementById("qtyInput");
-const addToCartBtn = document.getElementById("addToCartBtn");
-const relatedProductsGrid = document.getElementById("relatedProductsGrid");
-
-/* 
-   ✅ محصول کی معلومات صفحہ پر ڈالیں
-*/
-productImage.src = product.image;
-productImage.alt = product.name;
-
-productName.textContent = product.name;
-
-if (product.band) {
-  productBand.textContent = product.band;
-  productBand.style.display = "block";
+if (!product) {
+  window.location.replace("index-shop.html");
 } else {
-  productBand.style.display = "none";
-}
+  const productImage = document.getElementById("productImage");
+  const productName = document.getElementById("productName");
+  const productBand = document.getElementById("productBand");
+  const productDescription = document.getElementById("productDescription");
+  const productType = document.getElementById("productType");
+  const productPrice = document.getElementById("productPrice");
+  const productStock = document.getElementById("productStock");
+  const sizeOptions = document.getElementById("sizeOptions");
+  const qtyDecrease = document.getElementById("qtyDecrease");
+  const qtyIncrease = document.getElementById("qtyIncrease");
+  const qtyInput = document.getElementById("qtyInput");
+  const addToCartBtn = document.getElementById("addToCartBtn");
+  const relatedProductsGrid = document.getElementById("relatedProductsGrid");
 
-productDescription.textContent = product.description;
-productType.textContent = product.type;
-productPrice.textContent = `$${product.price}`;
+  productImage.src = product.image;
+  productImage.alt = product.name;
+  productImage.loading = "eager";
+  productImage.decoding = "async";
 
-/* Stock status */
-if (product.stock > 0) {
-  productStock.textContent = `${product.stock} IN STOCK`;
-  productStock.style.color = "rgba(144, 238, 144, 0.8)";
-} else {
-  productStock.textContent = "OUT OF STOCK";
-  productStock.style.color = "rgba(255, 0, 0, 0.8)";
-  addToCartBtn.disabled = true;
-  addToCartBtn.textContent = "OUT OF STOCK";
-}
+  productName.textContent = product.name;
+  productDescription.textContent = product.description;
+  productType.textContent = product.type;
+  productPrice.textContent = `$${product.price}`;
 
-/* 
-   ✅ Size Buttons بنائیں
-*/
-let selectedSize = null;
-
-product.sizes.forEach((size) => {
-  const btn = document.createElement("button");
-  btn.className = "size-btn";
-  btn.textContent = size;
-  btn.type = "button";
-
-  btn.addEventListener("click", () => {
-    /* پہلے تمام buttons سے selected class ہٹائیں */
-    document.querySelectorAll(".size-btn").forEach((b) => {
-      b.classList.remove("selected");
-    });
-
-    /* اس button پر selected class لگائیں */
-    btn.classList.add("selected");
-    selectedSize = size;
-  });
-
-  sizeOptions.appendChild(btn);
-});
-
-/* 
-   ✅ Quantity Controls
-*/
-qtyDecrease.addEventListener("click", () => {
-  const current = parseInt(qtyInput.value);
-  if (current > 1) {
-    qtyInput.value = current - 1;
-  }
-});
-
-qtyIncrease.addEventListener("click", () => {
-  const current = parseInt(qtyInput.value);
-  if (current < product.stock) {
-    qtyInput.value = current + 1;
-  }
-});
-
-/* صرف valid numbers داخل کریں */
-qtyInput.addEventListener("change", () => {
-  let value = parseInt(qtyInput.value);
-  if (isNaN(value) || value < 1) {
-    qtyInput.value = 1;
-  } else if (value > product.stock) {
-    qtyInput.value = product.stock;
-  }
-});
-
-/* 
-   ✅ Add to Cart Button
-*/
-addToCartBtn.addEventListener("click", () => {
-  const quantity = parseInt(qtyInput.value);
-
-  if (!selectedSize) {
-    alert("Please select a size");
-    return;
-  }
-
-  if (quantity < 1 || quantity > product.stock) {
-    alert("Invalid quantity");
-    return;
-  }
-
-  /* ✅ Cart item object بنائیں */
-  const cartItem = {
-    productId: product.id,
-    name: product.name,
-    size: selectedSize,
-    quantity: quantity,
-    price: product.price,
-    image: product.image,
-  };
-
-  /* ✅ localStorage میں add کریں (بعد میں backend ہوگا) */
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  /* چیک کریں کہ یہ item پہلے سے موجود ہے یا نہیں */
-  const existingItem = cart.find(
-    (item) => item.productId === product.id && item.size === selectedSize,
-  );
-
-  if (existingItem) {
-    existingItem.quantity += quantity;
-  } else {
-    cart.push(cartItem);
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  /* ✅ Success message */
-  const originalText = addToCartBtn.textContent;
-  addToCartBtn.textContent = "✓ ADDED TO CART";
-  addToCartBtn.style.background =
-    "linear-gradient(135deg, rgba(144, 238, 144, 0.15), rgba(144, 238, 144, 0.08))";
-  addToCartBtn.style.borderColor = "rgba(144, 238, 144, 0.4)";
-  addToCartBtn.style.color = "#90ee90";
-
-  setTimeout(() => {
-    addToCartBtn.textContent = originalText;
-    addToCartBtn.style.background =
-      "linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08))";
-    addToCartBtn.style.borderColor = "rgba(255, 215, 0, 0.4)";
-    addToCartBtn.style.color = "#ffd700";
-  }, 2000);
-
-  /* ✅ Cart count update کریں (اگر header میں ہو) */
-  updateCartCount();
-});
-
-/* 
-   ✅ Related Products دکھائیں
-   اسی category یا اسی band کے دوسرے محصولات
-*/
-function renderRelatedProducts() {
-  let relatedProducts = [];
-
-  /* اگر band موجود ہے، تو اسی band کے دوسرے محصولات */
   if (product.band) {
-    relatedProducts = products.filter(
-      (p) => p.band === product.band && p.id !== product.id,
-    );
+    productBand.textContent = product.band;
+    productBand.style.display = "block";
+  } else {
+    productBand.textContent = "";
+    productBand.style.display = "none";
   }
 
-  /* اگر کافی related نہیں ملے، تو category سے لو */
-  if (relatedProducts.length < 4) {
-    const categoryProducts = products.filter(
-      (p) => p.category === product.category && p.id !== product.id,
-    );
-    relatedProducts = [...relatedProducts, ...categoryProducts];
-    relatedProducts = [...new Set(relatedProducts)]; /* duplicates ہٹائیں */
-  }
+  productStock.textContent =
+    product.stock > 0 ? `${product.stock} IN STOCK` : "OUT OF STOCK";
 
-  /* صرف پہلے 4 دکھائیں */
-  relatedProducts = relatedProducts.slice(0, 4);
+  const sizeButtons = [];
+  let selectedSize = product.sizes.length === 1 ? product.sizes[0] : null;
 
-  if (relatedProducts.length === 0) {
-    relatedProductsGrid.innerHTML =
-      "<p style='grid-column: 1/-1; text-align: center; color: rgba(255,255,255,0.5);'>No related products</p>";
-    return;
-  }
+  product.sizes.forEach((size) => {
+    const button = document.createElement("button");
+    button.className = "size-btn";
+    button.type = "button";
+    button.textContent = size;
 
-  relatedProducts.forEach((relProduct) => {
-    const card = document.createElement("div");
-    card.className = "related-product-card";
+    if (size === selectedSize) {
+      button.classList.add("selected");
+    }
 
-    card.innerHTML = `
-      <div class="related-image">
-        <img src="${relProduct.image}" alt="${relProduct.name}">
-      </div>
-      <div class="related-info">
-        <h3 class="related-name">${relProduct.name}</h3>
-        <p class="related-price">$${relProduct.price}</p>
-      </div>
-    `;
+    button.addEventListener("click", () => {
+      sizeButtons.forEach((sizeButton) => {
+        sizeButton.classList.remove("selected");
+      });
 
-    /* کلیک کریں تو اس محصول کے detail پر جائیں */
-    card.addEventListener("click", () => {
-      window.location.href = `product-detail.html?id=${relProduct.id}`;
+      button.classList.add("selected");
+      selectedSize = size;
     });
 
-    relatedProductsGrid.appendChild(card);
+    sizeButtons.push(button);
+    sizeOptions.appendChild(button);
   });
-}
 
-renderRelatedProducts();
-
-/* 
-   ✅ Cart count update کریں (header میں)
-*/
-function updateCartCount() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  const cartPill = document.querySelector(".cart-pill");
-  if (cartPill) {
-    cartPill.textContent = `CART (${totalItems})`;
+  function getCart() {
+    try {
+      const savedCart = JSON.parse(localStorage.getItem("cart"));
+      return Array.isArray(savedCart) ? savedCart : [];
+    } catch {
+      return [];
+    }
   }
-}
 
-/* Page load کریں تو cart count update کریں */
-updateCartCount();
+  function updateCartCount() {
+    const cart = getCart();
+    const totalItems = cart.reduce(
+      (sum, item) => sum + Number(item.quantity || 0),
+      0,
+    );
+    const cartPill = document.querySelector(".cart-pill");
+
+    if (cartPill) {
+      cartPill.textContent = `CART (${totalItems})`;
+    }
+  }
+
+  function getCartQuantity(productId, size) {
+    const item = getCart().find(
+      (cartItem) =>
+        cartItem.productId === productId && cartItem.size === size,
+    );
+
+    return item ? Number(item.quantity || 0) : 0;
+  }
+
+  function setQuantity(value) {
+    const nextValue = Math.min(product.stock, Math.max(1, Number(value) || 1));
+    qtyInput.value = nextValue;
+  }
+
+  qtyDecrease.addEventListener("click", () => {
+    setQuantity(Number(qtyInput.value) - 1);
+  });
+
+  qtyIncrease.addEventListener("click", () => {
+    setQuantity(Number(qtyInput.value) + 1);
+  });
+
+  qtyInput.addEventListener("change", () => {
+    setQuantity(qtyInput.value);
+  });
+
+  if (product.stock <= 0) {
+    addToCartBtn.disabled = true;
+    addToCartBtn.textContent = "OUT OF STOCK";
+    qtyDecrease.disabled = true;
+    qtyIncrease.disabled = true;
+    qtyInput.disabled = true;
+  }
+
+  addToCartBtn.addEventListener("click", () => {
+    if (product.stock <= 0) {
+      return;
+    }
+
+    if (!selectedSize) {
+      alert("Please select a size");
+      return;
+    }
+
+    const quantity = Math.min(
+      product.stock,
+      Math.max(1, Number(qtyInput.value) || 1),
+    );
+    const existingQuantity = getCartQuantity(product.id, selectedSize);
+
+    if (existingQuantity + quantity > product.stock) {
+      alert(`Only ${Math.max(0, product.stock - existingQuantity)} more available.`);
+      return;
+    }
+
+    const cart = getCart();
+    const existingItem = cart.find(
+      (item) =>
+        item.productId === product.id && item.size === selectedSize,
+    );
+
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else {
+      cart.push({
+        productId: product.id,
+        name: product.name,
+        size: selectedSize,
+        quantity,
+        price: product.price,
+        image: product.image,
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+
+    const originalText = addToCartBtn.textContent;
+    addToCartBtn.textContent = "✓ ADDED TO CART";
+    addToCartBtn.classList.add("added");
+
+    window.setTimeout(() => {
+      addToCartBtn.textContent = originalText;
+      addToCartBtn.classList.remove("added");
+    }, 1500);
+  });
+
+  function renderRelatedProducts() {
+    let relatedProducts = [];
+
+    if (product.band) {
+      relatedProducts = products.filter(
+        (item) => item.band === product.band && item.id !== product.id,
+      );
+    }
+
+    if (relatedProducts.length < 4) {
+      const categoryProducts = products.filter(
+        (item) => item.category === product.category && item.id !== product.id,
+      );
+
+      relatedProducts = [
+        ...relatedProducts,
+        ...categoryProducts.filter(
+          (item) => !relatedProducts.some((related) => related.id === item.id),
+        ),
+      ];
+    }
+
+    relatedProducts.slice(0, 4).forEach((relatedProduct) => {
+      const card = document.createElement("article");
+      card.className = "related-product-card";
+      card.tabIndex = 0;
+      card.setAttribute("role", "link");
+
+      const imageWrapper = document.createElement("div");
+      imageWrapper.className = "related-image";
+
+      const image = document.createElement("img");
+      image.src = relatedProduct.image;
+      image.alt = relatedProduct.name;
+      image.width = 600;
+      image.height = 600;
+      image.loading = "lazy";
+      image.decoding = "async";
+
+      const info = document.createElement("div");
+      info.className = "related-info";
+
+      const name = document.createElement("h3");
+      name.className = "related-name";
+      name.textContent = relatedProduct.name;
+
+      const price = document.createElement("p");
+      price.className = "related-price";
+      price.textContent = `$${relatedProduct.price}`;
+
+      imageWrapper.appendChild(image);
+      info.append(name, price);
+      card.append(imageWrapper, info);
+
+      const openProduct = () => {
+        window.location.href = `product-detail.html?id=${relatedProduct.id}`;
+      };
+
+      card.addEventListener("click", openProduct);
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openProduct();
+        }
+      });
+
+      relatedProductsGrid.appendChild(card);
+    });
+
+    if (!relatedProducts.length) {
+      const emptyState = document.createElement("p");
+      emptyState.className = "related-empty";
+      emptyState.textContent = "No related products";
+      relatedProductsGrid.appendChild(emptyState);
+    }
+  }
+
+  renderRelatedProducts();
+  updateCartCount();
+}
