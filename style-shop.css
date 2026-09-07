@@ -463,7 +463,7 @@ body::before {
   margin: 0 auto;
   min-height: 20em;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 1.6em;
   align-items: stretch;
 }
@@ -802,6 +802,22 @@ body::before {
     opacity: 1;
     transform: none;
     animation: none;
+  }
+}
+
+/* Tablet: 4 Columns */
+@media (max-width: 1024px) {
+  .products-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.4em;
+  }
+}
+
+/* Mobile Tablet: 3 Columns */
+@media (max-width: 768px) {
+  .products-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2em;
   }
 }
 

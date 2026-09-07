@@ -2,61 +2,8 @@ const productsContainer = document.getElementById("products-container");
 
 const categoryButtons = document.querySelectorAll(".category-btn");
 /* querySelectorAll() یک مجموعه از تمام عناصر مطابق selector برمی‌گردونه، پس اینجا همه‌ی .category-btnها رو یکجا داریم */
-const products = [
-  {
-    name: "Master Of Puppets",
-    category: "band-merch",
-    band: "Metallica",
-    type: "T-Shirt",
-    price: 35,
-    image: "Images/1.jpeg",
-  },
 
-  {
-    name: "Vintage Flame",
-    category: "y2k",
-    band: null,
-    type: "T-Shirt",
-    price: 32,
-    image: "Images/2.jpg",
-  },
-
-  {
-    name: "Shadow Chain",
-    category: "accessories",
-    band: null,
-    type: "Chain",
-    price: 18,
-    image: "Images/3.jpg",
-  },
-
-  {
-    name: "Blackout Jacket",
-    category: "streetwear",
-    band: null,
-    type: "Jacket",
-    price: 75,
-    image: "Images/4.jpg",
-  },
-
-  {
-    name: "Master Of Puppets Vinyl",
-    category: "music",
-    band: "Metallica",
-    type: "Vinyl",
-    price: 42,
-    image: "Images/5.jpg",
-  },
-
-  {
-    name: "Demon Skull Figure",
-    category: "collectibles",
-    band: null,
-    type: "Figure",
-    price: 55,
-    image: "Images/6.jpeg",
-  },
-];
+/* ✅ Products array از products.js می‌یاد (بالا import شده) */
 /* تابع نمایش محصولات داخل container */
 function renderProducts(productsToRender) {
   productsContainer.innerHTML = "";
@@ -100,6 +47,62 @@ function renderProducts(productsToRender) {
       </div>
     `;
 
+    /* ✅ کارت کلیکی‌شونده است و به صفحه‌ی detail می‌رود */
+    card.addEventListener("click", (e) => {
+      /* اگر روی دکمه‌ی ADD TO CART کلیک شد، صفحه رو redirect نکن */
+      if (e.target.classList.contains("add-cart")) {
+        return;
+      }
+
+      /* به صفحه‌ی product detail برو و product ID رو pass کن */
+      window.location.href = `product-detail.html?id=${product.id}`;
+    });
+
+    /* ✅ ADD TO CART دکمہ پر event listener */
+    const addCartBtn = card.querySelector(".add-cart");
+    addCartBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); /* parent click event کو block کریں */
+
+      /* 🛒 سادہ cart item بنائیں (بغیر size selection) */
+      const cartItem = {
+        productId: product.id,
+        name: product.name,
+        quantity: 1,
+        price: product.price,
+        image: product.image,
+      };
+
+      /* localStorage میں add کریں */
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      /* چیک کریں کہ یہ item پہلے سے موجود ہے یا نہیں */
+      const existingItem = cart.find((item) => item.productId === product.id);
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push(cartItem);
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      /* ✅ Success feedback */
+      const originalText = addCartBtn.textContent;
+      addCartBtn.textContent = "✓ ADDED";
+      addCartBtn.style.color = "#90ee90";
+
+      setTimeout(() => {
+        addCartBtn.textContent = originalText;
+        addCartBtn.style.color = "";
+      }, 1500);
+
+      /* ✅ Cart count update کریں */
+      updateCartCount();
+    });
+
+    /* استایل cursor تغییر کن تا کاربر بدونه کارت کلیکی‌شونده است */
+    card.style.cursor = "pointer";
+
     productsContainer.appendChild(card);
   });
 }
@@ -139,3 +142,16 @@ categoryButtons.forEach((button) => {
     renderProducts(filteredProducts);
   });
 });
+
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const cartPill = document.querySelector(".cart-pill");
+  if (cartPill) {
+    cartPill.textContent = `CART (${totalItems})`;
+  }
+}
+
+/* Page load ہو تو cart count دکھائیں */
+updateCartCount();

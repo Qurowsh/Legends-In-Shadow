@@ -1,266 +1,299 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact — NICHERZ</title>
 
     <!-- Put your provided CSS file next to this HTML as style.css -->
-    <link rel="stylesheet" href="style-shop.css">
-    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
-
+    <link rel="stylesheet" href="style-shop.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/jpeg" href="./Images/Logo.jpg" />
 
     <style>
-        /* Contact page additions — keeps the visual language of your CSS */
-        .contact-page {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
+      /* Contact page additions — keeps the visual language of your CSS */
+      .contact-page {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+      }
+
+      .contact-hero {
+        min-height: 42vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 4em 1.5em 2em;
+      }
+
+      .contact-title {
+        margin: 0;
+        font-family: "Metal Mania", cursive;
+        font-size: clamp(3.5rem, 9vw, 7rem);
+        letter-spacing: 0.1em;
+        color: #fff;
+        text-shadow: 0 0 25px rgba(255, 255, 255, 0.12);
+      }
+
+      .contact-subtitle {
+        margin: 1em 0 0;
+        color: rgba(255, 255, 255, 0.62);
+        font-family: "Metal Mania", cursive;
+        font-size: clamp(0.85rem, 2vw, 1.2rem);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .contact-section {
+        padding: 1em 1.5em 6em;
+      }
+
+      .contact-container {
+        width: min(90%, 68em);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5em;
+      }
+
+      .contact-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 230px;
+        padding: 2em 1.5em;
+        text-align: center;
+        text-decoration: none;
+        color: #fff;
+        background: linear-gradient(
+          180deg,
+          rgba(26, 26, 26, 0.96),
+          rgba(8, 8, 8, 0.98)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 1.2em;
+        box-shadow:
+          0 18px 35px rgba(0, 0, 0, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease,
+          background 0.25s ease;
+      }
+
+      .contact-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.16),
+          transparent 40%,
+          rgba(255, 255, 255, 0.03)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .contact-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        border-color: rgba(255, 255, 255, 0.65);
+        box-shadow:
+          0 20px 45px rgba(0, 0, 0, 0.7),
+          0 0 28px rgba(255, 255, 255, 0.12);
+      }
+
+      .contact-card:hover::before {
+        opacity: 1;
+      }
+
+      .contact-icon {
+        width: 4em;
+        height: 4em;
+        display: grid;
+        place-items: center;
+        margin-bottom: 1.2em;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 50%;
+        font-size: 1.25em;
+        font-weight: 700;
+        transition:
+          transform 0.25s ease,
+          background 0.25s ease;
+      }
+
+      .contact-card:hover .contact-icon {
+        transform: scale(1.1) rotate(-4deg);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .contact-label {
+        margin: 0 0 0.45em;
+        color: rgba(255, 255, 255, 0.55);
+        font-family: "Metal Mania", cursive;
+        font-size: 0.7em;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .contact-value {
+        margin: 0;
+        color: #fff;
+        font-family: "Metal Mania", cursive;
+        font-size: clamp(1.25em, 2vw, 1.7em);
+        letter-spacing: 0.08em;
+      }
+
+      .contact-note {
+        margin: 0.8em 0 0;
+        color: rgba(255, 255, 255, 0.45);
+        font-family: "Metal Mania", cursive;
+        font-size: 0.72em;
+        letter-spacing: 0.08em;
+      }
+
+      .contact-footer {
+        position: relative;
+        z-index: 1;
+        padding: 2em 1em;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(10, 10, 10, 0.9);
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.7em;
+        letter-spacing: 0.16em;
+      }
+
+      @media (max-width: 650px) {
+        .contact-container {
+          width: 100%;
+          grid-template-columns: 1fr;
+          gap: 1em;
         }
 
         .contact-hero {
-            min-height: 42vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 4em 1.5em 2em;
-        }
-
-        .contact-title {
-            margin: 0;
-            font-family: "Metal Mania", cursive;
-            font-size: clamp(3.5rem, 9vw, 7rem);
-            letter-spacing: 0.1em;
-            color: #fff;
-            text-shadow: 0 0 25px rgba(255, 255, 255, .12);
-        }
-
-        .contact-subtitle {
-            margin: 1em 0 0;
-            color: rgba(255, 255, 255, .62);
-            font-family: "Metal Mania", cursive;
-            font-size: clamp(.85rem, 2vw, 1.2rem);
-            letter-spacing: .22em;
-            text-transform: uppercase;
-        }
-
-        .contact-section {
-            padding: 1em 1.5em 6em;
-        }
-
-        .contact-container {
-            width: min(90%, 68em);
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5em;
+          min-height: 38vh;
         }
 
         .contact-card {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 230px;
-            padding: 2em 1.5em;
-            text-align: center;
-            text-decoration: none;
-            color: #fff;
-            background: linear-gradient(180deg,
-                    rgba(26, 26, 26, .96),
-                    rgba(8, 8, 8, .98));
-            border: 1px solid rgba(255, 255, 255, .14);
-            border-radius: 1.2em;
-            box-shadow:
-                0 18px 35px rgba(0, 0, 0, .55),
-                inset 0 1px 0 rgba(255, 255, 255, .08);
-            overflow: hidden;
-            transition: transform .25s ease, border-color .25s ease,
-                box-shadow .25s ease, background .25s ease;
+          min-height: 190px;
         }
 
-        .contact-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, .16),
-                    transparent 40%,
-                    rgba(255, 255, 255, .03));
-            opacity: 0;
-            transition: opacity .3s ease;
-            pointer-events: none;
-        }
-
-        .contact-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(255, 255, 255, .65);
-            box-shadow:
-                0 20px 45px rgba(0, 0, 0, .7),
-                0 0 28px rgba(255, 255, 255, .12);
-        }
-
-        .contact-card:hover::before {
-            opacity: 1;
-        }
-
-        .contact-icon {
-            width: 4em;
-            height: 4em;
-            display: grid;
-            place-items: center;
-            margin-bottom: 1.2em;
-            border: 1px solid rgba(255, 255, 255, .25);
-            background: rgba(255, 255, 255, .04);
-            border-radius: 50%;
-            font-size: 1.25em;
-            font-weight: 700;
-            transition: transform .25s ease, background .25s ease;
-        }
-
-        .contact-card:hover .contact-icon {
-            transform: scale(1.1) rotate(-4deg);
-            background: rgba(255, 255, 255, .1);
-        }
-
-        .contact-label {
-            margin: 0 0 .45em;
-            color: rgba(255, 255, 255, .55);
-            font-family: "Metal Mania", cursive;
-            font-size: .7em;
-            letter-spacing: .2em;
-            text-transform: uppercase;
-        }
-
-        .contact-value {
-            margin: 0;
-            color: #fff;
-            font-family: "Metal Mania", cursive;
-            font-size: clamp(1.25em, 2vw, 1.7em);
-            letter-spacing: .08em;
-        }
-
+        .contact-title,
+        .contact-subtitle,
+        .contact-value,
+        .contact-label,
         .contact-note {
-            margin: .8em 0 0;
-            color: rgba(255, 255, 255, .45);
-            font-family: "Metal Mania", cursive;
-            font-size: .72em;
-            letter-spacing: .08em;
+          font-family: "Metal Mania", cursive;
         }
-
-        .contact-footer {
-            position: relative;
-            z-index: 1;
-            padding: 2em 1em;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, .08);
-            background: rgba(10, 10, 10, .9);
-            color: rgba(255, 255, 255, .5);
-            font-size: .7em;
-            letter-spacing: .16em;
-        }
-
-        @media (max-width: 650px) {
-            .contact-container {
-                width: 100%;
-                grid-template-columns: 1fr;
-                gap: 1em;
-            }
-
-            .contact-hero {
-                min-height: 38vh;
-            }
-
-            .contact-card {
-                min-height: 190px;
-            }
-
-            .contact-title,
-            .contact-subtitle,
-            .contact-value,
-            .contact-label,
-            .contact-note {
-                font-family: "Metal Mania", cursive;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Animated smoke background from your CSS -->
     <div class="smoke-background" aria-hidden="true">
-        <div class="smoke smoke-one"></div>
-        <div class="smoke smoke-two"></div>
-        <div class="smoke smoke-three"></div>
+      <div class="smoke smoke-one"></div>
+      <div class="smoke smoke-two"></div>
+      <div class="smoke smoke-three"></div>
     </div>
 
     <div class="contact-page">
-
-        <header class="shop-header">
-            <div class="shop-header-inner">
-                <a href="index-shop.html" class="brand-wrap" style="text-decoration:none;color:inherit;">
-                    <div class="brand-mark">N</div>
-                    <div class="brand-copy">
-                        <span class="brand-name">NICHERZ</span>
-                        <small>CONTACT</small>
-                    </div>
-                </a>
-
-                <nav class="header-nav" aria-label="Main navigation">
-                    <a href="index.html">HOME</a>
-                    <a href="index-shop.html">product</a>
-                </nav>
-
-                <a class="cart-pill" href="tel:09122159432" style="text-decoration: none;">CALL</a>
+      <header class="shop-header">
+        <div class="shop-header-inner">
+          <a
+            href="index-shop.html"
+            class="brand-wrap"
+            style="text-decoration: none; color: inherit"
+          >
+            <div class="brand-mark">N</div>
+            <div class="brand-copy">
+              <span class="brand-name">NICHERZ</span>
+              <small>CONTACT</small>
             </div>
-        </header>
+          </a>
 
-        <main>
-            <section class="contact-hero">
-                <h1 class="contact-title">CONTACT</h1>
-                <p class="contact-subtitle">GET IN TOUCH WITH NICHERZ</p>
-            </section>
+          <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html">HOME</a>
+            <a href="index-shop.html">product</a>
+          </nav>
 
-            <section class="contact-section" id="contact">
-                <div class="contact-container">
+          <a
+            class="cart-pill"
+            href="tel:09122159432"
+            style="text-decoration: none"
+            >CALL</a
+          >
+        </div>
+      </header>
 
-                    <a class="contact-card" href="https://instagram.com/nicherzz" target="_blank"
-                        rel="noopener noreferrer">
-                        <div class="contact-icon" aria-hidden="true"><img src="Images/insta.jpg" alt="instagram"
-                                style="height: 100%; width: 100%; border: solid grey; border-radius: 50%;">
-                        </div>
-                        <p class="contact-label">Instagram</p>
-                        <h2 class="contact-value">@nicherzz</h2>
-                        <p class="contact-note">FOLLOW / DM</p>
-                    </a>
+      <main>
+        <section class="contact-hero">
+          <h1 class="contact-title">CONTACT</h1>
+          <p class="contact-subtitle">GET IN TOUCH WITH NICHERZ</p>
+        </section>
 
-                    <a class="contact-card" href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">
-                        <div class="contact-icon" aria-hidden="true">➤</div>
-                        <p class="contact-label">Telegram</p>
-                        <h2 class="contact-value">nicherz</h2>
-                        <p class="contact-note">CHANNEL</p>
-                    </a>
+        <section class="contact-section" id="contact">
+          <div class="contact-container">
+            <a
+              class="contact-card"
+              href="https://instagram.com/nicherzz"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div class="contact-icon" aria-hidden="true">
+                <img
+                  src="Images/insta.jpg"
+                  alt="instagram"
+                  style="
+                    height: 100%;
+                    width: 100%;
+                    border: solid grey;
+                    border-radius: 50%;
+                  "
+                />
+              </div>
+              <p class="contact-label">Instagram</p>
+              <h2 class="contact-value">@nicherzz</h2>
+              <p class="contact-note">FOLLOW / DM</p>
+            </a>
 
-                    <a class="contact-card" href="tel:09122159432">
-                        <div class="contact-icon" aria-hidden="true">☎</div>
-                        <p class="contact-label">Phone</p>
-                        <h2 class="contact-value">09122159432</h2>
-                        <p class="contact-note">CALL NOW</p>
-                    </a>
+            <a
+              class="contact-card"
+              href="https://t.me/nicherz"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div class="contact-icon" aria-hidden="true">➤</div>
+              <p class="contact-label">Telegram</p>
+              <h2 class="contact-value">nicherz</h2>
+              <p class="contact-note">CHANNEL</p>
+            </a>
 
-                </div>
-            </section>
-        </main>
+            <a class="contact-card" href="tel:09122159432">
+              <div class="contact-icon" aria-hidden="true">☎</div>
+              <p class="contact-label">Phone</p>
+              <h2 class="contact-value">09122159432</h2>
+              <p class="contact-note">CALL NOW</p>
+            </a>
+          </div>
+        </section>
+      </main>
 
-        <footer class="contact-footer">
-            © NICHERZ 2026 — ALL RIGHTS RESERVED
-        </footer>
-
+      <footer class="contact-footer">
+        © NICHERZ 2026 — ALL RIGHTS RESERVED
+      </footer>
     </div>
-</body>
-
+  </body>
 </html>
