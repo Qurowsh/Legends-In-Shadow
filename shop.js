@@ -86,7 +86,10 @@ function renderProducts(productsToRender) {
 
       localStorage.setItem("cart", JSON.stringify(cart));
 
-      /* ✅ Success feedback */
+      /* ✅ Toast success */
+      showSuccess(`${product.name} شامل کیا گیا`, "✓ سبد میں");
+
+      /* ✅ Button animation */
       const originalText = addCartBtn.textContent;
       addCartBtn.textContent = "✓ ADDED";
       addCartBtn.style.color = "#90ee90";

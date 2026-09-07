@@ -125,12 +125,12 @@ addToCartBtn.addEventListener("click", () => {
   const quantity = parseInt(qtyInput.value);
 
   if (!selectedSize) {
-    alert("Please select a size");
+    showError("لطفاً سائز منتخب کریں", "⚠ سائز درکار ہے");
     return;
   }
 
   if (quantity < 1 || quantity > product.stock) {
-    alert("Invalid quantity");
+    showError("تعداد غلط ہے", "✕ مسئلہ");
     return;
   }
 
@@ -160,7 +160,13 @@ addToCartBtn.addEventListener("click", () => {
 
   localStorage.setItem("cart", JSON.stringify(cart));
 
-  /* ✅ Success message */
+  /* ✅ Toast success */
+  showSuccess(
+    `${quantity} × ${product.name} سبد میں شامل کیا گیا`,
+    "✓ شامل کیا گیا",
+  );
+
+  /* ✅ Button animation */
   const originalText = addToCartBtn.textContent;
   addToCartBtn.textContent = "✓ ADDED TO CART";
   addToCartBtn.style.background =
