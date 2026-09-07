@@ -1,160 +1,184 @@
 const productsContainer = document.getElementById("products-container");
-
 const categoryButtons = document.querySelectorAll(".category-btn");
-/* querySelectorAll() یک مجموعه از تمام عناصر مطابق selector برمی‌گردونه، پس اینجا همه‌ی .category-btnها رو یکجا داریم */
 
-/* ✅ Products array از products.js می‌یاد (بالا import شده) */
-/* تابع نمایش محصولات داخل container */
+function readCart() {
+  try {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    return Array.isArray(cart) ? cart : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function getProductQuantity(cart, productId) {
+  return cart.reduce((total, item) => {
+    return item.productId === productId ? total + (Number(item.quantity) || 0) : total;
+  }, 0);
+}
+
 function renderProducts(productsToRender) {
   productsContainer.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
   productsToRender.forEach((product) => {
     const card = document.createElement("article");
+    card.className = "product-card";
+    card.tabIndex = 0;
+    card.setAttribute("role", "link");
 
-    card.classList.add("product-card");
+    const imageWrap = document.createElement("div");
+    imageWrap.className = "product-image";
+    const image = document.createElement("img");
+    image.src = product.image;
+    image.alt = product.name;
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.addEventListener("error", () => image.removeAttribute("src"), { once: true });
+    imageWrap.appendChild(image);
 
-    card.innerHTML = `
-      <div class="product-image">
-        <img src="${product.image}" alt="${product.name}">
-      </div>
+    const info = document.createElement("div");
+    info.className = "product-info";
 
-      <div class="product-info">
+    const band = document.createElement("p");
+    band.className = "product-band";
+    band.textContent = product.band || "";
 
-        <p class="product-band">
-          ${product.band ?? ""}
-        </p>
+    const name = document.createElement("h2");
+    name.className = "product-name";
+    name.textContent = product.name;
 
-        <h2 class="product-name">
-          ${product.name}
-        </h2>
+    const type = document.createElement("p");
+    type.className = "product-type";
+    type.textContent = product.type;
 
-        <p class="product-type">
-          ${product.type}
-        </p>
+    const bottom = document.createElement("div");
+    bottom.className = "product-bottom";
 
-        <div class="product-bottom">
+    const price = document.createElement("span");
+    price.className = "product-price";
+    price.textContent = `$${product.price}`;
 
-          <span class="product-price">
-            $${product.price}
-          </span>
+    const addCartBtn = document.createElement("button");
+    addCartBtn.type = "button";
+    addCartBtn.className = "add-cart";
+    addCartBtn.textContent = product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK";
+    addCartBtn.disabled = product.stock <= 0;
 
-          <button class="add-cart">
-            ADD TO CART
-          </button>
+    bottom.append(price, addCartBtn);
+    info.append(band, name, type, bottom);
+    card.append(imageWrap, info);
 
-        </div>
+    const openDetail = () => {
+      window.location.href = `product-detail.html?id=${encodeURIComponent(product.id)}`;
+    };
 
-      </div>
-    `;
+    card.addEventListener("click", (event) => {
+      if (!event.target.closest(".add-cart")) openDetail();
+    });
 
-    /* ✅ کارت کلیکی‌شونده است و به صفحه‌ی detail می‌رود */
-    card.addEventListener("click", (e) => {
-      /* اگر روی دکمه‌ی ADD TO CART کلیک شد، صفحه رو redirect نکن */
-      if (e.target.classList.contains("add-cart")) {
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openDetail();
+      }
+    });
+
+    addCartBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      const cart = readCart();
+      const currentQuantity = getProductQuantity(cart, product.id);
+
+      if (currentQuantity >= product.stock) {
+        showWarning("This product is already at its stock limit.", "⚠ Stock Limit");
         return;
       }
 
-      /* به صفحه‌ی product detail برو و product ID رو pass کن */
-      window.location.href = `product-detail.html?id=${product.id}`;
-    });
-
-    /* ✅ ADD TO CART دکمہ پر event listener */
-    const addCartBtn = card.querySelector(".add-cart");
-    addCartBtn.addEventListener("click", (e) => {
-      e.stopPropagation(); /* parent click event کو block کریں */
-
-      /* 🛒 سادہ cart item بنائیں (بغیر size selection) */
-      const cartItem = {
-        productId: product.id,
-        name: product.name,
-        quantity: 1,
-        price: product.price,
-        image: product.image,
-      };
-
-      /* localStorage میں add کریں */
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-      /* چیک کریں کہ یہ item پہلے سے موجود ہے یا نہیں */
-      const existingItem = cart.find((item) => item.productId === product.id);
+      const existingItem = cart.find(
+        (item) => item.productId === product.id && !item.size,
+      );
 
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity = Math.min(product.stock, Number(existingItem.quantity) + 1);
       } else {
-        cart.push(cartItem);
+        cart.push({
+          productId: product.id,
+          name: product.name,
+          quantity: 1,
+          price: product.price,
+          image: product.image,
+        });
       }
 
-      localStorage.setItem("cart", JSON.stringify(cart));
+      saveCart(cart);
+      showSuccess(`${product.name} added to cart.`, "✓ Added to Cart");
+      updateCartCount();
 
-      /* ✅ Toast success */
-      showSuccess(`${product.name} شامل کیا گیا`, "✓ سبد میں");
-
-      /* ✅ Button animation */
       const originalText = addCartBtn.textContent;
       addCartBtn.textContent = "✓ ADDED";
-      addCartBtn.style.color = "#90ee90";
-
-      setTimeout(() => {
+      addCartBtn.disabled = true;
+      window.setTimeout(() => {
         addCartBtn.textContent = originalText;
-        addCartBtn.style.color = "";
+        addCartBtn.disabled = getProductQuantity(readCart(), product.id) >= product.stock;
       }, 1500);
-
-      /* ✅ Cart count update کریں */
-      updateCartCount();
     });
 
-    /* استایل cursor تغییر کن تا کاربر بدونه کارت کلیکی‌شونده است */
-    card.style.cursor = "pointer";
-
-    productsContainer.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  productsContainer.appendChild(fragment);
 }
-renderProducts(products);
-/* 
-وقتی تابع رو صدا بزنیم:
 
-Container رو خالی می‌کنه.
-تک‌تک Objectها رو می‌خونه.
-برای هر محصول یک article می‌سازه.
-اطلاعات محصول رو داخلش می‌گذاره.
-کارت رو به DOM اضافه می‌کنه.
+function applyCategoryFromUrl() {
+  const category = new URLSearchParams(window.location.search).get("category");
+  const selectedButton = [...categoryButtons].find(
+    (button) => button.dataset.category === (category || "all"),
+  );
 
-یعنی دیگه Product Card دستی داخل HTML نمی‌خوایم.
- */
+  categoryButtons.forEach((button) => button.classList.remove("active"));
+  (selectedButton || categoryButtons[0])?.classList.add("active");
+
+  if (category && category !== "all") {
+    renderProducts(products.filter((product) => product.category === category));
+  } else {
+    renderProducts(products);
+  }
+}
 
 categoryButtons.forEach((button) => {
+  button.type = "button";
   button.addEventListener("click", () => {
     const selectedCategory = button.dataset.category;
-
-    categoryButtons.forEach((btn) => {
-      btn.classList.remove("active");
-    });
-
+    categoryButtons.forEach((btn) => btn.classList.remove("active"));
     button.classList.add("active");
 
+    const url = new URL(window.location.href);
     if (selectedCategory === "all") {
-      renderProducts(products);
-
-      return;
+      url.searchParams.delete("category");
+    } else {
+      url.searchParams.set("category", selectedCategory);
     }
+    window.history.replaceState({}, "", url);
 
-    const filteredProducts = products.filter((product) => {
-      return product.category === selectedCategory;
-    });
-
-    renderProducts(filteredProducts);
+    renderProducts(
+      selectedCategory === "all"
+        ? products
+        : products.filter((product) => product.category === selectedCategory),
+    );
   });
 });
 
 function updateCartCount() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
+  const cart = readCart();
+  const totalItems = cart.reduce((sum, item) => sum + Math.max(0, Number(item.quantity) || 0), 0);
   const cartPill = document.querySelector(".cart-pill");
-  if (cartPill) {
-    cartPill.textContent = `CART (${totalItems})`;
-  }
+  if (cartPill) cartPill.textContent = `CART (${totalItems})`;
 }
 
-/* Page load ہو تو cart count دکھائیں */
+applyCategoryFromUrl();
 updateCartCount();
