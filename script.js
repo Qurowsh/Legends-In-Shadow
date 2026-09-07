@@ -1,4 +1,6 @@
+// اطلاعات گروه‌هایی که روی صفحه اصلی نمایش داده می‌شوند.
 const bands = [
+  // هر آبجکت نام، تصویر، توضیح، سبک و سال شروع گروه را نگه می‌دارد.
   { name: "Metallica", image: "Images/14.jpg", quote: '"The music is our sacred ritual."', genre: "Thrash Metal", year: "Since 1981" },
   { name: "Slayer", image: "Images/3.jpg", quote: '"Riffs that cut like blades."', genre: "Thrash Metal", year: "Since 1981" },
   { name: "Death", image: "Images/13.png", quote: '"The sound of rebellion."', genre: "Death Metal", year: "Since 1983" },
@@ -33,46 +35,60 @@ const bands = [
   { name: "Rage Against the Machine", image: "", quote: '"The anti-establishment rockers."', genre: "Alternative Rock", year: "Since 1991" },
 ];
 
+// ظرف نمایش گروه‌ها را از HTML پیدا می‌کند.
 const bandsContainer = document.getElementById("bands-container");
+// Fragment برای ساخت کارت‌ها بدون رندرهای اضافه.
 const fragment = document.createDocumentFragment();
+// تصویر جایگزین برای گروه‌هایی که تصویر ندارند.
 const placeholder = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%25" height="100%25" fill="%230a0a0a"/><text x="50%25" y="50%25" fill="%23ffffff" font-size="28" font-family="Arial" dominant-baseline="middle" text-anchor="middle">No Image</text></svg>';
 
+// نام گروه را برای مقایسه یکدست می‌کند.
 const normalizeBand = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
+// برای هر گروه یک کارت روی صفحه می‌سازد.
 bands.forEach((band) => {
+  // عنصر اصلی کارت را می‌سازد.
   const newCard = document.createElement("div");
   newCard.classList.add("card");
 
+  // تصویر گروه را می‌سازد.
   const bandImage = document.createElement("img");
   bandImage.classList.add("band-img");
   bandImage.alt = band.name || "Band";
   bandImage.decoding = "async";
   bandImage.loading = "lazy";
+  // اگر تصویر موجود نباشد، تصویر جایگزین را نشان می‌دهد.
   bandImage.src = band.image && band.image.trim() !== "" ? band.image : placeholder;
   if (!band.image || band.image.trim() === "") bandImage.classList.add("no-image");
   newCard.appendChild(bandImage);
 
+  // نام گروه را به کارت اضافه می‌کند.
   const bandName = document.createElement("h3");
   bandName.textContent = band.name;
   newCard.appendChild(bandName);
 
+  // جمله معرفی گروه را اضافه می‌کند.
   const bandQuote = document.createElement("p");
   bandQuote.textContent = band.quote;
   bandQuote.classList.add("quote");
   newCard.appendChild(bandQuote);
 
+  // سبک و سال شروع گروه را نمایش می‌دهد.
   const bandInfo = document.createElement("p");
   bandInfo.textContent = `${band.genre} | ${band.year}`;
   bandInfo.classList.add("info");
   newCard.appendChild(bandInfo);
 
+  // لینک محصولات مرتبط با همین گروه را می‌سازد.
   const shopLink = document.createElement("a");
   shopLink.classList.add("Bio");
   shopLink.href = `index-shop.html?band=${encodeURIComponent(band.name)}`;
   shopLink.textContent = "Related Products";
   newCard.appendChild(shopLink);
 
+  // کارت کامل را به Fragment اضافه می‌کند.
   fragment.appendChild(newCard);
 });
 
+// همه کارت‌ها را یک‌جا داخل صفحه قرار می‌دهد.
 bandsContainer.appendChild(fragment);
