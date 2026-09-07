@@ -1,5 +1,3 @@
-// لیست گروه‌های موسیقی را نگه می‌دارد
-// بعداً هر گروه جدید را فقط به همین لیست اضافه می‌کنیم
 const bands = [
   {
     name: "Metallica",
@@ -17,7 +15,7 @@ const bands = [
   },
   {
     name: "Death",
-    image: "Images/13.jpg",
+    image: "Images/13.png",
     quote: '"The sound of rebellion."',
     genre: "Death Metal",
     year: "Since 1983",
@@ -129,7 +127,7 @@ const bands = [
   },
   {
     name: "Nirvana",
-    image: "Images/11.jpg",
+    image: "Images/11.png",
     quote: '"The grunge pioneers."',
     genre: "Grunge",
     year: "Since 1987",
@@ -227,59 +225,55 @@ const bands = [
   },
 ];
 
-// بهتر است یک بار container را بگیریم و سپس با DocumentFragment یک‌جا اضافه کنیم
 const bandsContainer = document.getElementById("bands-container");
-const fragment = document.createDocumentFragment();
 
-// کوچک، درجا و بدون درخواست شبکه وقتی تصویر آماده نیست
-const placeholder =
-  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%25" height="100%25" fill="%230a0a0a"/><text x="50%25" y="50%25" fill="%23ffffff" font-size="28" font-family="Arial" dominant-baseline="middle" text-anchor="middle">No Image</text></svg>';
+if (bandsContainer) {
+  const fragment = document.createDocumentFragment();
+  const placeholder =
+    'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%25" height="100%25" fill="%230a0a0a"/><text x="50%25" y="50%25" fill="%23ffffff" font-size="28" font-family="Arial" dominant-baseline="middle" text-anchor="middle">No Image</text></svg>';
 
-bands.forEach((band) => {
-  const newCard = document.createElement("div");
-  newCard.classList.add("card");
+  bands.forEach((band) => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.dataset.band = band.name;
 
-  // تصویر: اگر مسیر موجود است از آن استفاده می‌کنیم وگرنه placeholder
-  const bandImage = document.createElement("img");
-  bandImage.classList.add("band-img");
-  bandImage.alt = band.name || "Band";
-  bandImage.decoding = "async";
-  bandImage.loading = "lazy";
-  bandImage.src =
-    band.image && band.image.trim() !== "" ? band.image : placeholder;
-  if (!band.image || band.image.trim() === "") {
-    bandImage.classList.add("no-image");
-  }
-  newCard.appendChild(bandImage);
+    const image = document.createElement("img");
+    image.className = "band-img";
+    image.alt = `${band.name} band`; 
+    image.width = 400;
+    image.height = 600;
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.src = band.image?.trim() ? band.image : placeholder;
+    image.addEventListener("error", () => {
+      if (image.src !== placeholder) {
+        image.src = placeholder;
+      }
+    }, { once: true });
+    card.appendChild(image);
 
-  const bandName = document.createElement("h3");
-  bandName.textContent = band.name;
-  newCard.appendChild(bandName);
+    const name = document.createElement("h3");
+    name.textContent = band.name;
+    card.appendChild(name);
 
-  const bandQuote = document.createElement("p");
-  bandQuote.textContent = band.quote;
-  bandQuote.classList.add("quote");
-  newCard.appendChild(bandQuote);
+    const quote = document.createElement("p");
+    quote.className = "quote";
+    quote.textContent = band.quote;
+    card.appendChild(quote);
 
-  const bandInfo = document.createElement("p");
-  bandInfo.textContent = `${band.genre} | ${band.year}`;
-  bandInfo.classList.add("info");
-  newCard.appendChild(bandInfo);
+    const info = document.createElement("p");
+    info.className = "info";
+    info.textContent = `${band.genre} | ${band.year}`;
+    card.appendChild(info);
 
-  const bioLink = document.createElement("a");
-  bioLink.classList.add("Bio");
-  if (band.bio) {
-    bioLink.href = band.bio;
-    bioLink.textContent = "View Biography";
-  } else {
-    bioLink.href = "#";
-    bioLink.textContent = "Biography coming soon";
-    bioLink.classList.add("disabled");
-    bioLink.setAttribute("aria-disabled", "true");
-  }
-  newCard.appendChild(bioLink);
+    const productsLink = document.createElement("a");
+    productsLink.className = "Bio";
+    productsLink.href = `index-shop.html?band=${encodeURIComponent(band.name)}`;
+    productsLink.textContent = "Related Products";
+    card.appendChild(productsLink);
 
-  fragment.appendChild(newCard);
-});
+    fragment.appendChild(card);
+  });
 
-bandsContainer.appendChild(fragment);
+  bandsContainer.replaceChildren(fragment);
+}
