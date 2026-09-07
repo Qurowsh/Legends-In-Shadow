@@ -1,113 +1,180 @@
+<!-- نوع سند را روی HTML5 قرار می‌دهد. -->
 <!doctype html>
+<!-- زبان اصلی محتوای صفحه را مشخص می‌کند. -->
 <html lang="en">
+  <!-- تنظیمات و فایل‌های مورد نیاز صفحه. -->
   <head>
+    <!-- پشتیبانی از حروف و متن با UTF-8. -->
     <meta charset="UTF-8" />
+    <!-- تنظیم نمایش صفحه در مرورگرهای مختلف. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- عنوانی که در تب مرورگر دیده می‌شود. -->
     <title>Shop | NICHERZ</title>
+    <!-- استایل اصلی صفحه فروشگاه. -->
     <link rel="stylesheet" href="style-shop.css" />
+    <!-- استایل پیام‌های Toast. -->
     <link rel="stylesheet" href="toast.css" />
+    <!-- فونت اصلی پروژه را از Google Fonts می‌گیرد. -->
     <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+    <!-- تصویر لوگو را به عنوان آیکن تب مرورگر تعیین می‌کند. -->
     <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
   </head>
 
   <body>
+    <!-- اطلاعات محصولات قبل از اجرای منطق فروشگاه در دسترس JavaScript قرار می‌گیرد. -->
     <script src="products.js"></script>
+    <!-- منطق نمایش پیام‌های کوتاه سایت را فعال می‌کند. -->
     <script src="toast.js"></script>
 
+    <!-- لایه‌های دود تزئینی پس‌زمینه که برای کاربر قابل خواندن نیستند. -->
     <div class="smoke-background" aria-hidden="true">
+      <!-- لایه اول دود. -->
       <div class="smoke smoke-one"></div>
+      <!-- لایه دوم دود. -->
       <div class="smoke smoke-two"></div>
+      <!-- لایه سوم دود. -->
       <div class="smoke smoke-three"></div>
     </div>
 
+    <!-- هدر اصلی فروشگاه. -->
     <header class="shop-header">
+      <!-- محتوای داخلی هدر را مرتب و هم‌تراز نگه می‌دارد. -->
       <div class="shop-header-inner">
+        <!-- بخش لوگو و نام برند. -->
         <div class="brand-wrap" aria-label="Brand logo">
+          <!-- قاب نمایش لوگو. -->
           <div class="brand-mark">
+            <!-- تصویر لوگوی برند. -->
             <img
               src="./Images/logo.jpg"
               alt="NICHERZ logo"
               style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;"
             />
           </div>
+          <!-- متن کنار لوگو. -->
           <div class="brand-copy">
+            <!-- نام اصلی برند. -->
             <span class="brand-name">NICHERZ</span>
+            <!-- توضیح کوتاه برند. -->
             <small>ARCHIVE</small>
           </div>
         </div>
 
+        <!-- منوی اصلی فروشگاه. -->
         <nav class="header-nav" aria-label="Main navigation">
+          <!-- لینک صفحه اصلی. -->
           <a href="index.html">HOME</a>
+          <!-- لینک صفحه فعلی فروشگاه. -->
           <a href="index-shop.html" class="active-nav" aria-current="page">SHOP</a>
+          <!-- لینک بخش گروه‌ها در صفحه اصلی. -->
           <a href="index.html#gallery">BANDS</a>
+          <!-- بخش لباس که فعلاً غیرفعال است. -->
           <a href="#" class="disabled">APPAREL</a>
+          <!-- لینک صفحه تماس. -->
           <a href="contact.html">CONTACT</a>
         </nav>
 
+        <!-- عملیات سمت راست هدر. -->
         <div class="header-actions">
+          <!-- لینک رفتن به سبد خرید و نمایش تعداد فعلی. -->
           <a href="cart.html" class="cart-pill">CART (0)</a>
         </div>
       </div>
     </header>
 
+    <!-- محتوای اصلی صفحه فروشگاه. -->
     <main class="shop-page">
+      <!-- بخش معرفی فروشگاه. -->
       <section class="shop-hero">
+        <!-- عنوان بزرگ آرشیو محصولات. -->
         <h1 class="shop-title">THE ARCHIVE</h1>
+        <!-- شعار کوتاه فروشگاه. -->
         <p class="shop-subtitle">Wear The Legend</p>
       </section>
 
+      <!-- بخش فیلتر و نمایش محصولات. -->
       <section class="products-section">
+        <!-- دکمه‌های انتخاب دسته‌بندی محصولات. -->
         <nav class="shop-categories" aria-label="Product categories">
+          <!-- نمایش همه محصولات. -->
           <button type="button" class="category-btn active" data-category="all">ALL</button>
+          <!-- فیلتر محصولات مرتبط با گروه‌ها. -->
           <button type="button" class="category-btn" data-category="band-merch">BAND MERCH</button>
+          <!-- فیلتر محصولات سبک Y2K. -->
           <button type="button" class="category-btn" data-category="y2k">Y2K</button>
+          <!-- فیلتر لباس‌های خیابانی. -->
           <button type="button" class="category-btn" data-category="streetwear">STREETWEAR</button>
+          <!-- فیلتر لوازم جانبی. -->
           <button type="button" class="category-btn" data-category="accessories">ACCESSORIES</button>
+          <!-- فیلتر محصولات موسیقی. -->
           <button type="button" class="category-btn" data-category="music">MUSIC</button>
+          <!-- فیلتر محصولات کلکسیونی. -->
           <button type="button" class="category-btn" data-category="collectibles">COLLECTIBLES</button>
         </nav>
 
+        <!-- JavaScript کارت‌های محصولات را داخل این بخش می‌سازد. -->
         <div class="products-container" id="products-container"></div>
       </section>
     </main>
 
+    <!-- فوتر اصلی فروشگاه. -->
     <footer class="shop-footer">
+      <!-- ستون‌های اطلاعاتی فوتر. -->
       <div class="footer-grid">
+        <!-- معرفی کوتاه برند. -->
         <div class="footer-brand">
+          <!-- حرف اول برند به عنوان نشانه بصری. -->
           <span class="footer-logo">N</span>
           <div>
+            <!-- نام برند در فوتر. -->
             <h3>NICHERZ</h3>
+            <!-- توضیح کوتاه برند. -->
             <p>Curated chaos for the loudest souls.</p>
           </div>
         </div>
 
+        <!-- لینک‌های مربوط به فروشگاه. -->
         <div class="footer-links">
           <h4>SHOP</h4>
+          <!-- رفتن مستقیم به دسته Band Merch. -->
           <a href="index-shop.html?category=band-merch">Band Merch</a>
+          <!-- رفتن مستقیم به دسته Streetwear. -->
           <a href="index-shop.html?category=streetwear">Streetwear</a>
+          <!-- رفتن مستقیم به دسته Accessories. -->
           <a href="index-shop.html?category=accessories">Accessories</a>
         </div>
 
+        <!-- لینک‌های اطلاعاتی سایت. -->
         <div class="footer-links">
           <h4>INFO</h4>
+          <!-- لینک اطلاعات درباره سایت. -->
           <a href="contact.html">About</a>
+          <!-- بخش ارسال که فعلاً لینک واقعی ندارد. -->
           <a href="#">Shipping</a>
+          <!-- بخش پشتیبانی که فعلاً لینک واقعی ندارد. -->
           <a href="#">Support</a>
         </div>
 
+        <!-- لینک شبکه‌های اجتماعی. -->
         <div class="footer-links">
           <h4>FOLLOW</h4>
+          <!-- لینک اینستاگرام با باز شدن در تب جدید. -->
           <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <!-- لینک تلگرام با باز شدن در تب جدید. -->
           <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a>
         </div>
       </div>
 
+      <!-- اطلاعات پایانی فوتر. -->
       <div class="footer-bottom">
+        <!-- سال و نام برند. -->
         <span>© 2026 NICHERZ</span>
+        <!-- شعار پایانی سایت. -->
         <span>WEAR THE LEGEND</span>
       </div>
     </footer>
 
+    <!-- منطق فیلتر و نمایش محصولات را اجرا می‌کند. -->
     <script src="shop.js"></script>
   </body>
 </html>
