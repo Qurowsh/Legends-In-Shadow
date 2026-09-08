@@ -1,0 +1,42 @@
+/* این فایل فقط اصلاحات نهایی هدر فروشگاه را انجام می‌دهد تا انیمیشن اصلی دست‌نخورده بماند. */
+
+/* لینک سبد خرید نباید مثل لینک‌های پیش‌فرض مرورگر زیرخط داشته باشد. */
+.cart-pill {
+  text-decoration: none;
+}
+
+/* درخشش سبد خرید داخل خود باکس محدود می‌شود تا از لبه‌ها بیرون نزند. */
+.cart-pill::before {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-140%) skewX(-14deg);
+  animation: cartShimmer 4s ease-in-out infinite;
+}
+
+/* نسخه مخصوص درخشش سبد خرید؛ حرکت نور داخل خود باکس انجام می‌شود. */
+@keyframes cartShimmer {
+  0% {
+    transform: translateX(-140%) skewX(-14deg);
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateX(140%) skewX(-14deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(140%) skewX(-14deg);
+    opacity: 0;
+  }
+}
+
+/* خط درخشان زیر هدر حذف می‌شود؛ خود انیمیشن هدر و لوگو باقی می‌ماند. */
+.shop-header::after {
+  display: none;
+}
