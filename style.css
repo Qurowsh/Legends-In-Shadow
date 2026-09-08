@@ -642,3 +642,86 @@ h1 {
     letter-spacing: 0.03em;
   }
 }
+
+/* Consolidated Bands background and header fixes. */
+/* این فایل ظاهر پس‌زمینه صفحه بندها را با تم مشکی و دود سفید هماهنگ می‌کند. */
+
+/* لایه اصلی نور و دود سفید پس‌زمینه. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.10), transparent 28%),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.07), transparent 30%),
+    radial-gradient(circle at 50% 80%, rgba(220, 220, 220, 0.08), transparent 32%);
+  filter: blur(55px);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 0;
+  animation: bandsSmokeMove1 28s ease-in-out infinite alternate;
+}
+
+/* لایه دوم دود برای عمق بیشتر و حرکت متفاوت. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  width: 150%;
+  height: 150%;
+  background:
+    radial-gradient(circle at 75% 70%, rgba(255, 255, 255, 0.08), transparent 25%),
+    radial-gradient(circle at 30% 60%, rgba(255, 255, 255, 0.06), transparent 28%),
+    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.05), transparent 22%);
+  filter: blur(80px);
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
+  animation: bandsSmokeMove2 36s ease-in-out infinite alternate;
+}
+
+/* حرکت آرام لایه اول دود. */
+@keyframes bandsSmokeMove1 {
+  0% {
+    transform: translate(-4%, 2%) scale(1);
+  }
+  50% {
+    transform: translate(4%, -3%) scale(1.08);
+  }
+  100% {
+    transform: translate(-2%, 4%) scale(0.98);
+  }
+}
+
+/* حرکت آرام لایه دوم دود. */
+@keyframes bandsSmokeMove2 {
+  0% {
+    transform: translate(3%, -3%) scale(1.02);
+  }
+  50% {
+    transform: translate(-4%, 4%) scale(0.96);
+  }
+  100% {
+    transform: translate(2%, -2%) scale(1.06);
+  }
+}
+
+/* محتوای اصلی را بالاتر از لایه‌های پس‌زمینه نگه می‌دارد. */
+main,
+.main-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* هدر را همیشه دقیقاً به بالای صفحه می‌چسباند. */
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
