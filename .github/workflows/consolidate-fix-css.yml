@@ -1,0 +1,84 @@
+name: Consolidate temporary fix CSS
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/consolidate-fix-css.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Move fix rules into their real stylesheet files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+
+          def append_if_needed(target_name, source_name, marker):
+              target = root / target_name
+              source = root / source_name
+              if not source.exists():
+                  return
+              target_text = target.read_text(encoding='utf-8')
+              source_text = source.read_text(encoding='utf-8')
+              if marker not in target_text:
+                  target.write_text(
+                      target_text.rstrip() + '\n\n' + marker + '\n' + source_text.strip() + '\n',
+                      encoding='utf-8'
+                  )
+
+          append_if_needed(
+              'style-shop.css',
+              'shop-fixes.css',
+              '/* Consolidated shop header, cart shimmer, and smoke fixes. */'
+          )
+          append_if_needed(
+              'style-shop.css',
+              'page-fixes.css',
+              '/* Consolidated shared internal-page header and cart fixes. */'
+          )
+          append_if_needed(
+              'style.css',
+              'bands-fixes.css',
+              '/* Consolidated Bands background and header fixes. */'
+          )
+
+          html_files = ['index-shop.html', 'product-detail.html', 'cart.html', 'contact.html', 'index.html']
+          for name in html_files:
+              path = root / name
+              if not path.exists():
+                  continue
+              text = path.read_text(encoding='utf-8')
+              lines = [line for line in text.splitlines() if 'shop-fixes.css' not in line and 'page-fixes.css' not in line and 'bands-fixes.css' not in line]
+              path.write_text('\n'.join(lines) + ('\n' if text.endswith('\n') else ''), encoding='utf-8')
+
+          for name in ['shop-fixes.css', 'page-fixes.css', 'bands-fixes.css']:
+              path = root / name
+              if path.exists():
+                  path.unlink()
+          PY
+
+      - name: Remove this one-time workflow
+        run: rm -f .github/workflows/consolidate-fix-css.yml
+
+      - name: Commit consolidated files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+          else
+            git commit -m 'refactor: consolidate fix CSS into source stylesheets'
+            git push origin HEAD:master
+          fi
