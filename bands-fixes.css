@@ -66,8 +66,16 @@ body::after {
 
 /* محتوای اصلی را بالاتر از لایه‌های پس‌زمینه نگه می‌دارد. */
 main,
-.main-header,
 .main-footer {
   position: relative;
   z-index: 1;
+}
+
+/* هدر را همیشه دقیقاً به بالای صفحه می‌چسباند. */
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
 }
