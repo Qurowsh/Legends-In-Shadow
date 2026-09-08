@@ -1,5 +1,14 @@
 /* این فایل فقط اصلاحات نهایی هدر و دود پس‌زمینه فروشگاه را انجام می‌دهد. */
 
+/* هدر را دقیقاً به بالای صفحه می‌چسباند و جلوی جابه‌جایی sticky را می‌گیرد. */
+.shop-header {
+  position: sticky !important;
+  top: 0 !important;
+  transform: none !important;
+  opacity: 1 !important;
+  animation: none !important;
+}
+
 /* لینک سبد خرید را مثل یک دکمه واقعی نگه می‌دارد. */
 .cart-pill {
   display: inline-flex;
