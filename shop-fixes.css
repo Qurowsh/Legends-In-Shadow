@@ -1,51 +1,108 @@
-/* این فایل فقط اصلاحات نهایی هدر فروشگاه را انجام می‌دهد تا انیمیشن اصلی دست‌نخورده بماند. */
+/* این فایل فقط اصلاحات نهایی هدر و دود پس‌زمینه فروشگاه را انجام می‌دهد. */
 
-/* لینک سبد خرید نباید مثل لینک‌های پیش‌فرض مرورگر زیرخط داشته باشد. */
+/* لینک سبد خرید را مثل یک دکمه واقعی نگه می‌دارد. */
 .cart-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden !important;
-  text-decoration: none;
+  text-decoration: none !important;
   isolation: isolate;
+  z-index: 1;
 }
 
-/* درخشش سبد خرید فقط داخل مستطیل خود دکمه حرکت می‌کند. */
+/* درخشش مورب سبد خرید را داخل خود مستطیل محدود می‌کند. */
 .cart-pill::before {
   content: "";
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: -40%;
+  left: -55%;
+  width: 45%;
+  height: 180%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.72),
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
+  transform: translateX(0) skewX(-18deg);
   pointer-events: none;
-  transform: translateX(-140%) skewX(-14deg);
+  z-index: 2;
   animation: cartShimmer 4s ease-in-out infinite;
 }
 
-/* نسخه مخصوص درخشش سبد خرید؛ حرکت نور داخل خود باکس انجام می‌شود. */
+/* حرکت آرام نور سبد خرید. */
 @keyframes cartShimmer {
-  0% {
-    transform: translateX(-140%) skewX(-14deg);
+  0%, 20% {
+    transform: translateX(0) skewX(-18deg);
     opacity: 0;
   }
 
-  25% {
+  30% {
     opacity: 1;
   }
 
-  50% {
-    transform: translateX(140%) skewX(-14deg);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateX(140%) skewX(-14deg);
+  65%, 100% {
+    transform: translateX(360%) skewX(-18deg);
     opacity: 0;
   }
 }
 
-/* خط درخشان زیر هدر حذف می‌شود؛ خود انیمیشن هدر و لوگو باقی می‌ماند. */
+/* درخشش اصلی هدر را برمی‌گرداند، ولی آن را نرم و کنترل‌شده نگه می‌دارد. */
 .shop-header::after {
-  display: none;
+  display: block;
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  width: min(82%, 64em);
+  height: 30px;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.24),
+    rgba(200, 200, 200, 0.09),
+    transparent 72%
+  );
+  filter: blur(18px);
+  opacity: 0.7;
+  pointer-events: none;
+  animation: headerGlowFix 4.2s ease-in-out infinite alternate;
+}
+
+/* حرکت نرم نور زیر هدر. */
+@keyframes headerGlowFix {
+  0% {
+    opacity: 0.3;
+    transform: translateX(-50%) scaleX(0.9);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translateX(-50%) scaleX(1.05);
+  }
+
+  100% {
+    opacity: 0.4;
+    transform: translateX(-50%) scaleX(0.96);
+  }
+}
+
+/* دود اصلی پس‌زمینه را روشن‌تر می‌کند. */
+body::before {
+  opacity: 1 !important;
+}
+
+/* حباب‌های دود را واضح‌تر می‌کند بدون تغییر حرکت آن‌ها. */
+.smoke {
+  background: rgba(255, 255, 255, 0.15) !important;
+  opacity: 0.9;
+}
+
+/* لایه سوم دود را هم کمی روشن‌تر می‌کند. */
+.smoke-three {
+  opacity: 0.75 !important;
 }
