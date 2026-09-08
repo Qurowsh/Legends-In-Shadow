@@ -2,14 +2,23 @@
 
 /* لینک سبد خرید نباید مثل لینک‌های پیش‌فرض مرورگر زیرخط داشته باشد. */
 .cart-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden !important;
   text-decoration: none;
+  isolation: isolate;
 }
 
-/* درخشش سبد خرید داخل خود باکس محدود می‌شود تا از لبه‌ها بیرون نزند. */
+/* درخشش سبد خرید فقط داخل مستطیل خود دکمه حرکت می‌کند. */
 .cart-pill::before {
+  content: "";
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
   transform: translateX(-140%) skewX(-14deg);
   animation: cartShimmer 4s ease-in-out infinite;
 }
