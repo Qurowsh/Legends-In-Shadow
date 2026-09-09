@@ -1,14 +1,11 @@
-/* فونت‌های مخصوص ظاهر متال و عنوان‌های سایت را وارد می‌کند. */
 @import url("https://fonts.cdnfonts.com/css/metal-lord");
 @import url("https://fonts.cdnfonts.com/css/black-metal");
 @import url("https://fonts.cdnfonts.com/css/death-crow");
 
-/* اندازه‌گیری عناصر را قابل پیش‌بینی می‌کند. */
 * {
   box-sizing: border-box;
 }
 
-/* اندازه و رفتار اسکرول صفحه اصلی را تنظیم می‌کند. */
 html {
   width: 100%;
   height: 100%;
@@ -17,7 +14,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* فاصله پیش‌فرض بدنه را حذف و اندازه آن را کنترل می‌کند. */
 body {
   margin: 0;
   background: #010101;
@@ -30,7 +26,7 @@ body {
   padding-top: 100px;
 }
 
-/* لایه اول دود قرمز و متحرک پس‌زمینه. */
+/* لایه دود اول */
 body::before {
   content: "";
   position: fixed;
@@ -49,7 +45,7 @@ body::before {
   pointer-events: none;
 }
 
-/* لایه دوم دود با حرکت و شدت متفاوت. */
+/* لایه دود دوم */
 body::after {
   content: "";
   position: fixed;
@@ -68,33 +64,35 @@ body::after {
   pointer-events: none;
 }
 
-/* انیمیشن حرکت لایه اول دود. */
+/* انیمیشن حرکت دود */
 @keyframes smokeMove1 {
   0% {
     transform: translate(0, 0);
   }
+
   50% {
     transform: translate(100px, -100px);
   }
+
   100% {
     transform: translate(0, 0);
   }
 }
 
-/* انیمیشن حرکت لایه دوم دود. */
 @keyframes smokeMove2 {
   0% {
     transform: translate(0, 0);
   }
+
   50% {
     transform: translate(-150px, 150px);
   }
+
   100% {
     transform: translate(0, 0);
   }
 }
 
-/* ظاهر عمومی عنوان‌های سطح اول. */
 h1 {
   text-align: center;
   color: red;
@@ -105,7 +103,6 @@ h1 {
   padding-top: 20px;
 }
 
-/* شبکه نمایش گروه‌ها را ایجاد می‌کند. */
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -115,19 +112,26 @@ h1 {
   padding: 0 20px;
 }
 
-/* ظاهر اصلی کارت‌های گروه. */
+/* ========================= LEGEND CARDS ========================= */
+
 .card {
   width: 100%;
   min-height: 450px;
   padding: 1.2em;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, rgba(35, 0, 0, 0.9), rgba(8, 0, 0, 0.98));
+
+  background: rgba(1, 1, 1, 0.55);
+  backdrop-filter: blur(8px);
+
   border: 1px solid rgba(255, 0, 0, 0.25);
   border-radius: 6px;
+
   box-shadow: 0 0 20px rgba(255, 0, 0, 0.12);
+
   opacity: 0;
   transform: translateY(30px);
+
   animation: cardEnter 0.8s ease both;
   will-change: transform, opacity;
   transition:
@@ -135,138 +139,147 @@ h1 {
     box-shadow 0.45s ease,
     border-color 0.45s ease;
 }
-
-/* زمان شروع انیمیشن کارت دوم. */
 .card:nth-child(2) {
   animation-delay: 0.08s;
 }
 
-/* زمان شروع انیمیشن کارت سوم. */
 .card:nth-child(3) {
   animation-delay: 0.16s;
 }
 
-/* زمان شروع انیمیشن کارت چهارم. */
 .card:nth-child(4) {
   animation-delay: 0.24s;
 }
 
-/* انیمیشن ورود کارت‌ها از پایین. */
 @keyframes cardEnter {
   from {
     opacity: 0;
     transform: translateY(25px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* لایه ظریف داخل کارت برای افکت Hover. */
 .card::before {
   content: "";
+
   position: absolute;
   inset: 0;
+
   border: 1px solid rgba(255, 0, 0, 0.12);
+
   pointer-events: none;
+
   transition:
     border-color 0.4s ease,
     box-shadow 0.4s ease;
 }
 
-/* تغییر لایه داخلی کارت هنگام Hover. */
 .card:hover::before {
   border-color: rgba(255, 0, 0, 0.55);
+
   box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.08);
 }
 
-/* کارت را هنگام Hover کمی بالا می‌برد و نور می‌دهد. */
 .card:hover {
   transform: translateY(-8px);
+
   border-color: rgba(255, 0, 0, 0.7);
+
   box-shadow:
     0 0 20px rgba(255, 0, 0, 0.2),
     0 0 50px rgba(255, 0, 0, 0.12);
 }
 
-/* تصویر هر گروه را داخل کارت تنظیم می‌کند. */
 .band-img {
   width: 100%;
   aspect-ratio: 2 / 3;
   object-fit: cover;
   display: block;
+
   border-radius: 4px;
+
   filter: grayscale(100%) brightness(0.75) contrast(1.15);
+
   transition:
     transform 0.5s ease,
     filter 0.5s ease;
 }
-
-/* تصویر را هنگام Hover از حالت خاکستری خارج می‌کند. */
 .card:hover .band-img {
   transform: scale(1.04);
+
   filter: grayscale(0%) brightness(1) contrast(1.1)
     drop-shadow(0 0 12px rgba(255, 0, 0, 0.45));
 }
 
-/* متن نقل‌قول گروه را استایل می‌دهد. */
 .quote {
   margin: 1em 0 0.7em;
   text-align: center;
+
   font-family: "Metal Mania", cursive;
   font-size: 1.05em;
   font-weight: normal;
   letter-spacing: 0.08em;
   line-height: 1.5;
+
   color: #f1f1f1;
+
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+
   transition:
     color 0.3s ease,
     text-shadow 0.3s ease;
 }
-
-/* نقل‌قول را هنگام Hover روشن‌تر می‌کند. */
 .card:hover .quote {
   color: #fff;
+
   text-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
 }
-
-/* اطلاعات سبک و سال گروه را تنظیم می‌کند. */
 .info {
   margin: 0;
+
   text-align: center;
+
   font-size: 0.85em;
   font-weight: bold;
   letter-spacing: 0.12em;
   line-height: 1.5;
+
   color: #ddd;
+
   transition:
     color 0.3s ease,
     text-shadow 0.3s ease;
 }
-
-/* اطلاعات گروه را هنگام Hover قرمز می‌کند. */
 .card:hover .info {
   color: #ff3333;
+
   text-shadow: 0 0 8px rgba(255, 0, 0, 0.45);
 }
 
-/* لینک محصولات مرتبط با گروه را طراحی می‌کند. */
 .Bio {
   display: block;
   width: fit-content;
+
   margin: 1.2em auto 0;
   padding: 0.55em 1.2em;
+
   border: 1px solid rgba(255, 0, 0, 0.45);
   border-radius: 3px;
+
   background: rgba(255, 0, 0, 0.04);
+
   color: #eee;
   text-decoration: none;
   text-align: center;
+
   font-size: 0.85em;
   font-weight: bold;
   letter-spacing: 0.08em;
+
   transition:
     color 0.4s ease,
     background 0.4s ease,
@@ -275,19 +288,22 @@ h1 {
     transform 0.4s ease;
 }
 
-/* افکت Hover لینک محصولات مرتبط. */
 .Bio:hover {
   color: #fff;
+
   background: rgba(255, 0, 0, 0.12);
+
   border-color: red;
+
   text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+
   box-shadow:
     0 0 12px rgba(255, 0, 0, 0.25),
     inset 0 0 10px rgba(255, 0, 0, 0.08);
+
   transform: translateY(-2px);
 }
 
-/* هدر ثابت و دارای خط نور قرمز پایین. */
 .main-header {
   width: 100%;
   padding: 20px 0px;
@@ -307,7 +323,6 @@ h1 {
   animation: headerGlow 5s ease;
 }
 
-/* انیمیشن درخشش اولیه هدر. */
 @keyframes headerGlow {
   0% {
     box-shadow: 0 0 0px red;
@@ -320,15 +335,12 @@ h1 {
   }
 }
 
-/* چینش لینک‌های منوی اصلی. */
 .nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
 }
-
-/* ظاهر لینک‌های منوی اصلی. */
 .nav a {
   color: snow;
   margin: 0 25px;
@@ -340,22 +352,18 @@ h1 {
     opacity 0.35s ease,
     transform 0.35s ease;
 }
-
-/* افکت Hover لینک‌های منو. */
 .nav a:hover {
   color: red;
   text-shadow: 0 0 8px red;
   transform: translateY(-1px);
 }
 
-/* لینک‌هایی که فعلاً غیرفعال هستند. */
 .nav a.disabled {
   opacity: 0.4;
   pointer-events: none;
   cursor: not-allowed;
 }
 
-/* ظاهر فوتر صفحه اصلی. */
 .main-footer {
   width: 100%;
   padding: 20px 0px;
@@ -367,80 +375,84 @@ h1 {
   opacity: 0.7;
 }
 
-/* متن کپی‌رایت فوتر. */
 .main-footer p {
   color: #bbb;
   font-size: 14px;
 }
 
-/* بخش بزرگ Hero را وسط صفحه قرار می‌دهد. */
 .hero {
   min-height: 650px;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   text-align: center;
+
   position: relative;
   overflow: hidden;
 }
-
-/* انیمیشن ورود محتوای Hero. */
 @keyframes heroEnter {
   from {
     opacity: 0;
+
     transform: translateY(40px);
   }
+
   to {
     opacity: 1;
+
     transform: translateY(0);
   }
 }
 
-/* ظرف داخلی عنوان Hero. */
 .hero-content {
   max-width: 1100px;
   padding: 10px 20px;
+
   animation: heroEnter 1.5s ease forwards;
 }
 
-/* عنوان اصلی Legends In Shadows. */
 .hero-title {
   margin: 0;
+
   font-family: "Death Crow";
   font-size: 90px;
   font-weight: lighter;
+
   letter-spacing: 15px;
   line-height: 0.9;
+
   color: #fff;
+
   text-shadow:
     0 0 8px rgba(255, 60, 60, 0.7),
     0 0 16px rgba(255, 60, 60, 0.35);
 }
 
-/* بخش دوم عنوان Hero را جداگانه تنظیم می‌کند. */
 .hero-title span {
   color: #fff;
+
   font-size: 90px;
+
   margin-left: 18px;
+
   text-shadow:
     0 0 8px rgba(255, 60, 60, 0.7),
     0 0 22px rgba(255, 60, 60, 0.3);
 }
 
-/* فاصله متن زیر عنوان Hero. */
 .hero-subtitle {
   margin: 18px 0 22px;
 }
 
-/* بخش معرفی کوتاه آرشیو. */
+/* ========================= INTRO SECTION ========================= */
 .intro {
   max-width: 800px;
   margin: 0 auto;
   padding: 2.5em 1.5em;
   text-align: center;
 }
-
-/* عنوان بخش معرفی. */
 .intro h2 {
   margin: 0 0 0.6em;
   font-family: "Death Crow";
@@ -453,7 +465,6 @@ h1 {
     0 0 20px rgba(255, 0, 0, 0.5);
 }
 
-/* متن توضیحی بخش معرفی. */
 .intro p {
   margin: 0;
   font-size: 1em;
@@ -463,32 +474,29 @@ h1 {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
   opacity: 1;
 }
+/* ========================= FEATURED LEGENDS ========================= */
 
-/* ظرف اصلی بخش گروه‌های منتخب. */
 .bands-section {
   width: 100%;
   padding: 2em 0 2em;
 }
-
-/* انیمیشن ورود بخش‌های معرفی و گروه‌ها. */
 .intro,
 .bands-section {
   animation: sectionEnter 1s ease both;
 }
 
-/* انیمیشن ورود آرام بخش‌های صفحه. */
 @keyframes sectionEnter {
   from {
     opacity: 0;
     transform: translateY(25px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* عنوان بخش Featured Legends. */
 .bands-section h2 {
   margin: 0;
   text-align: center;
@@ -504,109 +512,94 @@ h1 {
 
 
 /* چیدمان و اندازه‌های صفحه اصلی برای موبایل. */
+/* ریسپانسیو موبایل - چیدمان خودکار، متن‌ها خونا */
 @media (max-width: 600px) {
-  /* فاصله بالای صفحه را با هدر موبایل هماهنگ می‌کند. */
   body {
     padding-top: 105px;
   }
 
-  /* هدر موبایل را جمع‌وجور می‌کند. */
   .main-header {
-    padding: 0.9em 0.5em;
+    padding: 0.9em 0.75em;
   }
 
-  /* منوی موبایل را تمام عرض می‌کند. */
   .nav {
     width: 100%;
-    gap: 0.2em;
+    justify-content: center;
+    gap: 0.35em 0.8em;
   }
 
-  /* اندازه لینک‌های منو را برای موبایل کم می‌کند. */
   .nav a {
-    margin: 0 0.4em;
-    font-size: 0.8em;
+    margin: 0;
+    font-size: 0.9em;
+    letter-spacing: 0.04em;
   }
 
-  /* ارتفاع Hero در موبایل. */
   .hero {
     min-height: 500px;
     padding: 2em 1em 3em;
   }
 
-  /* محتوای Hero را تمام عرض می‌کند. */
   .hero-content {
     width: 100%;
     padding: 0;
   }
 
-  /* عنوان Hero را کوچک‌تر می‌کند. */
   .hero-title {
     font-size: 3em;
     letter-spacing: 0.08em;
     line-height: 1;
   }
 
-  /* بخش دوم عنوان را با صفحه کوچک هماهنگ می‌کند. */
   .hero-title span {
     margin-left: 0.1em;
     font-size: 0.8em;
   }
 
-  /* فاصله و اندازه زیرعنوان موبایل. */
   .hero-subtitle {
     margin: 1em 0 1.3em;
     font-size: 0.95em;
   }
 
-  /* فاصله بخش معرفی در موبایل. */
   .intro {
     padding: 2em 1.2em;
   }
 
-  /* عنوان معرفی در موبایل. */
   .intro h2 {
     font-size: 2.2em;
     letter-spacing: 0.1em;
   }
 
-  /* متن معرفی در موبایل. */
   .intro p {
     font-size: 0.95em;
     line-height: 1.7;
   }
 
-  /* فاصله بخش گروه‌ها در موبایل. */
   .bands-section {
     padding: 1.5em 0 2em;
   }
 
-  /* عنوان گروه‌ها در موبایل. */
   .bands-section h2 {
     font-size: 2em;
     letter-spacing: 0.1em;
   }
 
-  /* کارت‌های گروه را در موبایل تک‌ستونه می‌کند. */
   .gallery {
     grid-template-columns: 1fr;
     gap: 1.5em;
     padding: 0 1em;
   }
 
-  /* اندازه کارت گروه در موبایل. */
   .card {
     min-height: 0;
     padding: 1em;
     border-radius: 5px;
   }
 
-  /* نسبت تصویر گروه در موبایل. */
   .band-img {
     aspect-ratio: 4 / 5;
     object-fit: cover;
   }
 
-  /* متن نقل‌قول در موبایل. */
   .quote {
     margin: 0.9em 0 0.6em;
     font-size: 0.95em;
@@ -614,14 +607,12 @@ h1 {
     letter-spacing: 0.06em;
   }
 
-  /* اطلاعات گروه در موبایل. */
   .info {
     font-size: 0.8em;
     line-height: 1.5;
     letter-spacing: 0.1em;
   }
 
-  /* لینک محصولات مرتبط در موبایل. */
   .Bio {
     margin-top: 1em;
     padding: 0.5em 1em;
@@ -629,13 +620,11 @@ h1 {
     letter-spacing: 0.06em;
   }
 
-  /* فوتر موبایل را جمع‌وجور می‌کند. */
   .main-footer {
     margin-top: 2em;
     padding: 1.2em 1em;
   }
 
-  /* متن فوتر موبایل. */
   .main-footer p {
     margin: 0;
     font-size: 0.75em;

@@ -5,101 +5,70 @@ const products = [
     // شناسه یکتای محصول.
     id: 1,
     // نام محصول.
-    name: "Master Of Puppets",
+    name: "Dean Blunt chain",
     // دسته‌بندی محصول.
-    category: "band-merch",
+    category: "accessories",
     // نام گروه مرتبط با محصول.
-    band: "Metallica",
+    band: "Dean Blunt",
     // نوع محصول.
-    type: "T-Shirt",
+    type: "necklace",
     // قیمت محصول.
-    price: 35,
+    price: null,
     // مسیر تصویر محصول.
-    image: "Images/1.jpeg",
+    image: "Images/products/dean_blunt_chain.jpg",
     // توضیحی که در صفحه محصول نمایش داده می‌شود.
     description:
-      "Classic Metallica 'Master Of Puppets' t-shirt in premium quality. Featuring the iconic album artwork.",
+      "dean blunt chain, made of high-quality stainless steel. Perfect for fans of the artist and those who love unique accessories.",
     // سایزهای قابل انتخاب.
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    sizes: ["X", "XL", "S"],
     // تعداد موجود در انبار.
-    stock: 15,
+    stock: 2,
   },
 
   // محصول شماره ۲.
   {
     id: 2,
-    name: "Vintage Flame",
-    category: "y2k",
+    name: "Aphex Twin chain",
+    category: "accessories",
     // این محصول به گروه خاصی وابسته نیست.
-    band: null,
-    type: "T-Shirt",
-    price: 32,
-    image: "Images/2.jpg",
+    band: "Aphex Twin",
+    type: "necklace",
+    price: null,
+    image: "Images/products/aphex_twin_chain.jpg",
     description:
-      "Y2K inspired vintage flame graphic tee. Perfect for that early 2000s aesthetic.",
-    sizes: ["XS", "S", "M", "L", "XL"],
-    stock: 8,
+      "aphex twin chain, made of high-quality stainless steel. Perfect for fans of the artist and those who love unique accessories.",
+    sizes: ["One size"],
+    stock: null,
   },
 
   // محصول شماره ۳.
   {
     id: 3,
-    name: "Shadow Chain",
+    name: "Cross Chain",
     category: "accessories",
     band: null,
     type: "Chain",
-    price: 18,
-    image: "Images/3.jpg",
+    price: null,
+    image: "Images/products/cross_chain.jpg",
     description:
-      "Heavy-duty stainless steel chain accessory. Classic metal aesthetic for any outfit.",
+      "Elegant cross chain necklace made of stainless steel. A timeless accessory for any outfit.",
     // برای این محصول فقط یک سایز وجود دارد.
     sizes: ["One Size"],
-    stock: 25,
+    stock: null,
   },
-
-  // محصول شماره ۴.
   {
-    id: 4,
-    name: "Blackout Jacket",
-    category: "streetwear",
+    id: 3,
+    name: "Cross Chain",
+    category: "accessories",
     band: null,
-    type: "Jacket",
-    price: 75,
-    image: "Images/4.jpg",
+    type: "Chain",
+    price: null,
+    image: "Images/products/cross_chain.jg",
     description:
-      "Premium black streetwear jacket with metal accents. Comfortable and stylish.",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    stock: 5,
-  },
-
-  // محصول شماره ۵ و محصول موسیقی مرتبط با Metallica.
-  {
-    id: 5,
-    name: "Master Of Puppets Vinyl",
-    category: "music",
-    band: "Metallica",
-    type: "Vinyl",
-    price: 42,
-    image: "Images/5.jpg",
-    description:
-      "Original 'Master Of Puppets' vinyl record. Mint condition collectible.",
+      "Elegant cross chain necklace made of stainless steel. A timeless accessory for any outfit.",
+    // برای این محصول فقط یک سایز وجود دارد.
     sizes: ["One Size"],
-    stock: 3,
-  },
-
-  // محصول شماره ۶ از نوع کلکسیونی.
-  {
-    id: 6,
-    name: "Demon Skull Figure",
-    category: "collectibles",
-    band: null,
-    type: "Figure",
-    price: 55,
-    image: "Images/6.jpeg",
-    description:
-      "Detailed demon skull collectible figure. Perfect for any dark collection.",
-    sizes: ["One Size"],
-    stock: 12,
+    stock: null,
   },
 ];
 
@@ -133,3 +102,109 @@ function searchProducts(query) {
       product.type.toLowerCase().includes(lowerQuery),
   );
 }
+
+// فونت فارسی و استایل متن‌های معمول سایت را اضافه می‌کند.
+(function setupPersianTheme() {
+  // یک استایل داخلی می‌سازد تا به فایل‌های HTML جدید نیاز نباشد.
+  const style = document.createElement("style");
+  style.textContent = `
+    @import url("https://fonts.cdnfonts.com/css/estedad");
+
+    body,
+    body button,
+    body input,
+    body textarea,
+    body select,
+    body p,
+    body a,
+    body li,
+    body label,
+    body span,
+    body small,
+    body h1,
+    body h2,
+    body h3,
+    body h4,
+    body h5,
+    body h6 {
+      font-family: "Estedad", Arial, sans-serif;
+    }
+
+    .hero-title,
+    .shop-title,
+    .brand-name,
+    .footer-brand h3,
+    .quote {
+      font-family: "Death Crow", "Metal Mania", cursive;
+    }
+
+    .product-price,
+    .related-price,
+    .item-price,
+    .item-total,
+    #subtotalAmount,
+    #shippingAmount,
+    #taxAmount,
+    #discountAmount,
+    #totalAmount {
+      font-family: "Estedad", Arial, sans-serif;
+      direction: rtl;
+      unicode-bidi: plaintext;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+// قیمت‌های قابل نمایش را به واحد فان چوق تبدیل می‌کند.
+(function setupChoghCurrency() {
+  // یک عدد را با ظاهر مناسب برای قیمت سایت نمایش می‌دهد.
+  function formatChogh(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return value;
+    const formatted = Number.isInteger(number) ? String(number) : number.toFixed(2);
+    return `${formatted} چوق (تومان)`;
+  }
+
+  // متن‌های صفحه را پیدا می‌کند و دلار را با واحد جدید جایگزین می‌کند.
+  function formatCurrencyText(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+
+    while ((node = walker.nextNode())) {
+      if (node.parentElement?.closest("script, style, noscript")) continue;
+      if (/\$\d+(?:\.\d{1,2})?/.test(node.nodeValue)) nodes.push(node);
+    }
+
+    nodes.forEach((textNode) => {
+      textNode.nodeValue = textNode.nodeValue.replace(/\$(\d+(?:\.\d{1,2})?)/g, (_, value) => formatChogh(value));
+    });
+  }
+
+  // تغییرات بعدی مثل رندر کارت‌ها و محاسبه سبد را هم زیر نظر می‌گیرد.
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE && /\$\d+(?:\.\d{1,2})?/.test(node.nodeValue)) {
+          node.nodeValue = node.nodeValue.replace(/\$(\d+(?:\.\d{1,2})?)/g, (_, value) => formatChogh(value));
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          formatCurrencyText(node);
+        }
+      });
+    });
+  });
+
+  // تبدیل اولیه قیمت‌ها را بعد از آماده شدن DOM انجام می‌دهد.
+  function startCurrencyFormatting() {
+    if (!document.body) return;
+    formatCurrencyText(document.body);
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // اگر این فایل زود اجرا شود، منتظر آماده شدن DOM می‌ماند.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startCurrencyFormatting, { once: true });
+  } else {
+    startCurrencyFormatting();
+  }
+})();

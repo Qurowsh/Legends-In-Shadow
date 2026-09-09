@@ -57,6 +57,80 @@
           <span class="brand-name">NICHERZ</span>
           <!-- نوع فعالیت یا هویت آرشیوی برند. -->
           <small>ARCHIVE</small>
+  <!-- تنظیمات اولیه و فایل‌های مورد نیاز صفحه. -->
+  <head>
+    <!-- پشتیبانی از متن با UTF-8. -->
+    <meta charset="UTF-8" />
+    <!-- تنظیم نمایش مناسب در صفحه‌های مختلف. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- عنوان تب مرورگر. -->
+    <title>Product | NICHERZ</title>
+    <!-- استایل مشترک فروشگاه. -->
+    <link rel="stylesheet" href="style-shop.css" />
+    <!-- استایل مخصوص صفحه محصول. -->
+    <link rel="stylesheet" href="product-detail.css" />
+    <!-- استایل پیام‌های Toast. -->
+    <link rel="stylesheet" href="toast.css" />
+    <!-- فونت اصلی پروژه. -->
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+    <!-- آیکن تب مرورگر. -->
+    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+  </head>
+
+  <body>
+    <!-- پس‌زمینه دود تزئینی صفحه. -->
+    <div class="smoke-background" aria-hidden="true">
+      <!-- لایه اول دود. -->
+      <div class="smoke smoke-one"></div>
+      <!-- لایه دوم دود. -->
+      <div class="smoke smoke-two"></div>
+      <!-- لایه سوم دود. -->
+      <div class="smoke smoke-three"></div>
+    </div>
+
+    <!-- داده محصولات را برای JavaScript آماده می‌کند. -->
+    <script src="products.js"></script>
+    <!-- منطق نمایش پیام‌های کوتاه سایت. -->
+    <script src="toast.js"></script>
+
+    <!-- هدر فروشگاه. -->
+    <header class="shop-header">
+      <!-- محتوای داخلی هدر. -->
+      <div class="shop-header-inner">
+        <!-- بخش لوگو و نام برند. -->
+        <div class="brand-wrap" aria-label="Brand logo">
+          <!-- قاب لوگو. -->
+          <div class="brand-mark">
+            <!-- تصویر لوگوی برند. -->
+            <img src="./Images/logo.jpg" alt="NICHERZ logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;" />
+          </div>
+          <!-- نام و توضیح برند. -->
+          <div class="brand-copy">
+            <!-- نام برند. -->
+            <span class="brand-name">NICHERZ</span>
+            <!-- نوع فعالیت یا هویت آرشیوی برند. -->
+            <small>ARCHIVE</small>
+          </div>
+        </div>
+
+        <!-- منوی اصلی سایت. -->
+        <nav class="header-nav" aria-label="Main navigation">
+          <!-- لینک صفحه اصلی. -->
+          <a href="index.html">HOME</a>
+          <!-- لینک فروشگاه. -->
+          <a href="index-shop.html" class="active-nav">SHOP</a>
+          <!-- لینک بخش گروه‌ها. -->
+          <a href="index.html#gallery">GALLERY</a>
+          <!-- بخش لباس که فعلاً غیرفعال است. -->
+          <a href="#" class="disabled">APPAREL</a>
+          <!-- لینک صفحه تماس. -->
+          <a href="contact.html">CONTACT</a>
+        </nav>
+
+        <!-- بخش عملیات هدر. -->
+        <div class="header-actions">
+          <!-- لینک سبد خرید. -->
+          <a href="cart.html" class="cart-pill">CART (0)</a>
         </div>
       </div>
 
@@ -114,6 +188,27 @@
           <!-- تعداد نظرهای نمونه صفحه. -->
           <span class="review-count">(12 reviews)</span>
         </div>
+          <!-- توضیح محصول به صورت پویا قرار می‌گیرد. -->
+          <p id="productDescription" class="detail-description"></p>
+
+          <!-- مشخصات اصلی محصول. -->
+          <div class="detail-specs">
+            <!-- نوع محصول. -->
+            <div class="spec-item">
+              <span class="spec-label">Type:</span>
+              <span id="productType" class="spec-value"></span>
+            </div>
+            <!-- قیمت محصول. -->
+            <div class="spec-item">
+              <span class="spec-label">Price:</span>
+              <span id="productPrice" class="spec-value price-highlight"></span>
+            </div>
+            <!-- موجودی محصول. -->
+            <div class="spec-item">
+              <span class="spec-label">Stock:</span>
+              <span id="productStock" class="spec-value"></span>
+            </div>
+          </div>
 
         <!-- توضیح محصول به صورت پویا قرار می‌گیرد. -->
         <p id="productDescription" class="detail-description"></p>
@@ -134,6 +229,31 @@
           <div class="spec-item">
             <span class="spec-label">Stock:</span>
             <span id="productStock" class="spec-value"></span>
+
+          <!-- دکمه اضافه کردن محصول به سبد. -->
+          <button id="addToCartBtn" class="add-to-cart-btn" type="button">ADD TO CART</butto>
+        </div>
+      </section>
+
+      <!-- بخش محصولات مرتبط. -->
+      <section class="related-products">
+        <!-- عنوان محصولات مرتبط. -->
+        <h2 class="section-title">RELATED PRODUCTS</h2>
+        <!-- JavaScript کارت‌های مرتبط را اینجا قرار می‌دهد. -->
+        <div class="related-grid" id="relatedProductsGrid"></div>
+      </section>
+    </main>
+
+    <!-- فوتر مشترک سایت. -->
+    <footer class="shop-footer">
+      <!-- ستون‌های اطلاعاتی فوتر. -->
+      <div class="footer-grid">
+        <!-- معرفی برند. -->
+        <div class="footer-brand">
+          <span class="footer-logo">N</span>
+          <div>
+            <h3>NICHERZ</h3>
+            <p>Curated chaos for the loudest souls.</p>
           </div>
         </div>
 
