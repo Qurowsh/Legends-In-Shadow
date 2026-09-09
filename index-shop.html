@@ -21,12 +21,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
   <!-- تصویر لوگو را به عنوان آیکن تب مرورگر تعیین می‌کند. -->
   <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+  <link rel="stylesheet" href="auth.css">
 </head>
 
 <body>
-  <script src="toast.js"></script>
-  <!-- منطق نمایش پیام‌های کوتاه سایت را فعال می‌کند. -->
-  <script type="module" src="shop.js"></script>
 
   <!-- لایه‌های دود تزئینی پس‌زمینه که برای کاربر قابل خواندن نیستند. -->
   <div class="smoke-background" aria-hidden="true">
@@ -71,6 +69,7 @@
         <a href="#" class="disabled">APPAREL</a>
         <!-- لینک صفحه تماس. -->
         <a href="contact.html">CONTACT</a>
+        <div id="auth-nav" class="auth-nav"></div>
       </nav>
 
       <!-- عملیات سمت راست هدر. -->
@@ -173,6 +172,10 @@
   </footer>
 
   <!-- منطق فیلتر و نمایش محصولات را اجرا می‌کند. -->
+  <script src="toast.js"></script>
+  <!-- منطق نمایش پیام‌های کوتاه سایت را فعال می‌کند. -->
+  <script type="module" src="shop.js"></script>
+  <script type="module" src="header-auth.js"></script>
 </body>
 
 </html>

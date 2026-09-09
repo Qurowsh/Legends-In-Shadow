@@ -63,7 +63,7 @@ body::before{ content: ""; position: fixed; inset: 0; background: radial-gradien
 /* این بخش .brand-mark, .footer-logo را تنظیم می‌کند. */
 .brand-mark, .footer-logo{ position: relative; display: grid; place-items: center; width: 2.2em; height: 2.2em; border: 1px solid rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 1.1em; letter-spacing: 0.08em; overflow: hidden; box-shadow: 0 0 20px rgba(255, 255, 255, 0.08); }
 /* این بخش .brand-mark::before, .footer-logo::before, .cart-pill::before را تنظیم می‌کند. */
-.brand-mark::before, .footer-logo::before, .cart-pill::before{ content: ""; position: absolute; inset: -30%; background: linear-gradient( 120deg, transparent 35%, rgba(255, 255, 255, 0.45) 50%, transparent 65% ); transform: translateX(-120%) rotate(14deg); animation: shimmer 4s ease-in-out infinite; }
+/* .brand-mark::before, .footer-logo::before, .cart-pill::before{ content: ""; position: absolute; inset: -30%; background: linear-gradient( 120deg, transparent 35%, rgba(255, 255, 255, 0.45) 50%, transparent 65% ); transform: translateX(-120%) rotate(14deg); animation: shimmer 4s ease-in-out infinite; } */
 /* این بخش .brand-copy را تنظیم می‌کند. */
 .brand-copy{ display: flex; flex-direction: column; line-height: 1; }
 /* این بخش .brand-name, .footer-brand h3 را تنظیم می‌کند. */

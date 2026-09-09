@@ -500,6 +500,557 @@
   color: #fff;
 }
 
+.cart-item-image {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+/* =========================================
+   CART ITEM ACTIONS
+========================================= */
+
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-left: auto;
+}
+
+/* =========================================
+   QUANTITY CONTROLS
+========================================= */
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-btn {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.quantity-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.quantity-btn:active {
+    transform: scale(0.92);
+}
+
+/* =========================================
+   QUANTITY NUMBER
+========================================= */
+
+.quantity {
+    min-width: 28px;
+
+    text-align: center;
+
+    color: #fff;
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* =========================================
+   ITEM TOTAL
+========================================= */
+
+.cart-item-total {
+    min-width: 130px;
+
+    color: #fff;
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+
+    text-align: right;
+    direction: rtl;
+}
+
+/* =========================================
+   REMOVE BUTTON
+========================================= */
+
+.remove-item {
+    border: 0;
+    background: transparent;
+
+    padding: 6px 0;
+
+    color: rgba(255, 255, 255, 0.55);
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.remove-item:hover {
+    color: #fff;
+}
+
+.remove-item:active {
+    transform: scale(0.95);
+}
+
+/* =========================================
+   ITEM INFO
+========================================= */
+
+.cart-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cart-item-name {
+    margin: 0 0 8px;
+
+    color: #fff;
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.cart-item-size {
+    margin-bottom: 8px;
+
+    color: rgba(255, 255, 255, 0.55);
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 12px;
+}
+
+.cart-item-price {
+    color: rgba(255, 255, 255, 0.8);
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+
+    direction: rtl;
+    text-align: left;
+}
+
+/* =========================================
+   CART ITEM
+========================================= */
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    width: 100%;
+    padding: 18px 0;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================
+   IMAGE
+========================================= */
+
+.cart-item-image {
+    width: 120px;
+    height: 120px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.no-image {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: rgba(255, 255, 255, 0.3);
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 11px;
+}
+a{
+    margin: 0 0 0.5em;
+  font-family: "Metal Mania", cursive;
+  font-size: 1em;
+  letter-spacing: 0.1em;
+  font-weight: normal;
+  color: #fff;
+
+}
+/* =========================================
+   STOCK LIMIT POPUP
+========================================= */
+
+#stockPopup {
+    position: fixed;
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    visibility: hidden;
+    opacity: 0;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+#stockPopup.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/* =========================================
+   BACKDROP
+========================================= */
+
+.stock-popup-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255, 255, 255, 0.05),
+            rgba(0, 0, 0, 0.88)
+        );
+
+    backdrop-filter: blur(8px);
+}
+
+
+/* =========================================
+   POPUP
+========================================= */
+
+.stock-popup {
+    position: relative;
+
+    width: min(420px, 100%);
+
+    padding: 34px 30px 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(35, 35, 35, 0.98),
+            rgba(10, 10, 10, 0.98)
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.16);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+    text-align: center;
+
+    transform:
+        translateY(20px)
+        scale(0.96);
+
+    transition:
+        transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#stockPopup.show .stock-popup {
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* =========================================
+   CLOSE
+========================================= */
+
+.stock-popup-close {
+    position: absolute;
+
+    top: 12px;
+    right: 14px;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: rgba(255, 255, 255, 0.45);
+
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    font-weight: 300;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.stock-popup-close:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+
+/* =========================================
+   ICON
+========================================= */
+
+.stock-popup-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.12),
+            rgba(255, 255, 255, 0.02)
+        );
+
+    color: #fff;
+
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    font-weight: 700;
+
+    box-shadow:
+        0 0 30px rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================================
+   TEXT
+========================================= */
+
+.stock-popup-content {
+    font-family: "Vazirmatn", sans-serif;
+}
+
+.stock-popup-label {
+    margin-bottom: 8px;
+
+    color: rgba(255, 255, 255, 0.4);
+
+    font-family: "Metal Mania", cursive;
+    font-size: 13px;
+
+    letter-spacing: 2px;
+}
+
+.stock-popup h3 {
+    margin: 0 0 12px;
+
+    color: #fff;
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.stock-popup p {
+    margin: 0 auto 25px;
+
+    color: rgba(255, 255, 255, 0.58);
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 14px;
+    line-height: 1.9;
+
+    direction: rtl;
+}
+
+.stock-popup p strong {
+    color: #fff;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   BUTTON
+========================================= */
+
+.stock-popup-ok {
+    width: 100%;
+
+    padding: 12px 20px;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    color: #fff;
+
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.stock-popup-ok:hover {
+    background: rgba(255, 255, 255, 0.16);
+
+    border-color:
+        rgba(255, 255, 255, 0.45);
+}
+
+.stock-popup-ok:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+    .stock-popup {
+        padding: 30px 22px 22px;
+    }
+
+    .stock-popup h3 {
+        font-size: 18px;
+    }
+
+    .stock-popup p {
+        font-size: 13px;
+    }
+}
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .cart-item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .cart-item-image {
+        width: 90px;
+        height: 90px;
+    }
+
+    .cart-item-info {
+        padding-top: 4px;
+    }
+
+    .cart-item-name {
+        font-size: 15px;
+    }
+
+    .cart-item-actions {
+        width: 100%;
+        margin-left: 0;
+
+        justify-content: space-between;
+
+        gap: 12px;
+    }
+
+    .cart-item-total {
+        min-width: auto;
+        font-size: 13px;
+    }
+}
+
 /* انیمیشن ورود کارت‌های سبد. */
 @keyframes slideIn {
   from {

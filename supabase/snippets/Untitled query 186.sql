@@ -1,5 +1,6 @@
-CREATE POLICY "Public can view active products"
-ON public.products
-FOR SELECT
-TO anon, authenticated
-USING (is_active = true);
+select
+    conname,
+    pg_get_constraintdef(oid)
+from pg_constraint
+where conrelid = 'public.orders'::regclass
+  and conname = 'orders_status_check';
