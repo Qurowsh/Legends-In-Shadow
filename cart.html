@@ -21,6 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
   <!-- آیکن تب مرورگر. -->
   <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+  <link rel="stylesheet" href="auth.css">
 </head>
 
 <body>
@@ -65,6 +66,7 @@
         <a href="index.html#gallery">BANDS</a>
         <a href="#" class="disabled">APPAREL</a>
         <a href="contact.html">CONTACT</a>
+        <div id="auth-nav" class="auth-nav"></div>
       </nav>
 
       <!-- عملیات سمت راست هدر. -->
@@ -133,7 +135,7 @@
             <span class="summary-value" id="totalAmount">$0.00</span>
           </div>
           <!-- دکمه شروع فرایند پرداخت که تا آماده شدن سبد غیرفعال است. -->
-          <button class="checkout-btn" id="checkoutBtn" type="button" disabled>PROCEED TO CHECKOUT</button>
+          <button class="checkout-btn" id="checkoutBtn" type="button">PROCEED TO CHECKOUT</button>
           <!-- لینک برگشت به محصولات. -->
           <a href="index-shop.html" class="continue-shopping-link">← Continue Shopping</a>
         </div>
@@ -192,6 +194,7 @@
 
   <!-- منطق سبد خرید را اجرا می‌کند. -->
   <script type="module" src="cart.js"></script>
+  <script type="module" src="header-auth.js"></script>
 </body>
 
 </html>

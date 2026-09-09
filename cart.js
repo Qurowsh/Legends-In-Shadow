@@ -1,48 +1,78 @@
 import { supabase } from "./js/supabase.js";
 
-const cartItemsContainer = document.getElementById("cartItemsContainer");
-const emptyCartMessage = document.getElementById("emptyCartMessage");
-
-const subtotalAmount = document.getElementById("subtotalAmount");
-const shippingAmount = document.getElementById("shippingAmount");
-const taxAmount = document.getElementById("taxAmount");
-
-const discountRow = document.getElementById("discountRow");
-const discountAmount = document.getElementById("discountAmount");
-const totalAmount = document.getElementById("totalAmount");
-
-const checkoutBtn = document.getElementById("checkoutBtn");
-
-const promoInput = document.getElementById("promoInput");
-const promoBtn = document.getElementById("promoBtn");
-
-const cartPill = document.querySelector(".cart-pill");
-
 let products = [];
 let discountRate = 0;
+let currentUser = null;
+let currentUserCart = null;
+let currentDbCartItems = [];
 
-
-// ===============================
-// Helpers
-// ===============================
+/* =========================================================
+   PRICE
+========================================================= */
 
 function formatPrice(value) {
-  return `${Number(value || 0).toLocaleString("fa-IR")} تومان`;
+  const price = Number(value) || 0;
+
+  return `${new Intl.NumberFormat("fa-IR").format(
+    Math.round(price)
+  )} تومان`;
 }
 
 
-function loadCart() {
+/* =========================================================
+   IMAGE
+========================================================= */
+
+function getProductImageUrl(storagePath) {
+  if (!storagePath) {
+    return "";
+  }
+
+  const rawPath = String(storagePath).trim();
+
+  if (!rawPath) {
+    return "";
+  }
+
+  // اگر storage_path خودش URL کامل باشد
+  if (/^https?:\/\//i.test(rawPath)) {
+    return rawPath;
+  }
+
+  // اگر path معمولی داخل bucket باشد
+  let path = rawPath.replace(/^\/+/, "");
+
+  // اگر اسم bucket هم داخل storage_path ذخیره شده باشد
+  if (path.startsWith("product-images/")) {
+    path = path.substring("product-images/".length);
+  }
+
+  const { data } = supabase.storage
+    .from("product-images")
+    .getPublicUrl(path);
+
+  return data?.publicUrl || "";
+}
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+function getGuestCart() {
   try {
-    const cart = JSON.parse(localStorage.getItem("cart"));
+    const cart = JSON.parse(
+      localStorage.getItem("cart") || "[]"
+    );
 
     return Array.isArray(cart) ? cart : [];
-  } catch {
+  } catch (error) {
+    console.error("Failed to read guest cart:", error);
     return [];
   }
 }
 
-
-function saveCart(cart) {
+function saveGuestCart(cart) {
   localStorage.setItem(
     "cart",
     JSON.stringify(cart)
@@ -50,48 +80,30 @@ function saveCart(cart) {
 }
 
 
-function getProductById(productId) {
-  return products.find(
-    product =>
-      String(product.id) === String(productId)
-  );
+/* =========================================================
+   AUTH
+========================================================= */
+
+async function getCurrentUser() {
+  const {
+    data: { user },
+    error
+  } = await supabase.auth.getUser();
+
+  if (error) {
+    console.error("Failed to get current user:", error);
+    return null;
+  }
+
+  return user || null;
 }
 
 
-function getProductQuantity(cart, productId, exceptIndex = -1) {
-  return cart.reduce(
-    (total, item, index) => {
-
-      if (index === exceptIndex) {
-        return total;
-      }
-
-      if (
-        String(item.productId) !==
-        String(productId)
-      ) {
-        return total;
-      }
-
-      return (
-        total +
-        Math.max(
-          0,
-          Number(item.quantity) || 0
-        )
-      );
-    },
-    0
-  );
-}
-
-
-// ===============================
-// Load products from Supabase
-// ===============================
+/* =========================================================
+   LOAD PRODUCTS
+========================================================= */
 
 async function loadProducts() {
-
   const { data, error } = await supabase
     .from("products")
     .select(`
@@ -103,12 +115,10 @@ async function loadProducts() {
             price,
             material,
             is_active,
-
             categories (
                 name,
                 slug
             ),
-
             product_variants (
                 id,
                 size,
@@ -116,1179 +126,1194 @@ async function loadProducts() {
                 price
             ),
             product_images (
-    id,
-    storage_path,
-    alt_text,
-    is_primary,
-    sort_order
-)
+                id,
+                storage_path,
+                alt_text,
+                is_primary,
+                sort_order
+            )
         `)
     .eq("is_active", true);
 
+  if (error) {
+    console.error("Failed to load products:", error);
+    products = [];
+    return;
+  }
+
+  products = (data || []).map(product => {
+    const variants = Array.isArray(product.product_variants)
+      ? product.product_variants
+      : [];
+
+    const images = Array.isArray(product.product_images)
+      ? product.product_images
+      : [];
+
+    const primaryImage =
+      images.find(image => image.is_primary) ||
+      [...images].sort(
+        (a, b) =>
+          Number(a.sort_order || 0) -
+          Number(b.sort_order || 0)
+      )[0];
+
+    const imageUrl = getProductImageUrl(
+      primaryImage?.storage_path
+    );
+
+    const variantStocks = variants.map(
+      variant => Number(variant.stock) || 0
+    );
+
+    const totalStock = variantStocks.reduce(
+      (sum, stock) => sum + stock,
+      0
+    );
+
+    return {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      type: product.type,
+      material: product.material,
+      price: Number(product.price) || 0,
+      stock: totalStock,
+      image: imageUrl,
+      images,
+      variants
+    };
+  });
+}
+
+
+/* =========================================================
+   PRODUCT HELPERS
+========================================================= */
+
+function getProduct(productId) {
+  return products.find(
+    product => Number(product.id) === Number(productId)
+  );
+}
+
+function getProductVariant(product, variantId) {
+  if (!product || !Array.isArray(product.variants)) {
+    return null;
+  }
+
+  return product.variants.find(
+    variant => Number(variant.id) === Number(variantId)
+  );
+}
+
+function getProductPrice(product, variantId = null) {
+  if (!product) {
+    return 0;
+  }
+
+  if (variantId) {
+    const variant = getProductVariant(
+      product,
+      variantId
+    );
+
+    if (
+      variant &&
+      variant.price !== null &&
+      variant.price !== undefined
+    ) {
+      return Number(variant.price) || 0;
+    }
+  }
+
+  return Number(product.price) || 0;
+}
+
+
+/* =========================================================
+   USER CART
+========================================================= */
+
+async function getOrCreateUserCart() {
+  if (!currentUser) {
+    return null;
+  }
+
+  const { data: existingCart, error: fetchError } =
+    await supabase
+      .from("carts")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .order("created_at", {
+        ascending: true
+      })
+      .limit(1)
+      .maybeSingle();
+
+  if (fetchError) {
+    console.error(
+      "Failed to load user cart:",
+      fetchError
+    );
+
+    return null;
+  }
+
+  if (existingCart) {
+    return existingCart;
+  }
+
+  const { data: newCart, error: createError } =
+    await supabase
+      .from("carts")
+      .insert({
+        user_id: currentUser.id
+      })
+      .select()
+      .single();
+
+  if (createError) {
+    console.error(
+      "Failed to create user cart:",
+      createError
+    );
+
+    return null;
+  }
+
+  return newCart;
+}
+
+
+/* =========================================================
+   LOAD USER CART ITEMS
+========================================================= */
+
+async function loadUserCartItems() {
+  currentDbCartItems = [];
+
+  if (!currentUserCart) {
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("cart_items")
+    .select(`
+            id,
+            cart_id,
+            product_variant_id,
+            quantity
+        `)
+    .eq("cart_id", currentUserCart.id);
 
   if (error) {
-
     console.error(
-      "Error loading products:",
+      "Failed to load cart items:",
       error
     );
 
-    cartItemsContainer.innerHTML = `
-            <p>Failed to load products.</p>
-        `;
+    return;
+  }
 
+  currentDbCartItems = data || [];
+}
+
+
+/* =========================================================
+   ADD ITEM TO USER CART
+========================================================= */
+
+async function addVariantToUserCart(
+  variantId,
+  quantity = 1
+) {
+  if (!currentUser || !currentUserCart) {
     return false;
   }
 
+  const numericVariantId = Number(variantId);
+  const numericQuantity = Number(quantity) || 1;
 
-  products = (data || []).map(product => {
+  const existingItem = currentDbCartItems.find(
+    item =>
+      Number(item.product_variant_id) ===
+      numericVariantId
+  );
 
-    const variants =
-      Array.isArray(product.product_variants)
-        ? product.product_variants
-        : [];
+  if (existingItem) {
+    const newQuantity =
+      Number(existingItem.quantity) +
+      numericQuantity;
 
+    const { error } = await supabase
+      .from("cart_items")
+      .update({
+        quantity: newQuantity
+      })
+      .eq("id", existingItem.id)
+      .eq("cart_id", currentUserCart.id);
 
-    const stock =
-      variants.reduce(
-        (total, variant) =>
-          total +
-          Number(variant.stock || 0),
-        0
+    if (error) {
+      console.error(
+        "Failed to update cart item:",
+        error
       );
 
+      return false;
+    }
+  } else {
+    const { error } = await supabase
+      .from("cart_items")
+      .insert({
+        cart_id: currentUserCart.id,
+        product_variant_id: numericVariantId,
+        quantity: numericQuantity
+      });
 
-    /*
-     * اگر variant قیمت داشته باشد
-     * از قیمت variant استفاده می‌کنیم.
-     *
-     * در غیر این صورت قیمت خود product.
-     */
-    const variantPrice =
-      variants[0]?.price != null
-        ? Number(variants[0].price)
-        : Number(product.price);
-    const images =
-      Array.isArray(product.product_images)
-        ? product.product_images
-        : [];
+    if (error) {
+      console.error(
+        "Failed to add cart item:",
+        error
+      );
 
-    const primaryImage =
-      images
-        .filter(image => image.is_primary)
-        .sort(
-          (a, b) =>
-            (a.sort_order || 0) -
-            (b.sort_order || 0)
-        )[0]
-      || images.sort(
-        (a, b) =>
-          (a.sort_order || 0) -
-          (b.sort_order || 0)
-      )[0]
-      || null;
+      return false;
+    }
+  }
 
-
-
-    return {
-
-      id: product.id,
-
-      name: product.name,
-
-      slug: product.slug,
-
-      description:
-        product.description || "",
-
-      type:
-        product.type || "",
-
-      material:
-        product.material || "",
-
-      price:
-        variantPrice,
-
-      stock,
-
-      image: primaryImage?.storage_path || "",
-
-      sizes:
-        variants.map(
-          variant => variant.size
-        )
-    };
-  });
-
+  await loadUserCartItems();
 
   return true;
 }
 
 
-// ===============================
-// Clean cart
-// ===============================
+/* =========================================================
+   UPDATE USER CART ITEM
+========================================================= */
 
-function sanitizeCart(cart) {
+async function updateUserCartItem(
+  itemId,
+  quantity
+) {
+  if (!currentUser || !currentUserCart) {
+    return false;
+  }
 
-  const cleanCart = [];
+  const numericQuantity = Number(quantity);
 
-  cart.forEach(item => {
+  if (numericQuantity <= 0) {
+    return removeUserCartItem(itemId);
+  }
 
-    const product =
-      getProductById(item.productId);
+  const { error } = await supabase
+    .from("cart_items")
+    .update({
+      quantity: numericQuantity
+    })
+    .eq("id", itemId)
+    .eq("cart_id", currentUserCart.id);
 
+  if (error) {
+    console.error(
+      "Failed to update cart item:",
+      error
+    );
 
-    // محصول دیگر در دیتابیس نیست
-    if (!product) {
-      return;
-    }
+    return false;
+  }
 
+  await loadUserCartItems();
 
-    let quantity =
-      Math.floor(
-        Number(item.quantity)
-      );
-
-
-    if (
-      !Number.isFinite(quantity) ||
-      quantity < 1
-    ) {
-      return;
-    }
-
-
-    const used =
-      getProductQuantity(
-        cleanCart,
-        product.id
-      );
-
-
-    const available =
-      Math.max(
-        0,
-        product.stock - used
-      );
-
-
-    if (available < 1) {
-      return;
-    }
-
-
-    cleanCart.push({
-
-      productId:
-        product.id,
-
-      name:
-        product.name,
-
-      size:
-        item.size || null,
-
-      quantity:
-        Math.min(
-          quantity,
-          available
-        ),
-
-      price:
-        product.price,
-
-      image:
-        product.image || ""
-    });
-  });
-
-
-  return cleanCart;
+  return true;
 }
 
 
-// ===============================
-// Render cart
-// ===============================
+/* =========================================================
+   REMOVE USER CART ITEM
+========================================================= */
 
-function renderCart() {
+async function removeUserCartItem(itemId) {
+  if (!currentUser || !currentUserCart) {
+    return false;
+  }
 
-  let cart =
-    sanitizeCart(
-      loadCart()
+  const { error } = await supabase
+    .from("cart_items")
+    .delete()
+    .eq("id", itemId)
+    .eq("cart_id", currentUserCart.id);
+
+  if (error) {
+    console.error(
+      "Failed to remove cart item:",
+      error
     );
 
+    return false;
+  }
 
-  saveCart(cart);
+  await loadUserCartItems();
 
+  return true;
+}
+
+
+/* =========================================================
+   NORMALIZE CART
+========================================================= */
+
+function getCartItemsForDisplay() {
+  if (currentUser) {
+    return currentDbCartItems
+      .map(dbItem => {
+        const product = products.find(
+          item => {
+            if (
+              !Array.isArray(
+                item.variants
+              )
+            ) {
+              return false;
+            }
+
+            return item.variants.some(
+              variant =>
+                Number(variant.id) ===
+                Number(
+                  dbItem.product_variant_id
+                )
+            );
+          }
+        );
+
+        if (!product) {
+          return null;
+        }
+
+        const variant =
+          getProductVariant(
+            product,
+            dbItem.product_variant_id
+          );
+
+        return {
+          cartItemId: dbItem.id,
+          productId: product.id,
+          variantId:
+            dbItem.product_variant_id,
+          quantity:
+            Number(dbItem.quantity) || 1,
+          product,
+          variant,
+          price: getProductPrice(
+            product,
+            dbItem.product_variant_id
+          )
+        };
+      })
+      .filter(Boolean);
+  }
+
+  const guestCart = getGuestCart();
+
+  return guestCart
+    .map(item => {
+      const product = getProduct(
+        item.productId ?? item.id
+      );
+
+      if (!product) {
+        return null;
+      }
+
+      const variantId =
+        item.variantId ??
+        item.product_variant_id ??
+        null;
+
+      const variant = variantId
+        ? getProductVariant(
+          product,
+          variantId
+        )
+        : null;
+
+      return {
+        cartItemId: null,
+        productId: product.id,
+        variantId,
+        quantity:
+          Number(item.quantity) || 1,
+        product,
+        variant,
+        price: getProductPrice(
+          product,
+          variantId
+        )
+      };
+    })
+    .filter(Boolean);
+}
+
+
+/* =========================================================
+   RENDER CART
+========================================================= */
+
+function renderCart() {
+  const cartItemsContainer =
+    document.getElementById(
+      "cartItemsContainer"
+    );
+
+  if (!cartItemsContainer) {
+    return;
+  }
+
+  const cartItems =
+    getCartItemsForDisplay();
 
   cartItemsContainer.innerHTML = "";
 
+  if (cartItems.length === 0) {
+    cartItemsContainer.innerHTML = `
+            <div class="empty-cart">
+                <h2>YOUR CART IS EMPTY</h2>
+                <p>There are no products in your cart.</p>
+                <a href="index-shop.html">
+                    CONTINUE SHOPPING
+                </a>
+            </div>
+        `;
 
-  const isEmpty =
-    cart.length === 0;
-
-
-  if (emptyCartMessage) {
-    emptyCartMessage.hidden =
-      !isEmpty;
-  }
-
-
-  if (checkoutBtn) {
-    checkoutBtn.disabled =
-      isEmpty;
-  }
-
-
-  if (isEmpty) {
-
-    updateTotals();
-    updateCartCount();
+    updateSummary([]);
+    updateCartCount(0);
 
     return;
   }
 
+  cartItems.forEach(item => {
+    const product = item.product;
 
-  cart.forEach(
-    (item, index) => {
+    const itemTotal =
+      item.price * item.quantity;
 
-      const product =
-        getProductById(
-          item.productId
-        );
+    const variantSize =
+      item.variant?.size || "One Size";
 
+    const itemElement =
+      document.createElement("div");
 
-      if (!product) {
-        return;
+    itemElement.className = "cart-item";
+
+    itemElement.innerHTML = `
+            <div class="cart-item-image">
+                ${product.image
+        ? `
+                            <img
+                                src="${product.image}"
+                                alt="${escapeHtml(
+          product.name
+        )}"
+                                loading="lazy"
+                                onerror="this.style.display='none';"
+                            >
+                        `
+        : `
+                            <div class="no-image">
+                                NO IMAGE
+                            </div>
+                        `
       }
+            </div>
 
+            <div class="cart-item-info">
+                <h3 class="cart-item-name">
+                    ${escapeHtml(product.name)}
+                </h3>
 
-      const itemTotal =
-        product.price *
-        item.quantity;
+                <div class="cart-item-size">
+                    SIZE: ${escapeHtml(
+        String(variantSize)
+      )}
+                </div>
 
+                <div class="cart-item-price">
+                    ${formatPrice(item.price)}
+                </div>
+            </div>
 
-      const stock =
-        product.stock;
+            <div class="cart-item-actions">
 
+                <div class="quantity-controls">
 
-      const otherQuantity =
-        getProductQuantity(
-          cart,
-          product.id,
-          index
-        );
+                    <button
+                        type="button"
+                        class="quantity-btn decrease-btn"
+                        aria-label="Decrease quantity"
+                    >
+                        −
+                    </button>
 
+                    <span class="quantity">
+                        ${item.quantity}
+                    </span>
 
-      const canIncrease =
-        otherQuantity +
-        item.quantity <
-        stock;
+                    <button
+                        type="button"
+                        class="quantity-btn increase-btn"
+                        aria-label="Increase quantity"
+                    >
+                        +
+                    </button>
 
+                </div>
 
-      // =========================
-      // Main item
-      // =========================
+                <div class="cart-item-total">
+                    ${formatPrice(itemTotal)}
+                </div>
 
-      const itemDiv =
-        document.createElement(
-          "article"
-        );
+                <button
+                    type="button"
+                    class="remove-item"
+                >
+                    REMOVE
+                </button>
 
-      itemDiv.className =
-        "cart-item";
+            </div>
+        `;
 
+    const decreaseBtn =
+      itemElement.querySelector(
+        ".decrease-btn"
+      );
 
-      // =========================
-      // Image
-      // =========================
+    const increaseBtn =
+      itemElement.querySelector(
+        ".increase-btn"
+      );
 
-      const imageWrap =
-        document.createElement(
-          "div"
-        );
+    const removeBtn =
+      itemElement.querySelector(
+        ".remove-item"
+      );
 
-      imageWrap.className =
-        "item-image";
-
-
-      if (product.image) {
-        const image = document.createElement("img");
-
-        image.src = product.image;
-        image.alt = product.imageAlt || product.name;
-
-        image.loading = "lazy";
-        image.decoding = "async";
-
-        image.addEventListener(
-          "error",
-          () => {
-            imageWrap.classList.add("image-error");
-            image.remove();
-          },
-          { once: true }
-        );
-
-        imageWrap.appendChild(image);
-      }
-
-      // =========================
-      // Details
-      // =========================
-
-      const details =
-        document.createElement(
-          "div"
-        );
-
-      details.className =
-        "item-details";
-
-
-      const name =
-        document.createElement(
-          "h3"
-        );
-
-      name.className =
-        "item-name";
-
-      name.textContent =
-        product.name;
-
-
-      const meta =
-        document.createElement(
-          "div"
-        );
-
-      meta.className =
-        "item-meta";
-
-
-      // Size
-
-      if (item.size) {
-
-        const sizeRow =
-          document.createElement(
-            "div"
-          );
-
-        sizeRow.className =
-          "item-meta-row";
-
-
-        const sizeLabel =
-          document.createElement(
-            "span"
-          );
-
-        sizeLabel.className =
-          "item-meta-label";
-
-        sizeLabel.textContent =
-          "Size:";
-
-
-        const sizeValue =
-          document.createElement(
-            "span"
-          );
-
-        sizeValue.className =
-          "item-meta-value";
-
-        sizeValue.textContent =
-          item.size;
-
-
-        sizeRow.append(
-          sizeLabel,
-          sizeValue
-        );
-
-
-        meta.appendChild(
-          sizeRow
+    decreaseBtn.addEventListener(
+      "click",
+      async () => {
+        await changeQuantity(
+          item,
+          -1
         );
       }
+    );
 
-
-      // Price
-
-      const priceRow =
-        document.createElement(
-          "div"
+    increaseBtn.addEventListener(
+      "click",
+      async () => {
+        await changeQuantity(
+          item,
+          1
         );
-
-      priceRow.className =
-        "item-meta-row";
-
-
-      const priceLabel =
-        document.createElement(
-          "span"
-        );
-
-      priceLabel.className =
-        "item-meta-label";
-
-      priceLabel.textContent =
-        "Price:";
-
-
-      const priceValue =
-        document.createElement(
-          "span"
-        );
-
-      priceValue.className =
-        "item-price";
-
-      priceValue.textContent =
-        formatPrice(
-          product.price
-        );
-
-
-      priceRow.append(
-        priceLabel,
-        priceValue
-      );
-
-
-      meta.appendChild(
-        priceRow
-      );
-
-
-      details.append(
-        name,
-        meta
-      );
-
-
-      // =========================
-      // Actions
-      // =========================
-
-      const actions =
-        document.createElement(
-          "div"
-        );
-
-      actions.className =
-        "item-actions";
-
-
-      const total =
-        document.createElement(
-          "div"
-        );
-
-      total.className =
-        "item-total";
-
-      total.textContent =
-        formatPrice(
-          itemTotal
-        );
-
-
-      // =========================
-      // Quantity controls
-      // =========================
-
-      const controls =
-        document.createElement(
-          "div"
-        );
-
-      controls.className =
-        "item-controls";
-
-
-      const qtyControl =
-        document.createElement(
-          "div"
-        );
-
-      qtyControl.className =
-        "qty-control";
-
-
-      // Decrease
-
-      const decrease =
-        document.createElement(
-          "button"
-        );
-
-      decrease.type =
-        "button";
-
-      decrease.className =
-        "qty-decrease";
-
-      decrease.dataset.index =
-        index;
-
-      decrease.textContent =
-        "−";
-
-
-      decrease.setAttribute(
-        "aria-label",
-        `Decrease ${product.name} quantity`
-      );
-
-
-      // Input
-
-      const input =
-        document.createElement(
-          "input"
-        );
-
-      input.type =
-        "number";
-
-      input.className =
-        "qty-input";
-
-      input.dataset.index =
-        index;
-
-      input.value =
-        item.quantity;
-
-      input.min =
-        "1";
-
-      input.max =
-        String(
-          Math.max(
-            1,
-            stock -
-            otherQuantity
-          )
-        );
-
-
-      // Increase
-
-      const increase =
-        document.createElement(
-          "button"
-        );
-
-      increase.type =
-        "button";
-
-      increase.className =
-        "qty-increase";
-
-      increase.dataset.index =
-        index;
-
-      increase.textContent =
-        "+";
-
-
-      increase.disabled =
-        !canIncrease;
-
-
-      increase.setAttribute(
-        "aria-label",
-        `Increase ${product.name} quantity`
-      );
-
-
-      qtyControl.append(
-        decrease,
-        input,
-        increase
-      );
-
-
-      // =========================
-      // Remove
-      // =========================
-
-      const remove =
-        document.createElement(
-          "button"
-        );
-
-      remove.type =
-        "button";
-
-      remove.className =
-        "remove-btn";
-
-      remove.dataset.index =
-        index;
-
-      remove.textContent =
-        "REMOVE";
-
-
-      controls.append(
-        qtyControl,
-        remove
-      );
-
-
-      actions.append(
-        total,
-        controls
-      );
-
-
-      itemDiv.append(
-        imageWrap,
-        details,
-        actions
-      );
-
-
-      cartItemsContainer.appendChild(
-        itemDiv
-      );
-    }
+      }
+    );
+
+    removeBtn.addEventListener(
+      "click",
+      async () => {
+        await removeCartItem(item);
+      }
+    );
+
+    cartItemsContainer.appendChild(
+      itemElement
+    );
+  });
+
+  updateSummary(cartItems);
+
+  updateCartCount(
+    cartItems.reduce(
+      (total, item) =>
+        total + item.quantity,
+      0
+    )
   );
-
-
-  // =========================
-  // Events
-  // =========================
-
-  document
-    .querySelectorAll(".qty-decrease")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          changeQuantity(
-            Number(
-              button.dataset.index
-            ),
-            -1
-          );
-        }
-      );
-    });
-
-
-  document
-    .querySelectorAll(".qty-increase")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          changeQuantity(
-            Number(
-              button.dataset.index
-            ),
-            1
-          );
-        }
-      );
-    });
-
-
-  document
-    .querySelectorAll(".qty-input")
-    .forEach(input => {
-
-      input.addEventListener(
-        "change",
-        () => {
-
-          const index =
-            Number(
-              input.dataset.index
-            );
-
-
-          const cart =
-            loadCart();
-
-
-          const item =
-            cart[index];
-
-
-          if (!item) {
-            return;
-          }
-
-
-          const product =
-            getProductById(
-              item.productId
-            );
-
-
-          if (!product) {
-            renderCart();
-            return;
-          }
-
-
-          const requested =
-            Math.floor(
-              Number(
-                input.value
-              )
-            );
-
-
-          if (
-            !Number.isFinite(
-              requested
-            )
-          ) {
-            renderCart();
-            return;
-          }
-
-
-          const otherQuantity =
-            getProductQuantity(
-              cart,
-              product.id,
-              index
-            );
-
-
-          const max =
-            Math.max(
-              1,
-              product.stock -
-              otherQuantity
-            );
-
-
-          cart[index].quantity =
-            Math.min(
-              Math.max(
-                1,
-                requested
-              ),
-              max
-            );
-
-
-          saveCart(cart);
-
-          renderCart();
-        }
-      );
-    });
-
-
-  document
-    .querySelectorAll(".remove-btn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const index =
-            Number(
-              button.dataset.index
-            );
-
-
-          const cart =
-            loadCart();
-
-
-          if (
-            !Number.isInteger(
-              index
-            ) ||
-            !cart[index]
-          ) {
-            return;
-          }
-
-
-          cart.splice(
-            index,
-            1
-          );
-
-
-          saveCart(cart);
-
-          renderCart();
-        }
-      );
-    });
-
-
-  updateTotals();
-  updateCartCount();
 }
 
 
-// ===============================
-// Quantity
-// ===============================
+/* =========================================================
+   CHANGE QUANTITY
+========================================================= */
 
-function changeQuantity(
-  index,
-  delta
-) {
+async function changeQuantity(item, amount) {
+  const newQuantity =
+    Number(item.quantity) + Number(amount);
 
-  const cart =
-    loadCart();
-
-
-  const item =
-    cart[index];
-
-
-  if (!item) {
+  // حذف وقتی تعداد به صفر می‌رسد
+  if (newQuantity <= 0) {
+    await removeCartItem(item);
     return;
   }
 
+  // فقط هنگام افزایش تعداد، موجودی را بررسی کن
+  if (amount > 0) {
+    const variant = item.variant;
 
-  const product =
-    getProductById(
-      item.productId
+    if (!variant) {
+      console.error(
+        "Product variant not found:",
+        item
+      );
+      return;
+    }
+
+    const stock = Number(variant.stock) || 0;
+
+    console.log(
+      "Stock:",
+      stock,
+      "New quantity:",
+      newQuantity
     );
 
-
-  if (!product) {
-    renderCart();
-    return;
+    if (newQuantity > stock) {
+      showStockPopup(stock);
+      return;
+    }
   }
 
+  // کاربر لاگین کرده
+  if (currentUser) {
+    const success =
+      await updateUserCartItem(
+        item.cartItemId,
+        newQuantity
+      );
 
-  const otherQuantity =
-    getProductQuantity(
-      cart,
-      product.id,
-      index
+    if (!success) {
+      return;
+    }
+  }
+
+  // مهمان
+  else {
+    const cart = getGuestCart();
+
+    const cartItem = cart.find(
+      cartItem => {
+        const productId =
+          cartItem.productId ??
+          cartItem.id;
+
+        const variantId =
+          cartItem.variantId ??
+          cartItem.product_variant_id ??
+          null;
+
+        return (
+          Number(productId) ===
+          Number(item.productId) &&
+          Number(variantId || 0) ===
+          Number(item.variantId || 0)
+        );
+      }
     );
 
+    if (cartItem) {
+      cartItem.quantity = newQuantity;
+      saveGuestCart(cart);
+    }
+  }
 
-  const max =
-    Math.max(
-      1,
-      product.stock -
-      otherQuantity
+  renderCart();
+}
+/* =========================================================
+   REMOVE CART ITEM
+========================================================= */
+
+async function removeCartItem(item) {
+  if (currentUser) {
+    await removeUserCartItem(
+      item.cartItemId
+    );
+  } else {
+    const cart = getGuestCart();
+
+    const newCart = cart.filter(
+      cartItem => {
+        const productId =
+          cartItem.productId ??
+          cartItem.id;
+
+        const variantId =
+          cartItem.variantId ??
+          cartItem.product_variant_id ??
+          null;
+
+        return !(
+          Number(productId) ===
+          Number(item.productId) &&
+          Number(variantId || 0) ===
+          Number(item.variantId || 0)
+        );
+      }
     );
 
-
-  item.quantity =
-    Math.min(
-      max,
-      Math.max(
-        1,
-        (Number(item.quantity) || 1) +
-        delta
-      )
-    );
-
-
-  saveCart(cart);
+    saveGuestCart(newCart);
+  }
 
   renderCart();
 }
 
 
-// ===============================
-// Totals
-// ===============================
+/* =========================================================
+   SUMMARY
+========================================================= */
 
-function updateTotals() {
-
-  const cart =
-    sanitizeCart(
-      loadCart()
+function updateSummary(cartItems) {
+  const subtotalAmount =
+    document.getElementById(
+      "subtotalAmount"
     );
 
-
-  const subtotal =
-    cart.reduce(
-      (sum, item) => {
-
-        const product =
-          getProductById(
-            item.productId
-          );
-
-
-        if (!product) {
-          return sum;
-        }
-
-
-        return (
-          sum +
-          product.price *
-          item.quantity
-        );
-      },
-      0
+  const shippingAmount =
+    document.getElementById(
+      "shippingAmount"
     );
 
+  const taxAmount =
+    document.getElementById(
+      "taxAmount"
+    );
+
+  const discountAmount =
+    document.getElementById(
+      "discountAmount"
+    );
+
+  const totalAmount =
+    document.getElementById(
+      "totalAmount"
+    );
+
+  const subtotal = cartItems.reduce(
+    (total, item) =>
+      total +
+      item.price *
+      item.quantity,
+    0
+  );
 
   /*
-   * فعلاً ارسال را رایگان گذاشتیم.
-   *
-   * بعداً می‌توانیم بر اساس
-   * شهر / روش ارسال / مبلغ سفارش
-   * آن را تغییر دهیم.
+   * فعلاً ارسال و مالیات صفر هستند.
+   * بعداً می‌توانیم منطق واقعی آنها را اضافه کنیم.
    */
-
   const shipping = 0;
-
-
-  /*
-   * فعلاً مالیات را صفر گذاشتیم.
-   *
-   * چون برای فروشگاه ایران
-   * نباید منطق مالیات 10٪ دلاری قبلی
-   * را همین‌طوری نگه داریم.
-   */
-
   const tax = 0;
-
 
   const discount =
     subtotal *
-    discountRate;
-
+    (discountRate / 100);
 
   const total =
-    Math.max(
-      0,
-      subtotal +
-      shipping +
-      tax -
-      discount
-    );
+    subtotal +
+    shipping +
+    tax -
+    discount;
 
+  if (subtotalAmount) {
+    subtotalAmount.textContent =
+      formatPrice(subtotal);
+  }
 
-  subtotalAmount.textContent =
-    formatPrice(
-      subtotal
-    );
+  if (shippingAmount) {
+    shippingAmount.textContent =
+      formatPrice(shipping);
+  }
 
+  if (taxAmount) {
+    taxAmount.textContent =
+      formatPrice(tax);
+  }
 
-  shippingAmount.textContent =
-    shipping === 0
-      ? "رایگان"
-      : formatPrice(
-        shipping
+  if (discountAmount) {
+    discountAmount.textContent =
+      discount > 0
+        ? `-${formatPrice(discount)}`
+        : formatPrice(0);
+  }
+
+  if (totalAmount) {
+    totalAmount.textContent =
+      formatPrice(
+        Math.max(0, total)
       );
-
-
-  taxAmount.textContent =
-    formatPrice(
-      tax
-    );
-
-
-  discountAmount.textContent =
-    `-${formatPrice(
-      discount
-    )}`;
-
-
-  discountRow.hidden =
-    discount === 0;
-
-
-  totalAmount.textContent =
-    formatPrice(
-      total
-    );
-}
-
-
-// ===============================
-// Cart count
-// ===============================
-
-function updateCartCount() {
-
-  const cart =
-    sanitizeCart(
-      loadCart()
-    );
-
-
-  const totalItems =
-    cart.reduce(
-      (sum, item) =>
-        sum +
-        Math.max(
-          0,
-          Number(item.quantity) || 0
-        ),
-      0
-    );
-
-
-  if (cartPill) {
-
-    cartPill.textContent =
-      `CART (${totalItems})`;
   }
 }
 
 
-// ===============================
-// Checkout
-// ===============================
+/* =========================================================
+   CART COUNT
+========================================================= */
 
-if (checkoutBtn) {
+async function updateCartCount(
+  forcedCount = null
+) {
+  const cartCountElements =
+    document.querySelectorAll(
+      "[data-cart-count], .cart-count"
+    );
 
-  checkoutBtn.addEventListener(
-    "click",
-    () => {
+  let count = forcedCount;
 
-      const cart =
-        sanitizeCart(
-          loadCart()
-        );
-
-
-      if (cart.length === 0) {
-
-        if (
-          typeof showWarning ===
-          "function"
-        ) {
-          showWarning(
-            "Your cart is empty.",
-            "⚠ Cart Empty"
-          );
-        }
-
-        return;
-      }
-
-
-      if (
-        typeof showInfo ===
-        "function"
-      ) {
-
-        showInfo(
-          "Checkout is not connected yet.",
-          "ⓘ Checkout"
-        );
-      }
-    }
-  );
-}
-
-
-// ===============================
-// Promo code
-// ===============================
-
-if (promoBtn) {
-
-  promoBtn.addEventListener(
-    "click",
-    () => {
-
-      const promoCode =
-        promoInput.value
-          .trim()
-          .toUpperCase();
-
-
-      if (!promoCode) {
-
-        showInfo(
-          "Please enter a promo code.",
-          "ⓘ Code Required"
-        );
-
-        return;
-      }
-
-
-      /*
-       * فعلاً برای تست frontend
-       * این کد را نگه می‌داریم.
-       *
-       * بعداً باید promo_codes
-       * را از Supabase بخوانیم.
-       */
-
-      if (
-        promoCode ===
-        "LEGEND20"
-      ) {
-
-        discountRate =
-          0.20;
-
-
-        promoInput.value =
-          "";
-
-
-        updateTotals();
-
-
-        showSuccess(
-          "20% discount applied.",
-          "✓ Promo Applied"
-        );
-
-
-        return;
-      }
-
-
-      showError(
-        "That promo code is not valid.",
-        "✕ Invalid Code"
+  if (count === null) {
+    if (currentUser) {
+      count = currentDbCartItems.reduce(
+        (total, item) =>
+          total +
+          (Number(item.quantity) || 0),
+        0
+      );
+    } else {
+      count = getGuestCart().reduce(
+        (total, item) =>
+          total +
+          (Number(item.quantity) || 0),
+        0
       );
     }
+  }
+
+  cartCountElements.forEach(
+    element => {
+      element.textContent =
+        String(count);
+    }
   );
 }
 
 
-// ===============================
-// Initial load
-// ===============================
+/* =========================================================
+   PROMO CODE
+========================================================= */
 
-async function initCart() {
+async function applyPromoCode() {
+  const promoInput =
+    document.getElementById(
+      "promoCode"
+    );
 
-  const loaded =
-    await loadProducts();
-
-
-  if (!loaded) {
+  if (!promoInput) {
     return;
   }
 
+  const code =
+    promoInput.value
+      .trim()
+      .toUpperCase();
+
+  if (!code) {
+    return;
+  }
+
+  const { data, error } =
+    await supabase
+      .from("promo_codes")
+      .select("*")
+      .eq("code", code)
+      .eq("is_active", true)
+      .maybeSingle();
+
+  if (error) {
+    console.error(
+      "Failed to check promo code:",
+      error
+    );
+
+    return;
+  }
+
+  if (!data) {
+    discountRate = 0;
+
+    alert("Invalid promo code.");
+
+    renderCart();
+
+    return;
+  }
+
+  const now = new Date();
+
+  if (
+    data.starts_at &&
+    new Date(data.starts_at) > now
+  ) {
+    alert("This promo code is not active yet.");
+    return;
+  }
+
+  if (
+    data.expires_at &&
+    new Date(data.expires_at) < now
+  ) {
+    alert("This promo code has expired.");
+    return;
+  }
+
+  discountRate =
+    Number(data.discount_percent) || 0;
 
   renderCart();
 }
 
+
+/* =========================================================
+   CHECKOUT
+========================================================= */
+
+async function handleCheckout() {
+  if (!currentUser) {
+    window.location.href =
+      "login.html?redirect=cart.html";
+
+    return;
+  }
+
+  if (
+    !currentDbCartItems ||
+    currentDbCartItems.length === 0
+  ) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  /*
+   * فعلاً فقط کاربر را به Checkout می‌فرستیم.
+   * محاسبه نهایی قیمت/موجودی باید در RPC امن
+   * سمت Supabase انجام شود.
+   */
+  window.location.href =
+    "checkout.html";
+}
+
+
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
+
+function setupEventListeners() {
+  const promoButton =
+    document.getElementById(
+      "applyPromoBtn"
+    );
+
+  if (promoButton) {
+    promoButton.addEventListener(
+      "click",
+      applyPromoCode
+    );
+  }
+
+  const promoInput =
+    document.getElementById(
+      "promoCode"
+    );
+
+  if (promoInput) {
+    promoInput.addEventListener(
+      "keydown",
+      event => {
+        if (
+          event.key === "Enter"
+        ) {
+          event.preventDefault();
+          applyPromoCode();
+        }
+      }
+    );
+  }
+
+  const checkoutButton =
+    document.getElementById(
+      "checkoutBtn"
+    );
+
+  if (checkoutButton) {
+    checkoutButton.addEventListener(
+      "click",
+      handleCheckout
+    );
+  }
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+async function initCart() {
+  try {
+    await loadProducts();
+
+    currentUser =
+      await getCurrentUser();
+
+    if (currentUser) {
+      currentUserCart =
+        await getOrCreateUserCart();
+
+      await loadUserCartItems();
+    } else {
+      currentUserCart = null;
+      currentDbCartItems = [];
+    }
+
+    setupEventListeners();
+
+    renderCart();
+
+    await updateCartCount();
+
+  } catch (error) {
+    console.error(
+      "Cart initialization failed:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   AUTH STATE CHANGES
+========================================================= */
+
+supabase.auth.onAuthStateChange(
+  async () => {
+    currentUser =
+      await getCurrentUser();
+
+    if (currentUser) {
+      currentUserCart =
+        await getOrCreateUserCart();
+
+      await loadUserCartItems();
+    } else {
+      currentUserCart = null;
+      currentDbCartItems = [];
+    }
+
+    renderCart();
+    await updateCartCount();
+  }
+);
+function showStockPopup(stock) {
+  let popup = document.getElementById("stockPopup");
+
+  if (!popup) {
+    popup = document.createElement("div");
+
+    popup.id = "stockPopup";
+
+    popup.innerHTML = `
+            <div class="stock-popup-backdrop"></div>
+
+            <div class="stock-popup">
+                <button
+                    type="button"
+                    class="stock-popup-close"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+                <div class="stock-popup-icon">
+                    !
+                </div>
+
+                <div class="stock-popup-content">
+                    <div class="stock-popup-label">
+                        STOCK LIMIT
+                    </div>
+
+                    <h3>موجودی کافی نیست</h3>
+
+                    <p>
+                        فقط
+                        <strong class="stock-popup-number"></strong>
+                        عدد از این محصول موجود است.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="stock-popup-ok"
+                >
+                    متوجه شدم
+                </button>
+            </div>
+        `;
+
+    document.body.appendChild(popup);
+
+    const closePopup = () => {
+      popup.classList.remove("show");
+
+      setTimeout(() => {
+        if (popup && popup.parentNode) {
+          popup.remove();
+        }
+      }, 250);
+    };
+
+    popup
+      .querySelector(".stock-popup-backdrop")
+      .addEventListener("click", closePopup);
+
+    popup
+      .querySelector(".stock-popup-close")
+      .addEventListener("click", closePopup);
+
+    popup
+      .querySelector(".stock-popup-ok")
+      .addEventListener("click", closePopup);
+  }
+
+  const numberElement = popup.querySelector(
+    ".stock-popup-number"
+  );
+
+  numberElement.textContent =
+    new Intl.NumberFormat("fa-IR").format(
+      Number(stock)
+    );
+
+  // اگر Popup قبلاً ساخته شده ولی مخفی شده باشد
+  popup.classList.remove("show");
+
+  requestAnimationFrame(() => {
+    popup.classList.add("show");
+  });
+}
+
+/* =========================================================
+   START
+========================================================= */
 
 initCart();
