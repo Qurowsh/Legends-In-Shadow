@@ -1,291 +1,821 @@
-// ظرف نمایش کارت‌های محصول را پیدا می‌کند.
+import { supabase } from "./js/supabase.js";
+
+let products = [];
+
 const productsContainer = document.getElementById("products-container");
-// همه دکمه‌های دسته‌بندی را پیدا می‌کند.
 const categoryButtons = document.querySelectorAll(".category-btn");
 
-// سبد ذخیره‌شده در مرورگر را می‌خواند.
+
+// ======================================================
+// CART
+// ======================================================
+
 function readCart() {
   try {
-    // داده ذخیره‌شده را از localStorage می‌گیرد.
     const cart = JSON.parse(localStorage.getItem("cart"));
-    // فقط آرایه معتبر را برمی‌گرداند.
     return Array.isArray(cart) ? cart : [];
   } catch {
-    // در صورت خراب بودن داده، سبد خالی در نظر گرفته می‌شود.
     return [];
   }
 }
 
-// سبد را در مرورگر ذخیره می‌کند.
+
 function saveCart(cart) {
   try {
-    // آرایه سبد را به متن JSON تبدیل و ذخیره می‌کند.
     localStorage.setItem("cart", JSON.stringify(cart));
     return true;
   } catch {
-    // اگر مرورگر اجازه ذخیره ندهد، خطا را به صورت false اعلام می‌کند.
     return false;
   }
 }
 
-// تعداد یک محصول مشخص را در سبد حساب می‌کند.
+
 function getProductQuantity(cart, productId) {
   return cart.reduce((total, item) => {
-    // اگر شناسه یکی باشد، تعداد آن محصول را به جمع اضافه می‌کند.
-    return Number(item.productId) === productId ? total + (Number(item.quantity) || 0) : total;
+    return String(item.productId) === String(productId)
+      ? total + (Number(item.quantity) || 0)
+      : total;
   }, 0);
 }
 
-// نام گروه را برای مقایسه یکدست می‌کند.
+
+// ======================================================
+// HELPERS
+// ======================================================
+
 function normalizeBand(value) {
-  return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 }
 
-// فیلترهای موجود در URL را می‌خواند.
+
+// ======================================================
+// URL FILTERS
+// ======================================================
+
 function getRequestedFilters() {
-  // پارامترهای Query String صفحه را می‌گیرد.
   const params = new URLSearchParams(window.location.search);
+
   return {
-    // دسته‌بندی انتخاب‌شده یا all.
     category: params.get("category") || "all",
-    // نام گروه را برای مقایسه نرمال می‌کند.
     band: normalizeBand(params.get("band")),
   };
 }
 
-// محصولات را بر اساس دسته و گروه فیلتر می‌کند.
+
+// ======================================================
+// FILTER PRODUCTS
+// ======================================================
+
 function filterProducts(category, band) {
   return products.filter((product) => {
-    // بررسی می‌کند محصول در دسته انتخاب‌شده باشد.
-    const categoryMatch = category === "all" || product.category === category;
-    // بررسی می‌کند محصول به گروه انتخاب‌شده مربوط باشد.
-    const bandMatch = !band || normalizeBand(product.band) === band;
-    // فقط محصولاتی که هر دو شرط را دارند نگه می‌دارد.
+
+    const categoryMatch =
+      category === "all" ||
+      product.category === category;
+
+    const bandMatch =
+      !band ||
+      normalizeBand(product.band) === band;
+
     return categoryMatch && bandMatch;
   });
 }
 
-// کارت‌های محصولات فیلترشده را روی صفحه می‌سازد.
-function renderProducts(productsToRender) {
-  // نمایش قبلی محصولات را پاک می‌کند.
+
+// ======================================================
+// RENDER PRODUCTS
+// ======================================================
+
+function renderProducts(productsToRender = products) {
+
+  if (!productsContainer) {
+    console.error("products-container not found.");
+    return;
+  }
+
   productsContainer.innerHTML = "";
 
-  // برای ساخت چند کارت بدون رندرهای اضافه، Fragment می‌سازد.
   const fragment = document.createDocumentFragment();
 
-  // برای هر محصول یک کارت ایجاد می‌کند.
+
+  // اگر محصولی وجود نداشت
+  if (!productsToRender.length) {
+
+    const emptyMessage = document.createElement("p");
+
+    emptyMessage.textContent = "No products found.";
+
+    emptyMessage.className = "no-products";
+
+    productsContainer.appendChild(emptyMessage);
+
+    return;
+  }
+
+
   productsToRender.forEach((product) => {
-    // عنصر اصلی کارت را می‌سازد.
+
+    // ==============================================
+    // CARD
+    // ==============================================
+
     const card = document.createElement("article");
+
     card.className = "product-card";
-    // کارت را قابل انتخاب با کیبورد می‌کند.
+
     card.tabIndex = 0;
+
     card.setAttribute("role", "link");
 
-    // ظرف تصویر محصول را می‌سازد.
-    const imageWrap = document.createElement("div");
-    imageWrap.className = "product-image";
-    const image = document.createElement("img");
-    image.src = product.image;
-    image.alt = product.name;
-    image.loading = "lazy";
-    image.decoding = "async";
-    // اگر تصویر خراب شد، منبع آن را حذف می‌کند.
-    image.addEventListener("error", () => image.removeAttribute("src"), { once: true });
-    imageWrap.appendChild(image);
 
-    // ظرف اطلاعات محصول را می‌سازد.
+    // ==============================================
+    // IMAGE
+    // ==============================================
+
+    const imageWrap = document.createElement("div");
+
+    imageWrap.className = "product-image";
+
+
+    // چون فعلاً محصول عکس ندارد
+    // فقط وقتی image وجود داشته باشد img ساخته می‌شود
+
+    if (product.image) {
+
+      const image = document.createElement("img");
+
+      image.src = product.image;
+
+      image.alt = product.name || product.name;
+
+      image.loading = "lazy";
+
+      image.decoding = "async";
+
+
+      image.addEventListener(
+        "error",
+        () => {
+          imageWrap.classList.add("image-error");
+          image.remove();
+        },
+        { once: true }
+      );
+
+
+      imageWrap.appendChild(image);
+    }
+
+
+    // ==============================================
+    // INFO
+    // ==============================================
+
     const info = document.createElement("div");
+
     info.className = "product-info";
 
-    // نام گروه مرتبط با محصول را می‌سازد.
+
+    // ==============================================
+    // BAND
+    // ==============================================
+
     const band = document.createElement("p");
+
     band.className = "product-band";
+
     band.textContent = product.band || "";
 
-    // نام محصول را می‌سازد.
+
+    // ==============================================
+    // NAME
+    // ==============================================
+
     const name = document.createElement("h2");
+
     name.className = "product-name";
+
     name.textContent = product.name;
 
-    // نوع محصول را می‌سازد.
-    const type = document.createElement("p");
-    type.className = "product-type";
-    type.textContent = product.type;
 
-    // بخش پایینی کارت را می‌سازد.
+    // ==============================================
+    // TYPE
+    // ==============================================
+
+    const type = document.createElement("p");
+
+    type.className = "product-type";
+
+    type.textContent = product.type || "";
+
+
+    // ==============================================
+    // BOTTOM
+    // ==============================================
+
     const bottom = document.createElement("div");
+
     bottom.className = "product-bottom";
 
-    // قیمت محصول را می‌سازد.
-    const price = document.createElement("span");
-    price.className = "product-price";
-    price.textContent = `$${product.price}`;
 
-    // دکمه اضافه کردن به سبد را می‌سازد.
+    // ==============================================
+    // PRICE
+    // ==============================================
+
+    const price = document.createElement("span");
+
+    price.className = "product-price";
+
+    price.textContent =
+      `${Number(product.price).toLocaleString("fa-IR")} تومان`;
+
+
+    // ==============================================
+    // ADD TO CART BUTTON
+    // ==============================================
+
     const addCartBtn = document.createElement("button");
+
     addCartBtn.type = "button";
+
     addCartBtn.className = "add-cart";
-    addCartBtn.textContent = product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK";
+
+    addCartBtn.textContent =
+      product.stock > 0
+        ? "ADD TO CART"
+        : "OUT OF STOCK";
+
     addCartBtn.disabled = product.stock <= 0;
 
-    // قیمت و دکمه را داخل بخش پایین قرار می‌دهد.
-    bottom.append(price, addCartBtn);
-    // اطلاعات محصول را کنار هم می‌گذارد.
-    info.append(band, name, type, bottom);
-    // تصویر و اطلاعات را داخل کارت قرار می‌دهد.
-    card.append(imageWrap, info);
 
-    // رفتن به صفحه جزئیات همین محصول را آماده می‌کند.
-    const openDetail = () => {
-      window.location.href = `product-detail.html?id=${encodeURIComponent(product.id)}`;
-    };
+    // ==============================================
+    // ADD TO CART
+    // ==============================================
 
-    // کلیک روی کارت را کنترل می‌کند، مگر اینکه روی دکمه سبد کلیک شده باشد.
-    card.addEventListener("click", (event) => {
-      if (!event.target.closest(".add-cart")) openDetail();
-    });
-
-    // فعال‌سازی کارت با Enter یا Space برای کیبورد.
-    card.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        openDetail();
-      }
-    });
-
-    // کلیک دکمه Add to Cart را کنترل می‌کند.
     addCartBtn.addEventListener("click", (event) => {
-      // جلوی کلیک کارت را می‌گیرد تا صفحه جزئیات باز نشود.
+
       event.stopPropagation();
 
-      // سبد فعلی را می‌خواند.
-      const cart = readCart();
-      // تعداد فعلی محصول را پیدا می‌کند.
-      const currentQuantity = getProductQuantity(cart, product.id);
 
-      // اگر موجودی کامل مصرف شده باشد، پیام هشدار می‌دهد.
+      const cart = readCart();
+
+
+      const currentQuantity =
+        getProductQuantity(cart, product.id);
+
+
+      // Stock limit
       if (currentQuantity >= product.stock) {
-        showWarning("This product is already at its stock limit.", "⚠ Stock Limit");
+
+        if (typeof showWarning === "function") {
+
+          showWarning(
+            "This product is already at its stock limit.",
+            "⚠ Stock Limit"
+          );
+
+        }
+
         return;
       }
 
-      // آیتم موجودی را پیدا می‌کند که سایز مشخصی ندارد.
+
+      // Check existing item
       const existingItem = cart.find(
-        (item) => Number(item.productId) === product.id && !item.size,
+        (item) =>
+          String(item.productId) === String(product.id) &&
+          !item.size
       );
 
-      // اگر آیتم از قبل وجود داشته باشد، تعداد آن را افزایش می‌دهد.
+
       if (existingItem) {
-        existingItem.quantity = Math.min(product.stock, Number(existingItem.quantity) + 1);
+
+        existingItem.quantity = Math.min(
+          product.stock,
+          Number(existingItem.quantity || 0) + 1
+        );
+
       } else {
-        // در غیر این صورت آیتم جدید را به سبد اضافه می‌کند.
+
         cart.push({
           productId: product.id,
           name: product.name,
           quantity: 1,
           price: product.price,
-          image: product.image,
+          image: product.image || "",
         });
       }
 
-      // اگر ذخیره‌سازی سبد شکست خورد، پیام خطا نشان می‌دهد.
+
+      // Save cart
       if (!saveCart(cart)) {
-        showError("Your cart could not be saved in this browser.", "Cart Error");
+
+        if (typeof showError === "function") {
+
+          showError(
+            "Your cart could not be saved in this browser.",
+            "Cart Error"
+          );
+        }
+
         return;
       }
 
-      // موفقیت اضافه شدن محصول را اطلاع می‌دهد.
-      showSuccess(`${product.name} added to cart.`, "✓ Added to Cart");
-      // تعداد سبد را به‌روزرسانی می‌کند.
+
+      // Success message
+      if (typeof showSuccess === "function") {
+
+        showSuccess(
+          `${product.name} added to cart.`,
+          "✓ Added to Cart"
+        );
+      }
+
+
       updateCartCount();
 
-      // متن اصلی دکمه را نگه می‌دارد تا بعداً برگردانده شود.
-      const originalText = addCartBtn.textContent;
+
+      // Button animation
+      const originalText =
+        addCartBtn.textContent;
+
+
       addCartBtn.textContent = "✓ ADDED";
+
       addCartBtn.disabled = true;
-      // بعد از مدت کوتاه، دکمه را به حالت قبلی برمی‌گرداند.
+
+
       window.setTimeout(() => {
+
         addCartBtn.textContent = originalText;
-        addCartBtn.disabled = getProductQuantity(readCart(), product.id) >= product.stock;
+
+        addCartBtn.disabled =
+          getProductQuantity(
+            readCart(),
+            product.id
+          ) >= product.stock;
+
       }, 1500);
+
     });
 
-    // کارت ساخته‌شده را به Fragment اضافه می‌کند.
+
+    // ==============================================
+    // BUILD CARD
+    // ==============================================
+
+    bottom.append(
+      price,
+      addCartBtn
+    );
+
+
+    info.append(
+      band,
+      name,
+      type,
+      bottom
+    );
+
+
+    card.append(
+      imageWrap,
+      info
+    );
+
+
+    // ==============================================
+    // OPEN PRODUCT DETAIL
+    // ==============================================
+
+    const openDetail = () => {
+
+      window.location.href =
+        `product-detail.html?id=${encodeURIComponent(product.id)}`;
+
+    };
+
+
+    card.addEventListener("click", (event) => {
+
+      if (!event.target.closest(".add-cart")) {
+
+        openDetail();
+
+      }
+
+    });
+
+
+    // Keyboard
+    card.addEventListener("keydown", (event) => {
+
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
+
+        event.preventDefault();
+
+        openDetail();
+
+      }
+
+    });
+
+
     fragment.appendChild(card);
+
   });
 
-  // همه کارت‌ها را یک‌جا به صفحه اضافه می‌کند.
+
   productsContainer.appendChild(fragment);
 }
 
-// فیلترهای URL را خوانده و محصولات مناسب را نمایش می‌دهد.
-function applyFiltersFromUrl() {
-  // دسته و گروه درخواست‌شده را از URL می‌گیرد.
-  const { category, band } = getRequestedFilters();
-  // دکمه‌ای که دسته فعلی را نشان می‌دهد پیدا می‌کند.
-  const selectedButton = [...categoryButtons].find(
-    (button) => button.dataset.category === category,
-  );
 
-  // حالت فعال همه دکمه‌ها را پاک می‌کند.
-  categoryButtons.forEach((button) => button.classList.remove("active"));
-  // دکمه مناسب را فعال می‌کند.
-  (selectedButton || categoryButtons[0])?.classList.add("active");
-  // محصولات فیلترشده را نمایش می‌دهد.
-  renderProducts(filterProducts(category === "all" || selectedButton ? category : "all", band));
+// ======================================================
+// APPLY URL FILTER
+// ======================================================
+
+function applyFiltersFromUrl() {
+
+  const {
+    category,
+    band
+  } = getRequestedFilters();
+
+
+  // ==============================================
+  // VALID CATEGORY
+  // ==============================================
+
+  const validCategories = [
+    "all",
+    "necklaces",
+    "pendants"
+  ];
+
+
+  const selectedCategory =
+    validCategories.includes(category)
+      ? category
+      : "all";
+
+
+  // ==============================================
+  // ACTIVE BUTTON
+  // ==============================================
+
+  categoryButtons.forEach((button) => {
+
+    button.classList.toggle(
+      "active",
+      button.dataset.category === selectedCategory
+    );
+
+  });
+
+
+  // ==============================================
+  // FILTER
+  // ==============================================
+
+  const filteredProducts =
+    filterProducts(
+      selectedCategory,
+      band
+    );
+
+
+  renderProducts(filteredProducts);
 }
 
-// برای هر دکمه دسته‌بندی رویداد کلیک ثبت می‌کند.
+
+// ======================================================
+// CATEGORY BUTTONS
+// ======================================================
+
 categoryButtons.forEach((button) => {
-  // نوع دکمه را صریحاً button قرار می‌دهد.
+
   button.type = "button";
+
+
   button.addEventListener("click", () => {
-    // دسته انتخاب‌شده را می‌گیرد.
-    const selectedCategory = button.dataset.category;
-    // حالت فعال قبلی را پاک می‌کند.
-    categoryButtons.forEach((btn) => btn.classList.remove("active"));
-    // دکمه انتخاب‌شده را فعال می‌کند.
+
+    const selectedCategory =
+      button.dataset.category;
+
+
+    // Active button
+    categoryButtons.forEach((btn) => {
+
+      btn.classList.remove("active");
+
+    });
+
+
     button.classList.add("active");
 
-    // URL فعلی را برای به‌روزرسانی فیلترها می‌سازد.
-    const url = new URL(window.location.href);
-    if (selectedCategory === "all") {
-      // برای حالت all پارامتر دسته را حذف می‌کند.
-      url.searchParams.delete("category");
-    } else {
-      // برای دسته دیگر مقدار جدید را در URL قرار می‌دهد.
-      url.searchParams.set("category", selectedCategory);
-    }
-    // URL را بدون Reload صفحه به‌روزرسانی می‌کند.
-    window.history.replaceState({}, "", url);
 
-    // گروه انتخاب‌شده را از URL می‌گیرد.
-    const band = normalizeBand(url.searchParams.get("band"));
-    // محصولات را با دسته و گروه فعلی دوباره فیلتر می‌کند.
-    renderProducts(filterProducts(selectedCategory, band));
+    // Update URL
+    const url =
+      new URL(window.location.href);
+
+
+    if (selectedCategory === "all") {
+
+      url.searchParams.delete("category");
+
+    } else {
+
+      url.searchParams.set(
+        "category",
+        selectedCategory
+      );
+
+    }
+
+
+    window.history.replaceState(
+      {},
+      "",
+      url
+    );
+
+
+    // Current band
+    const band =
+      normalizeBand(
+        url.searchParams.get("band")
+      );
+
+
+    // Render
+    renderProducts(
+      filterProducts(
+        selectedCategory,
+        band
+      )
+    );
+
   });
+
 });
 
-// تعداد کالاهای سبد را در هدر نشان می‌دهد.
+
+// ======================================================
+// CART COUNT
+// ======================================================
+
 function updateCartCount() {
-  // سبد فعلی را می‌خواند.
+
   const cart = readCart();
-  // تعداد تمام واحدهای موجود در سبد را جمع می‌کند.
-  const totalItems = cart.reduce((sum, item) => sum + Math.max(0, Number(item.quantity) || 0), 0);
-  // دکمه سبد را پیدا می‌کند.
-  const cartPill = document.querySelector(".cart-pill");
-  // اگر دکمه وجود داشت، تعداد را داخل آن نمایش می‌دهد.
-  if (cartPill) cartPill.textContent = `CART (${totalItems})`;
+
+
+  const totalItems =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        Math.max(
+          0,
+          Number(item.quantity) || 0
+        ),
+      0
+    );
+
+
+  const cartPill =
+    document.querySelector(".cart-pill");
+
+
+  if (cartPill) {
+
+    cartPill.textContent =
+      `CART (${totalItems})`;
+
+  }
+
 }
 
-// تغییرات سبد از تب یا صفحه دیگری را دنبال می‌کند.
-window.addEventListener("storage", (event) => {
-  // فقط تغییرات کلید cart باعث به‌روزرسانی می‌شوند.
-  if (event.key === "cart") updateCartCount();
-});
 
-// فیلترهای اولیه URL را اعمال می‌کند.
-applyFiltersFromUrl();
-// تعداد اولیه سبد را نمایش می‌دهد.
+// ======================================================
+// STORAGE EVENT
+// ======================================================
+
+window.addEventListener(
+  "storage",
+  (event) => {
+
+    if (event.key === "cart") {
+
+      updateCartCount();
+
+    }
+
+  }
+);
+
+
+// ======================================================
+// LOAD PRODUCTS FROM SUPABASE
+// ======================================================
+
+async function loadProducts() {
+
+  const {
+    data,
+    error
+  } = await supabase
+
+    .from("products")
+
+    .select(`
+            id,
+            name,
+            slug,
+            description,
+            type,
+            price,
+            material,
+            is_active,
+
+            categories (
+                name,
+                slug
+            ),
+
+            product_variants (
+                id,
+                size,
+                stock,
+                price
+            ),
+            product_images (
+            id,
+            storage_path,
+            alt_text,
+            is_primary,
+            sort_order
+        )
+        `)
+
+    .eq("is_active", true);
+
+
+  console.log(
+    "PRODUCTS FROM SUPABASE:",
+    data
+  );
+
+
+  console.log(
+    "SUPABASE ERROR:",
+    error
+  );
+
+
+  // ==============================================
+  // ERROR
+  // ==============================================
+
+  if (error) {
+
+    console.error(
+      "Error loading products:",
+      error
+    );
+
+
+    productsContainer.innerHTML = `
+            <p>Failed to load products.</p>
+        `;
+
+
+    return;
+  }
+
+
+  // ==============================================
+  // MAP DATA
+  // ==============================================
+
+  products =
+    (data || []).map((product) => {
+
+
+      // Category
+      let category = "";
+
+
+      if (Array.isArray(product.categories)) {
+
+        category =
+          product.categories[0]?.slug || "";
+
+      } else {
+
+        category =
+          product.categories?.slug || "";
+
+      }
+
+
+      // Variants
+      const variants =
+        Array.isArray(product.product_variants)
+          ? product.product_variants
+          : [];
+
+
+      // Stock
+      const stock =
+        variants.reduce(
+          (total, variant) =>
+            total +
+            Number(variant.stock || 0),
+          0
+        );
+      const images =
+        Array.isArray(product.product_images)
+          ? product.product_images
+          : [];
+
+      const primaryImage =
+        images
+          .filter(image => image.is_primary)
+          .sort(
+            (a, b) =>
+              (a.sort_order || 0) -
+              (b.sort_order || 0)
+          )[0]
+        || images.sort(
+          (a, b) =>
+            (a.sort_order || 0) -
+            (b.sort_order || 0)
+        )[0]
+        || null;
+
+      return {
+
+        id: product.id,
+
+        name: product.name,
+
+        category: category,
+
+        band: null,
+
+        type: product.type || "",
+
+        price: product.price,
+
+        // فعلاً عکس نداریم
+        image: primaryImage?.storage_path || "",
+
+        description:
+          product.description || "",
+
+        material:
+          product.material || "",
+
+        sizes:
+          variants.map(
+            (variant) =>
+              variant.size
+          ),
+
+        stock: stock,
+
+      };
+
+    });
+
+
+  console.log(
+    "MAPPED PRODUCTS:",
+    products
+  );
+
+
+  // ==============================================
+  // IMPORTANT
+  // ==============================================
+
+  // بعد از اینکه محصولات از Supabase آمدند،
+  // تازه فیلتر URL را اجرا می‌کنیم.
+
+  applyFiltersFromUrl();
+
+}
+
+
+// ======================================================
+// INITIALIZE
+// ======================================================
+
 updateCartCount();
+
+loadProducts();
