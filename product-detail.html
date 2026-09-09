@@ -2,6 +2,61 @@
 <!doctype html>
 <!-- زبان اصلی صفحه را مشخص می‌کند. -->
 <html lang="en">
+<!-- تنظیمات اولیه و فایل‌های مورد نیاز صفحه. -->
+
+<head>
+  <!-- پشتیبانی از متن با UTF-8. -->
+  <meta charset="UTF-8" />
+  <!-- تنظیم نمایش مناسب در صفحه‌های مختلف. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- عنوان تب مرورگر. -->
+  <title>Product | NICHERZ</title>
+  <!-- استایل مشترک فروشگاه. -->
+  <link rel="stylesheet" href="style-shop.css" />
+  <!-- استایل مخصوص صفحه محصول. -->
+  <link rel="stylesheet" href="product-detail.css" />
+  <!-- استایل پیام‌های Toast. -->
+  <link rel="stylesheet" href="toast.css" />
+  <!-- فونت اصلی پروژه. -->
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+  <!-- آیکن تب مرورگر. -->
+  <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+</head>
+
+<body>
+  <!-- پس‌زمینه دود تزئینی صفحه. -->
+  <div class="smoke-background" aria-hidden="true">
+    <!-- لایه اول دود. -->
+    <div class="smoke smoke-one"></div>
+    <!-- لایه دوم دود. -->
+    <div class="smoke smoke-two"></div>
+    <!-- لایه سوم دود. -->
+    <div class="smoke smoke-three"></div>
+  </div>
+
+  <!-- داده محصولات را برای JavaScript آماده می‌کند. -->
+  <script src="products.js"></script>
+  <!-- منطق نمایش پیام‌های کوتاه سایت. -->
+  <script src="toast.js"></script>
+
+  <!-- هدر فروشگاه. -->
+  <header class="shop-header">
+    <!-- محتوای داخلی هدر. -->
+    <div class="shop-header-inner">
+      <!-- بخش لوگو و نام برند. -->
+      <div class="brand-wrap" aria-label="Brand logo">
+        <!-- قاب لوگو. -->
+        <div class="brand-mark">
+          <!-- تصویر لوگوی برند. -->
+          <img src="./Images/logo.jpg" alt="NICHERZ logo"
+            style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;" />
+        </div>
+        <!-- نام و توضیح برند. -->
+        <div class="brand-copy">
+          <!-- نام برند. -->
+          <span class="brand-name">NICHERZ</span>
+          <!-- نوع فعالیت یا هویت آرشیوی برند. -->
+          <small>ARCHIVE</small>
   <!-- تنظیمات اولیه و فایل‌های مورد نیاز صفحه. -->
   <head>
     <!-- پشتیبانی از متن با UTF-8. -->
@@ -78,33 +133,61 @@
           <a href="cart.html" class="cart-pill">CART (0)</a>
         </div>
       </div>
-    </header>
 
-    <!-- محتوای اصلی جزئیات محصول. -->
-    <main class="product-detail-page">
-      <!-- دکمه برگشت به فروشگاه. -->
-      <div class="back-button-wrapper">
-        <a href="index-shop.html" class="back-button">← BACK TO SHOP</a>
+      <!-- منوی اصلی سایت. -->
+      <nav class="header-nav" aria-label="Main navigation">
+        <!-- لینک صفحه اصلی. -->
+        <a href="index.html">HOME</a>
+        <!-- لینک فروشگاه. -->
+        <a href="index-shop.html" class="active-nav">SHOP</a>
+        <!-- لینک بخش گروه‌ها. -->
+        <a href="index.html#gallery">BANDS</a>
+        <!-- بخش لباس که فعلاً غیرفعال است. -->
+        <a href="#" class="disabled">APPAREL</a>
+        <!-- لینک صفحه تماس. -->
+        <a href="contact.html">CONTACT</a>
+      </nav>
+
+      <!-- بخش عملیات هدر. -->
+      <div class="header-actions">
+        <!-- لینک سبد خرید. -->
+        <a href="cart.html" class="cart-pill">CART (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- محتوای اصلی جزئیات محصول. -->
+  <main class="product-detail-page">
+    <!-- دکمه برگشت به فروشگاه. -->
+    <div class="back-button-wrapper">
+      <a href="index-shop.html" class="back-button">← BACK TO SHOP</a>
+    </div>
+
+    <!-- بخش اصلی شامل تصویر و اطلاعات محصول. -->
+    <section class="product-detail-container">
+      <!-- بخش تصویر محصول. -->
+      <div class="product-detail-image">
+        <!-- JavaScript تصویر محصول انتخاب‌شده را اینجا قرار می‌دهد. -->
+        <img id="productImage" src="" alt="Product" class="detail-image" />
       </div>
 
-      <!-- بخش اصلی شامل تصویر و اطلاعات محصول. -->
-      <section class="product-detail-container">
-        <!-- بخش تصویر محصول. -->
-        <div class="product-detail-image">
-          <!-- JavaScript تصویر محصول انتخاب‌شده را اینجا قرار می‌دهد. -->
-          <img id="productImage" src="" alt="Product" class="detail-image" />
+      <!-- بخش اطلاعات محصول. -->
+      <div class="product-detail-info">
+        <!-- نام و گروه محصول. -->
+        <div class="detail-header">
+          <!-- نام محصول به صورت پویا پر می‌شود. -->
+          <h1 id="productName" class="detail-name"></h1>
+          <!-- نام گروه یا برند محصول. -->
+          <p id="productBand" class="detail-band"></p>
         </div>
 
-        <!-- بخش اطلاعات محصول. -->
-        <div class="product-detail-info">
-          <!-- نام و گروه محصول. -->
-          <div class="detail-header">
-            <!-- نام محصول به صورت پویا پر می‌شود. -->
-            <h1 id="productName" class="detail-name"></h1>
-            <!-- نام گروه یا برند محصول. -->
-            <p id="productBand" class="detail-band"></p>
-          </div>
-
+        <!-- امتیاز و تعداد نظرها. -->
+        <div class="detail-rating">
+          <!-- نمایش پنج ستاره. -->
+          <span class="stars">★★★★★</span>
+          <!-- تعداد نظرهای نمونه صفحه. -->
+          <span class="review-count">(12 reviews)</span>
+        </div>
           <!-- توضیح محصول به صورت پویا قرار می‌گیرد. -->
           <p id="productDescription" class="detail-description"></p>
 
@@ -127,25 +210,25 @@
             </div>
           </div>
 
-          <!-- انتخاب سایز محصول. -->
-          <div class="size-section">
-            <span class="section-label">SELECT SIZE</span>
-            <!-- JavaScript گزینه‌های سایز را اینجا می‌سازد. -->
-            <div class="size-options" id="sizeOptions"></div>
-          </div>
+        <!-- توضیح محصول به صورت پویا قرار می‌گیرد. -->
+        <p id="productDescription" class="detail-description"></p>
 
-          <!-- انتخاب تعداد محصول. -->
-          <div class="quantity-section">
-            <span class="section-label">QUANTITY</span>
-            <div class="quantity-selector">
-              <!-- کم کردن تعداد. -->
-              <button class="qty-btn" id="qtyDecrease" type="button" aria-label="Decrease quantity">−</button>
-              <!-- نمایش و ورود تعداد. -->
-              <input type="number" id="qtyInput" class="qty-input" value="1" min="1" inputmode="numeric" aria-label="Quantity" />
-              <!-- زیاد کردن تعداد. -->
-              <button class="qty-btn" id="qtyIncrease" type="button" aria-label="Increase quantity">+</button>
-            </div>
+        <!-- مشخصات اصلی محصول. -->
+        <div class="detail-specs">
+          <!-- نوع محصول. -->
+          <div class="spec-item">
+            <span class="spec-label">Type:</span>
+            <span id="productType" class="spec-value"></span>
           </div>
+          <!-- قیمت محصول. -->
+          <div class="spec-item">
+            <span class="spec-label">Price:</span>
+            <span id="productPrice" class="spec-value price-highlight"></span>
+          </div>
+          <!-- موجودی محصول. -->
+          <div class="spec-item">
+            <span class="spec-label">Stock:</span>
+            <span id="productStock" class="spec-value"></span>
 
           <!-- دکمه اضافه کردن محصول به سبد. -->
           <button id="addToCartBtn" class="add-to-cart-btn" type="button">ADD TO CART</butto>
@@ -174,38 +257,106 @@
           </div>
         </div>
 
-        <!-- لینک‌های فروشگاه. -->
-        <div class="footer-links">
-          <h4>SHOP</h4>
-          <a href="index-shop.html?category=band-merch">Band Merch</a>
-          <a href="index-shop.html?category=streetwear">Streetwear</a>
-          <a href="index-shop.html?category=accessories">Accessories</a>
+        <!-- انتخاب سایز محصول. -->
+        <div class="size-section">
+          <span class="section-label">SELECT SIZE</span>
+          <!-- JavaScript گزینه‌های سایز را اینجا می‌سازد. -->
+          <div class="size-options" id="sizeOptions"></div>
         </div>
 
-        <!-- لینک‌های اطلاعاتی. -->
-        <div class="footer-links">
-          <h4>INFO</h4>
-          <a href="contact.html">About</a>
-          <a href="#">Shipping</a>
-          <a href="#">Support</a>
+        <!-- انتخاب تعداد محصول. -->
+        <div class="quantity-section">
+          <span class="section-label">QUANTITY</span>
+          <div class="quantity-selector">
+            <!-- کم کردن تعداد. -->
+            <button class="qty-btn" id="qtyDecrease" type="button" aria-label="Decrease quantity">−</button>
+            <!-- نمایش و ورود تعداد. -->
+            <input type="number" id="qtyInput" class="qty-input" value="1" min="1" inputmode="numeric"
+              aria-label="Quantity" />
+            <!-- زیاد کردن تعداد. -->
+            <button class="qty-btn" id="qtyIncrease" type="button" aria-label="Increase quantity">+</button>
+          </div>
         </div>
 
-        <!-- لینک شبکه‌های اجتماعی. -->
-        <div class="footer-links">
-          <h4>FOLLOW</h4>
-          <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a>
-          <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <!-- دکمه اضافه کردن محصول به سبد. -->
+        <button id="addToCartBtn" class="add-to-cart-btn" type="button">ADD TO CART</button>
+
+        <!-- اطلاعات تکمیلی خرید. -->
+        <div class="additional-info">
+          <!-- اطلاع‌رسانی درباره ارسال رایگان. -->
+          <div class="info-item">
+            <span class="info-icon">🚚</span>
+            <p>FREE SHIPPING ON ORDERS OVER $50</p>
+          </div>
+          <!-- اطلاع‌رسانی درباره مرجوعی. -->
+          <div class="info-item">
+            <span class="info-icon">↩️</span>
+            <p>30-DAY RETURNS &amp; EXCHANGES</p>
+          </div>
+          <!-- اطلاع‌رسانی درباره پرداخت امن. -->
+          <div class="info-item">
+            <span class="info-icon">🔒</span>
+            <p>SECURE CHECKOUT WITH SSL</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- بخش محصولات مرتبط. -->
+    <section class="related-products">
+      <!-- عنوان محصولات مرتبط. -->
+      <h2 class="section-title">RELATED PRODUCTS</h2>
+      <!-- JavaScript کارت‌های مرتبط را اینجا قرار می‌دهد. -->
+      <div class="related-grid" id="relatedProductsGrid"></div>
+    </section>
+  </main>
+
+  <!-- فوتر مشترک سایت. -->
+  <footer class="shop-footer">
+    <!-- ستون‌های اطلاعاتی فوتر. -->
+    <div class="footer-grid">
+      <!-- معرفی برند. -->
+      <div class="footer-brand">
+        <span class="footer-logo">N</span>
+        <div>
+          <h3>NICHERZ</h3>
+          <p>Curated chaos for the loudest souls.</p>
         </div>
       </div>
 
-      <!-- اطلاعات پایانی فوتر. -->
-      <div class="footer-bottom">
-        <span>© 2026 NICHERZ</span>
-        <span>WEAR THE LEGEND</span>
+      <!-- لینک‌های فروشگاه. -->
+      <div class="footer-links">
+        <h4>SHOP</h4>
+        <a href="index-shop.html?category=band-merch">Band Merch</a>
+        <a href="index-shop.html?category=streetwear">Streetwear</a>
+        <a href="index-shop.html?category=accessories">Accessories</a>
       </div>
-    </footer>
 
-    <!-- منطق صفحه جزئیات محصول. -->
-    <script src="product-detail.js"></script>
-  </body>
+      <!-- لینک‌های اطلاعاتی. -->
+      <div class="footer-links">
+        <h4>INFO</h4>
+        <a href="contact.html">About</a>
+        <a href="#">Shipping</a>
+        <a href="#">Support</a>
+      </div>
+
+      <!-- لینک شبکه‌های اجتماعی. -->
+      <div class="footer-links">
+        <h4>FOLLOW</h4>
+        <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a>
+      </div>
+    </div>
+
+    <!-- اطلاعات پایانی فوتر. -->
+    <div class="footer-bottom">
+      <span>© 2026 NICHERZ</span>
+      <span>WEAR THE LEGEND</span>
+    </div>
+  </footer>
+
+  <!-- منطق صفحه جزئیات محصول. -->
+  <script type="module" src="product-detail.js"></script>
+</body>
+
 </html>

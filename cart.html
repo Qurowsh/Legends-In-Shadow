@@ -2,46 +2,60 @@
 <!doctype html>
 <!-- زبان اصلی صفحه. -->
 <html lang="en">
-  <!-- تنظیمات و فایل‌های مورد نیاز. -->
-  <head>
-    <!-- پشتیبانی از UTF-8. -->
-    <meta charset="UTF-8" />
-    <!-- تنظیم نمایش واکنش‌گرا. -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- عنوان تب مرورگر. -->
-    <title>Shopping Cart | NICHERZ</title>
-    <!-- استایل مشترک فروشگاه. -->
-    <link rel="stylesheet" href="style-shop.css" />
-    <!-- اصلاحات مشترک هدر صفحات داخلی. -->
-    <!-- استایل مخصوص سبد خرید. -->
-    <link rel="stylesheet" href="cart.css" />
-    <!-- استایل پیام‌های Toast. -->
-    <link rel="stylesheet" href="toast.css" />
-    <!-- فونت اصلی پروژه. -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
-      rel="stylesheet"
-    />
-    <!-- آیکن تب مرورگر. -->
-    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
-  </head>
+<!-- تنظیمات و فایل‌های مورد نیاز. -->
 
-  <body>
-    <!-- پس‌زمینه دود تزئینی. -->
-    <div class="smoke-background" aria-hidden="true">
-      <!-- لایه اول دود. -->
-      <div class="smoke smoke-one"></div>
-      <!-- لایه دوم دود. -->
-      <div class="smoke smoke-two"></div>
-      <!-- لایه سوم دود. -->
-      <div class="smoke smoke-three"></div>
-    </div>
+<head>
+  <!-- پشتیبانی از UTF-8. -->
+  <meta charset="UTF-8" />
+  <!-- تنظیم نمایش واکنش‌گرا. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- عنوان تب مرورگر. -->
+  <title>Shopping Cart | NICHERZ</title>
+  <!-- استایل مشترک فروشگاه. -->
+  <link rel="stylesheet" href="style-shop.css" />
+  <!-- استایل مخصوص سبد خرید. -->
+  <link rel="stylesheet" href="cart.css" />
+  <!-- استایل پیام‌های Toast. -->
+  <link rel="stylesheet" href="toast.css" />
+  <!-- فونت اصلی پروژه. -->
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+  <!-- آیکن تب مرورگر. -->
+  <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+  <link rel="stylesheet" href="auth.css">
+</head>
 
-    <!-- اطلاعات محصولات برای منطق سبد خرید. -->
-    <script src="products.js"></script>
-    <!-- سیستم پیام‌های کوتاه سایت. -->
-    <script src="toast.js"></script>
+<body>
+  <!-- پس‌زمینه دود تزئینی. -->
+  <div class="smoke-background" aria-hidden="true">
+    <!-- لایه اول دود. -->
+    <div class="smoke smoke-one"></div>
+    <!-- لایه دوم دود. -->
+    <div class="smoke smoke-two"></div>
+    <!-- لایه سوم دود. -->
+    <div class="smoke smoke-three"></div>
+  </div>
 
+  <!-- اطلاعات محصولات برای منطق سبد خرید. -->
+  <script src="products.js"></script>
+  <!-- سیستم پیام‌های کوتاه سایت. -->
+  <script src="toast.js"></script>
+
+  <!-- هدر فروشگاه. -->
+  <header class="shop-header">
+    <!-- محتوای داخلی هدر. -->
+    <div class="shop-header-inner">
+      <!-- لوگو و نام برند. -->
+      <div class="brand-wrap" aria-label="Brand logo">
+        <div class="brand-mark">
+          <!-- تصویر لوگوی برند. -->
+          <img src="./Images/logo.jpg" alt="NICHERZ logo"
+            style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;" />
+        </div>
+        <div class="brand-copy">
+          <!-- نام برند. -->
+          <span class="brand-name">NICHERZ</span>
+          <!-- عنوان آرشیو. -->
+          <small>ARCHIVE</small>
     <!-- هدر فروشگاه. -->
     <header class="shop-header">
       <!-- محتوای داخلی هدر. -->
@@ -83,23 +97,59 @@
           <a href="cart.html" class="cart-pill" aria-current="page">CART (0)</a>
         </div>
       </div>
-    </header>
 
-    <!-- محتوای اصلی سبد خرید. -->
-    <main class="cart-page">
-      <!-- عنوان و توضیح کوتاه سبد خرید. -->
-      <div class="cart-header">
-        <h1 class="cart-title">YOUR CART</h1>
-        <p class="cart-subtitle">Review your items before checkout</p>
+      <!-- منوی اصلی. -->
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="index.html">HOME</a>
+        <a href="index-shop.html">SHOP</a>
+        <a href="index.html#gallery">BANDS</a>
+        <a href="#" class="disabled">APPAREL</a>
+        <a href="contact.html">CONTACT</a>
+        <div id="auth-nav" class="auth-nav"></div>
+      </nav>
+
+      <!-- عملیات سمت راست هدر. -->
+      <div class="header-actions">
+        <!-- لینک سبد خرید و مشخص کردن صفحه فعلی. -->
+        <a href="cart.html" class="cart-pill" aria-current="page">CART (0)</a>
       </div>
+    </div>
+  </header>
 
-      <!-- دو بخش اصلی سبد خرید و خلاصه سفارش. -->
-      <div class="cart-container">
-        <!-- بخش نمایش کالاهای داخل سبد. -->
-        <section class="cart-items-section" aria-label="Cart items">
-          <!-- JavaScript آیتم‌های سبد را اینجا می‌سازد. -->
-          <div id="cartItemsContainer" class="cart-items"></div>
+  <!-- محتوای اصلی سبد خرید. -->
+  <main class="cart-page">
+    <!-- عنوان و توضیح کوتاه سبد خرید. -->
+    <div class="cart-header">
+      <h1 class="cart-title">YOUR CART</h1>
+      <p class="cart-subtitle">Review your items before checkout</p>
+    </div>
 
+    <!-- دو بخش اصلی سبد خرید و خلاصه سفارش. -->
+    <div class="cart-container">
+      <!-- بخش نمایش کالاهای داخل سبد. -->
+      <section class="cart-items-section" aria-label="Cart items">
+        <!-- JavaScript آیتم‌های سبد را اینجا می‌سازد. -->
+        <div id="cartItemsContainer" class="cart-items"></div>
+
+        <!-- پیام زمانی که سبد خالی باشد. -->
+        <div id="emptyCartMessage" class="empty-cart" hidden>
+          <p class="empty-icon" aria-hidden="true">🛒</p>
+          <h2>Your Cart is Empty</h2>
+          <p>Time to discover some legendary gear!</p>
+          <!-- برگشت به فروشگاه. -->
+          <a href="index-shop.html" class="continue-shopping-btn">← CONTINUE SHOPPING</a>
+        </div>
+      </section>
+
+      <!-- بخش خلاصه مبلغ سفارش. -->
+      <section class="cart-summary-section" aria-label="Order summary">
+        <div class="cart-summary">
+          <!-- عنوان خلاصه سفارش. -->
+          <h2 class="summary-title">ORDER SUMMARY</h2>
+          <!-- مبلغ کالاها قبل از هزینه‌های دیگر. -->
+          <div class="summary-row">
+            <span class="summary-label">Subtotal</span>
+            <span class="summary-value" id="subtotalAmount">$0.00</span>
           <!-- پیام زمانی که سبد خالی باشد. -->
           <div id="emptyCartMessage" class="empty-cart" hidden>
             <p class="empty-icon" aria-hidden="true">🛒</p>
@@ -173,36 +223,56 @@
             <!-- دکمه اعمال کد. -->
             <button id="promoBtn" class="promo-btn" type="button">APPLY</button>
           </div>
-        </section>
-      </div>
-    </main>
-
-    <!-- فوتر سایت. -->
-    <footer class="shop-footer">
-      <!-- ستون‌های فوتر. -->
-      <div class="footer-grid">
-        <!-- معرفی برند. -->
-        <div class="footer-brand">
-          <span class="footer-logo">N</span>
-          <div>
-            <h3>NICHERZ</h3>
-            <p>Curated chaos for the loudest souls.</p>
+          <!-- هزینه ارسال. -->
+          <div class="summary-row">
+            <span class="summary-label">Shipping</span>
+            <span class="summary-value" id="shippingAmount">FREE</span>
           </div>
+          <!-- مالیات ده درصدی. -->
+          <div class="summary-row">
+            <span class="summary-label">Tax (10%)</span>
+            <span class="summary-value" id="taxAmount">$0.00</span>
+          </div>
+          <!-- ردیف تخفیف که در حالت عادی مخفی است. -->
+          <div class="summary-row" id="discountRow" hidden>
+            <span class="summary-label">Discount</span>
+            <span class="summary-value" id="discountAmount">-$0.00</span>
+          </div>
+          <!-- جداکننده قبل از مبلغ نهایی. -->
+          <div class="summary-divider"></div>
+          <!-- مبلغ نهایی سفارش. -->
+          <div class="summary-row summary-total">
+            <span class="summary-label">TOTAL</span>
+            <span class="summary-value" id="totalAmount">$0.00</span>
+          </div>
+          <!-- دکمه شروع فرایند پرداخت که تا آماده شدن سبد غیرفعال است. -->
+          <button class="checkout-btn" id="checkoutBtn" type="button">PROCEED TO CHECKOUT</button>
+          <!-- لینک برگشت به محصولات. -->
+          <a href="index-shop.html" class="continue-shopping-link">← Continue Shopping</a>
         </div>
-        <!-- لینک‌های فروشگاه. -->
-        <div class="footer-links">
-          <h4>SHOP</h4>
-          <a href="index-shop.html?category=band-merch">Band Merch</a>
-          <a href="index-shop.html?category=streetwear">Streetwear</a>
-          <a href="index-shop.html?category=accessories">Accessories</a>
+
+        <!-- بخش وارد کردن کد تخفیف. -->
+        <div class="promo-section">
+          <!-- ورودی کد تبلیغاتی. -->
+          <input type="text" id="promoInput" class="promo-input" placeholder="Enter promo code" aria-label="Promo code"
+            autocomplete="off" />
+          <!-- دکمه اعمال کد. -->
+          <button id="promoBtn" class="promo-btn" type="button">APPLY</button>
         </div>
-        <!-- لینک‌های اطلاعاتی. -->
-        <div class="footer-links">
-          <h4>INFO</h4>
-          <a href="contact.html">About</a>
-          <a href="#">Shipping</a>
-          <a href="#">Support</a>
-        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- فوتر سایت. -->
+  <footer class="shop-footer">
+    <!-- ستون‌های فوتر. -->
+    <div class="footer-grid">
+      <!-- معرفی برند. -->
+      <div class="footer-brand">
+        <span class="footer-logo">N</span>
+        <div>
+          <h3>NICHERZ</h3>
+          <p>Curated chaos for the loudest souls.</p>
         <!-- لینک شبکه‌های اجتماعی. -->
         <div class="footer-links">
           <h4>FOLLOW</h4>
@@ -220,14 +290,37 @@
           >
         </div>
       </div>
-      <!-- اطلاعات انتهایی فوتر. -->
-      <div class="footer-bottom">
-        <span>© 2026 NICHERZ</span>
-        <span>WEAR THE LEGEND</span>
+      <!-- لینک‌های فروشگاه. -->
+      <div class="footer-links">
+        <h4>SHOP</h4>
+        <a href="index-shop.html?category=band-merch">Band Merch</a>
+        <a href="index-shop.html?category=streetwear">Streetwear</a>
+        <a href="index-shop.html?category=accessories">Accessories</a>
       </div>
-    </footer>
+      <!-- لینک‌های اطلاعاتی. -->
+      <div class="footer-links">
+        <h4>INFO</h4>
+        <a href="contact.html">About</a>
+        <a href="#">Shipping</a>
+        <a href="#">Support</a>
+      </div>
+      <!-- لینک شبکه‌های اجتماعی. -->
+      <div class="footer-links">
+        <h4>FOLLOW</h4>
+        <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a>
+      </div>
+    </div>
+    <!-- اطلاعات انتهایی فوتر. -->
+    <div class="footer-bottom">
+      <span>© 2026 NICHERZ</span>
+      <span>WEAR THE LEGEND</span>
+    </div>
+  </footer>
 
-    <!-- منطق سبد خرید را اجرا می‌کند. -->
-    <script src="cart.js"></script>
-  </body>
+  <!-- منطق سبد خرید را اجرا می‌کند. -->
+  <script type="module" src="cart.js"></script>
+  <script type="module" src="header-auth.js"></script>
+</body>
+
 </html>

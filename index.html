@@ -2,6 +2,27 @@
 <!doctype html>
 <!-- زبان اصلی صفحه را مشخص می‌کند. -->
 <html lang="en">
+<!-- تنظیمات اولیه و فایل‌های مورد نیاز صفحه. -->
+
+<head>
+  <!-- پشتیبانی از UTF-8. -->
+  <meta charset="UTF-8" />
+  <!-- تنظیم نمایش مناسب در مرورگرهای مختلف. -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- تنظیم نمایش واکنش‌گرا در موبایل و دسکتاپ. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- عنوان تب مرورگر. -->
+  <title>NICHERZ</title>
+  <!-- استایل اصلی صفحه را وصل می‌کند. -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- اصلاحات ظاهری پس‌زمینه صفحه را اضافه می‌کند. -->
+  <link rel="stylesheet" href="bands-fixes.css" />
+  <!-- تصویر لوگو را برای آیکن تب مرورگر استفاده می‌کند. -->
+  <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+  <!-- فونت اصلی پروژه را اضافه می‌کند. -->
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="auth.css">
+</head>
   <!-- تنظیمات اولیه و فایل‌های مورد نیاز صفحه. -->
   <head>
     <!-- پشتیبانی از UTF-8. -->
@@ -187,50 +208,71 @@
       </nav>
     </header>
 
-    <!-- محتوای اصلی صفحه. -->
-    <main>
-      <!-- بخش Hero و معرفی اصلی برند. -->
-      <section class="hero">
-        <!-- ظرف عنوان و زیرعنوان Hero. -->
-        <div class="hero-content">
-          <!-- عنوان اصلی سایت. -->
-          <h1 class="hero-title">
-            <!-- بخش اول عنوان. -->
-            LEGENDS
-            <!-- بخش دوم عنوان که جداگانه استایل می‌گیرد. -->
-            <span> IN SHADOWS </span>
-          </h1>
-          <!-- شعار کوتاه سایت. -->
-          <p class="hero-subtitle">Where Metal Becomes A Legend</p>
-        </div>
-      </section>
+<!-- محتوایی که کاربر در صفحه می‌بیند. -->
 
-      <!-- معرفی کوتاه آرشیو متال. -->
-      <section class="intro">
-        <!-- عنوان بخش معرفی. -->
-        <h2>THE METAL ARCHIVE</h2>
-        <!-- توضیح هدف سایت. -->
-        <p>
-          A dark archive dedicated to the legends, stories and sounds that
-          shaped generations.
-        </p>
-      </section>
+<body>
+  <!-- هدر و منوی اصلی سایت. -->
+  <header class="main-header">
+    <!-- منوی جابه‌جایی بین بخش‌های سایت. -->
+    <nav class="nav">
+      <!-- لینک صفحه محصولات. -->
+      <a href="index-shop.html"> Products </a>
+      <!-- لینک رفتن به بخش گروه‌ها. -->
+      <a href="#gallery"> Bands </a>
+      <!-- لینک تماس. -->
+      <a href="contact.html" class=""> Contact </a>
+      <!-- بخش آلبوم که فعلاً غیرفعال است. -->
+      <a href="#" class="disabled"> Albums </a>
+      <div id="auth-nav" class="auth-nav"></div>
+    </nav>
+  </header>
 
-      <!-- بخش گروه‌های منتخب. -->
-      <section class="bands-section" id="gallery">
-        <!-- عنوان بخش گروه‌ها. -->
-        <h2>FEATURED LEGENDS</h2>
-        <!-- JavaScript کارت‌های گروه‌ها را داخل این ظرف قرار می‌دهد. -->
-        <div class="gallery" id="bands-container"></div>
-      </section>
-    </main>
+  <!-- محتوای اصلی صفحه. -->
+  <main>
+    <!-- بخش Hero و معرفی اصلی برند. -->
+    <section class="hero">
+      <!-- ظرف عنوان و زیرعنوان Hero. -->
+      <div class="hero-content">
+        <!-- عنوان اصلی سایت. -->
+        <h1 class="hero-title">
+          <!-- بخش اول عنوان. -->
+          LEGENDS
+          <!-- بخش دوم عنوان که جداگانه استایل می‌گیرد. -->
+          <span> IN SHADOWS </span>
+        </h1>
+        <!-- شعار کوتاه سایت. -->
+        <p class="hero-subtitle">Where Metal Becomes A Legend</p>
+      </div>
+    </section>
 
-    <!-- فوتر صفحه. -->
-    <footer class="main-footer">
-      <!-- متن کپی‌رایت. -->
-      <p>2026 Legends In The Shadows - ALL Rights Reserved</p>
-    </footer>
-    <!-- منطق ساخت کارت‌های گروه را اجرا می‌کند. -->
-    <script src="script.js"></script>
-  </body>
+    <!-- معرفی کوتاه آرشیو متال. -->
+    <section class="intro">
+      <!-- عنوان بخش معرفی. -->
+      <h2>THE METAL ARCHIVE</h2>
+      <!-- توضیح هدف سایت. -->
+      <p>
+        A dark archive dedicated to the legends, stories and sounds that
+        shaped generations.
+      </p>
+    </section>
+
+    <!-- بخش گروه‌های منتخب. -->
+    <section class="bands-section" id="gallery">
+      <!-- عنوان بخش گروه‌ها. -->
+      <h2>FEATURED LEGENDS</h2>
+      <!-- JavaScript کارت‌های گروه‌ها را داخل این ظرف قرار می‌دهد. -->
+      <div class="gallery" id="bands-container"></div>
+    </section>
+  </main>
+
+  <!-- فوتر صفحه. -->
+  <footer class="main-footer">
+    <!-- متن کپی‌رایت. -->
+    <p>2026 Legends In The Shadows - ALL Rights Reserved</p>
+  </footer>
+  <!-- منطق ساخت کارت‌های گروه را اجرا می‌کند. -->
+  <script src="script.js"></script>
+  <script type="module" src="header-auth.js"></script>
+</body>
+
 </html>

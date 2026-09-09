@@ -1,267 +1,1320 @@
-// پارامترهای URL صفحه محصول را می‌خواند.
-const urlParams = new URLSearchParams(window.location.search);
-// شناسه محصول را از URL به عدد تبدیل می‌کند.
-const productId = Number.parseInt(urlParams.get("id"), 10);
-// اگر شناسه معتبر باشد، محصول مربوطه را پیدا می‌کند.
-const product = Number.isInteger(productId) ? getProductById(productId) : null;
+import { supabase } from "./js/supabase.js";
 
-// اگر محصول پیدا نشود، کاربر را به فروشگاه برمی‌گرداند.
-if (!product) {
-  window.location.replace("index-shop.html");
-} else {
-  // عناصر صفحه محصول را برای تغییر محتوای پویا پیدا می‌کند.
-  const productImage = document.getElementById("productImage");
-  const productName = document.getElementById("productName");
-  const productBand = document.getElementById("productBand");
-  const productDescription = document.getElementById("productDescription");
-  const productType = document.getElementById("productType");
-  const productPrice = document.getElementById("productPrice");
-  const productStock = document.getElementById("productStock");
-  const sizeOptions = document.getElementById("sizeOptions");
-  const qtyDecrease = document.getElementById("qtyDecrease");
-  const qtyIncrease = document.getElementById("qtyIncrease");
-  const qtyInput = document.getElementById("qtyInput");
-  const addToCartBtn = document.getElementById("addToCartBtn");
-  const relatedProductsGrid = document.getElementById("relatedProductsGrid");
 
-  // تصویر محصول را قرار می‌دهد و بارگذاری آن را سریع‌تر می‌کند.
-  productImage.src = product.image;
-  productImage.alt = product.name;
-  productImage.loading = "eager";
-  productImage.addEventListener("error", () => productImage.removeAttribute("src"), { once: true });
+// ========================================
+// Get product ID from URL
+// ========================================
 
-  // اطلاعات اصلی محصول را داخل صفحه می‌نویسد.
-  productName.textContent = product.name;
-  productBand.textContent = product.band || "";
-  productBand.hidden = !product.band;
-  productDescription.textContent = product.description;
-  productType.textContent = product.type;
-  productPrice.textContent = `$${product.price}`;
+const urlParams =
+  new URLSearchParams(window.location.search);
 
-  // موجودی را نمایش می‌دهد و در صورت اتمام، دکمه خرید را غیرفعال می‌کند.
-  if (product.stock > 0) {
-    productStock.textContent = `${product.stock} IN STOCK`;
-  } else {
-    productStock.textContent = "OUT OF STOCK";
-    addToCartBtn.disabled = true;
-    addToCartBtn.textContent = "OUT OF STOCK";
-  }
+const productId =
+  Number.parseInt(
+    urlParams.get("id"),
+    10
+  );
 
-  // اگر سایز معتبر وجود نداشته باشد، One Size را به عنوان گزینه پیش‌فرض قرار می‌دهد.
-  const sizes = Array.isArray(product.sizes) && product.sizes.length ? product.sizes : ["One Size"];
-  // اگر فقط یک سایز باشد، همان سایز به صورت خودکار انتخاب می‌شود.
-  let selectedSize = sizes.length === 1 ? sizes[0] : null;
 
-  // برای هر سایز یک دکمه می‌سازد.
-  sizes.forEach((size) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "size-btn";
-    btn.textContent = size;
-    // سایز انتخاب‌شده را از ابتدا فعال می‌کند.
-    if (size === selectedSize) btn.classList.add("selected");
+// ========================================
+// DOM elements
+// ========================================
 
-    // انتخاب سایز با کلیک را مدیریت می‌کند.
-    btn.addEventListener("click", () => {
-      // حالت انتخاب همه دکمه‌ها را پاک می‌کند.
-      sizeOptions.querySelectorAll(".size-btn").forEach((item) => item.classList.remove("selected"));
-      // دکمه فعلی را فعال می‌کند.
-      btn.classList.add("selected");
-      // سایز انتخاب‌شده را ذخیره می‌کند.
-      selectedSize = size;
-    });
+const productImage =
+  document.getElementById("productImage");
 
-    // دکمه سایز را به صفحه اضافه می‌کند.
-    sizeOptions.appendChild(btn);
-  });
+const productName =
+  document.getElementById("productName");
 
-  // حداکثر تعداد را با موجودی محصول هماهنگ می‌کند.
-  qtyInput.max = String(Math.max(1, product.stock));
-  qtyDecrease.type = "button";
-  qtyIncrease.type = "button";
+const productBand =
+  document.getElementById("productBand");
 
-  // مقدار تعداد را بین حداقل یک و موجودی واقعی محدود می‌کند.
-  function setQuantity(value) {
-    const next = Number.parseInt(value, 10);
-    qtyInput.value = String(Number.isFinite(next) ? Math.min(product.stock, Math.max(1, next)) : 1);
-  }
+const productDescription =
+  document.getElementById("productDescription");
 
-  // دکمه کم کردن تعداد را فعال می‌کند.
-  qtyDecrease.addEventListener("click", () => setQuantity(Number(qtyInput.value) - 1));
-  // دکمه زیاد کردن تعداد را فعال می‌کند.
-  qtyIncrease.addEventListener("click", () => setQuantity(Number(qtyInput.value) + 1));
-  // تغییر مستقیم ورودی تعداد را کنترل می‌کند.
-  qtyInput.addEventListener("change", () => setQuantity(qtyInput.value));
+const productType =
+  document.getElementById("productType");
 
-  // سبد ذخیره‌شده را از مرورگر می‌خواند.
-  function readCart() {
-    try {
-      const cart = JSON.parse(localStorage.getItem("cart"));
-      return Array.isArray(cart) ? cart : [];
-    } catch {
-      return [];
-    }
-  }
+const productPrice =
+  document.getElementById("productPrice");
 
-  // سبد جدید را در مرورگر ذخیره می‌کند.
-  function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }
+const productStock =
+  document.getElementById("productStock");
 
-  // تعداد یک محصول مشخص را در سبد جمع می‌کند.
-  function getProductQuantity(cart, productId) {
-    return cart.reduce((total, item) => {
-      return item.productId === productId ? total + (Number(item.quantity) || 0) : total;
-    }, 0);
-  }
+const sizeOptions =
+  document.getElementById("sizeOptions");
 
-  // کلیک دکمه اضافه کردن به سبد را کنترل می‌کند.
-  addToCartBtn.addEventListener("click", () => {
-    // اگر موجودی صفر باشد، خرید انجام نمی‌شود.
-    if (product.stock < 1) return;
+const qtyDecrease =
+  document.getElementById("qtyDecrease");
 
-    // تعداد واردشده را به محدوده موجودی محدود می‌کند.
-    const quantity = Math.min(product.stock, Math.max(1, Number.parseInt(qtyInput.value, 10) || 1));
-    // سبد فعلی را می‌خواند.
-    const cart = readCart();
-    // تعداد فعلی همین محصول را پیدا می‌کند.
-    const currentQuantity = getProductQuantity(cart, product.id);
+const qtyIncrease =
+  document.getElementById("qtyIncrease");
 
-    // اگر مقدار جدید از موجودی عبور کند، هشدار می‌دهد.
-    if (currentQuantity + quantity > product.stock) {
-      showWarning("You cannot add more than the available stock.", "⚠ Stock Limit");
-      return;
-    }
+const qtyInput =
+  document.getElementById("qtyInput");
 
-    // آیتم مشابه با همان محصول و همان سایز را پیدا می‌کند.
-    const existingItem = cart.find(
-      (item) => item.productId === product.id && (item.size || null) === (selectedSize || null),
-    );
+const addToCartBtn =
+  document.getElementById("addToCartBtn");
 
-    // اگر آیتم موجود باشد، تعداد و اطلاعاتش را به‌روزرسانی می‌کند.
-    if (existingItem) {
-      existingItem.quantity += quantity;
-      existingItem.name = product.name;
-      existingItem.price = product.price;
-      existingItem.image = product.image;
-    } else {
-      // اگر آیتم وجود نداشته باشد، یک آیتم جدید به سبد اضافه می‌کند.
-      cart.push({
-        productId: product.id,
-        name: product.name,
-        size: selectedSize,
-        quantity,
-        price: product.price,
-        image: product.image,
-      });
-    }
+const relatedProductsGrid =
+  document.getElementById(
+    "relatedProductsGrid"
+  );
 
-    // سبد به‌روزشده را ذخیره می‌کند.
-    saveCart(cart);
-    // موفقیت اضافه شدن را اطلاع می‌دهد.
-    showSuccess(`${quantity} × ${product.name} added to cart.`, "✓ Added to Cart");
 
-    // متن قبلی دکمه را نگه می‌دارد.
-    const originalText = addToCartBtn.textContent;
-    addToCartBtn.textContent = "✓ ADDED TO CART";
-    addToCartBtn.disabled = true;
-    // بعد از مدت کوتاه دکمه را به حالت مناسب برمی‌گرداند.
-    window.setTimeout(() => {
-      addToCartBtn.textContent = originalText;
-      addToCartBtn.disabled = getProductQuantity(readCart(), product.id) >= product.stock;
-    }, 1500);
+// ========================================
+// Helpers
+// ========================================
 
-    // تعداد سبد در هدر را به‌روزرسانی می‌کند.
-    updateCartCount();
-  });
+function formatPrice(value) {
 
-  // محصولات مرتبط را پیدا و نمایش می‌دهد.
-  function renderRelatedProducts() {
-    // اگر محصول گروه داشته باشد، ابتدا محصولات همان گروه را پیدا می‌کند.
-    let relatedProducts = product.band
-      ? products.filter((item) => item.band === product.band && item.id !== product.id)
+  return `${Number(value || 0).toLocaleString("fa-IR")} تومان`;
+}
+
+
+function readCart() {
+
+  try {
+
+    const cart =
+      JSON.parse(
+        localStorage.getItem("cart")
+      );
+
+    return Array.isArray(cart)
+      ? cart
       : [];
 
-    // اگر کمتر از چهار محصول مرتبط وجود داشت، از همان دسته‌بندی کمک می‌گیرد.
-    if (relatedProducts.length < 4) {
-      const categoryProducts = products.filter(
-        (item) => item.category === product.category && item.id !== product.id && !relatedProducts.includes(item),
+  } catch {
+
+    return [];
+  }
+}
+
+
+function saveCart(cart) {
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+}
+
+
+function getCartQuantity(
+  cart,
+  productId
+) {
+
+  return cart.reduce(
+    (total, item) => {
+
+      if (
+        String(item.productId) !==
+        String(productId)
+      ) {
+        return total;
+      }
+
+      return (
+        total +
+        Math.max(
+          0,
+          Number(item.quantity) || 0
+        )
       );
-      relatedProducts = [...relatedProducts, ...categoryProducts];
-    }
+    },
+    0
+  );
+}
 
-    // نمایش قبلی محصولات مرتبط را پاک می‌کند.
-    relatedProductsGrid.innerHTML = "";
 
-    // اگر محصول مرتبطی وجود نداشته باشد، پیام مناسب نشان می‌دهد.
-    if (relatedProducts.length === 0) {
-      const empty = document.createElement("p");
-      empty.textContent = "No related products";
-      empty.style.cssText = "grid-column: 1/-1; text-align: center; color: rgba(255,255,255,0.5);";
-      relatedProductsGrid.appendChild(empty);
-      return;
-    }
+function updateCartCount() {
 
-    // حداکثر چهار محصول مرتبط را نمایش می‌دهد.
-    relatedProducts.slice(0, 4).forEach((relProduct) => {
-      // کارت محصول مرتبط را می‌سازد.
-      const card = document.createElement("article");
-      card.className = "related-product-card";
-      card.tabIndex = 0;
-      card.setAttribute("role", "link");
+  const cart =
+    readCart();
 
-      // تصویر محصول مرتبط را می‌سازد.
-      const imageWrap = document.createElement("div");
-      imageWrap.className = "related-image";
-      const image = document.createElement("img");
-      image.src = relProduct.image;
-      image.alt = relProduct.name;
-      image.loading = "lazy";
-      image.decoding = "async";
-      image.addEventListener("error", () => image.removeAttribute("src"), { once: true });
-      imageWrap.appendChild(image);
+  const totalItems =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        Math.max(
+          0,
+          Number(item.quantity) || 0
+        ),
+      0
+    );
 
-      // اطلاعات محصول مرتبط را می‌سازد.
-      const info = document.createElement("div");
-      info.className = "related-info";
-      const name = document.createElement("h3");
-      name.className = "related-name";
-      name.textContent = relProduct.name;
-      const price = document.createElement("p");
-      price.className = "related-price";
-      price.textContent = `$${relProduct.price}`;
-      info.append(name, price);
+  const cartPill =
+    document.querySelector(
+      ".cart-pill"
+    );
 
-      // تصویر و اطلاعات را داخل کارت می‌گذارد.
-      card.append(imageWrap, info);
-      // تابع رفتن به صفحه جزئیات محصول مرتبط.
-      const openDetail = () => {
-        window.location.href = `product-detail.html?id=${encodeURIComponent(relProduct.id)}`;
-      };
-      // کلیک روی کارت را کنترل می‌کند.
-      card.addEventListener("click", openDetail);
-      // دسترسی به کارت با کیبورد را فعال می‌کند.
-      card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openDetail();
-        }
-      });
-      // کارت را به شبکه محصولات مرتبط اضافه می‌کند.
-      relatedProductsGrid.appendChild(card);
-    });
+  if (cartPill) {
+
+    cartPill.textContent =
+      `CART (${totalItems})`;
+  }
+}
+
+
+// ========================================
+// Load product from Supabase
+// ========================================
+
+async function loadProduct() {
+
+  if (
+    !Number.isInteger(productId)
+  ) {
+
+    window.location.replace(
+      "index-shop.html"
+    );
+
+    return;
   }
 
-  // تعداد کالاهای سبد را در هدر نشان می‌دهد.
-  function updateCartCount() {
-    const cart = readCart();
-    const totalItems = cart.reduce((sum, item) => sum + Math.max(0, Number(item.quantity) || 0), 0);
-    const cartPill = document.querySelector(".cart-pill");
-    if (cartPill) cartPill.textContent = `CART (${totalItems})`;
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from("products")
+    .select(`
+            id,
+            name,
+            slug,
+            description,
+            type,
+            price,
+            material,
+            is_active,
+
+            categories (
+                id,
+                name,
+                slug
+            ),
+
+            product_variants (
+                id,
+                size,
+                sku,
+                stock,
+                price
+            ),
+
+            product_images (
+                id,
+                storage_path,
+                alt_text,
+                is_primary,
+                sort_order
+            )
+        `)
+    .eq("id", productId)
+    .eq("is_active", true)
+    .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Error loading product:",
+      error
+    );
+
+    showError(
+      "Failed to load product.",
+      "Product Error"
+    );
+
+    return;
   }
 
-  // محصولات مرتبط را هنگام باز شدن صفحه می‌سازد.
-  renderRelatedProducts();
-  // تعداد اولیه سبد را نمایش می‌دهد.
+
+  if (!data) {
+
+    window.location.replace(
+      "index-shop.html"
+    );
+
+    return;
+  }
+
+
+  // ====================================
+  // Normalize product data
+  // ====================================
+
+  const variants =
+    Array.isArray(
+      data.product_variants
+    )
+      ? data.product_variants
+      : [];
+
+
+  const images =
+    Array.isArray(
+      data.product_images
+    )
+      ? data.product_images
+      : [];
+
+
+  // Sort images
+  images.sort(
+    (a, b) =>
+      (a.sort_order || 0) -
+      (b.sort_order || 0)
+  );
+
+
+  // Primary image
+  const primaryImage =
+    images.find(
+      image =>
+        image.is_primary
+    ) ||
+    images[0] ||
+    null;
+
+
+  // Total stock
+  const stock =
+    variants.reduce(
+      (total, variant) =>
+        total +
+        Number(
+          variant.stock || 0
+        ),
+      0
+    );
+
+
+  // Price
+  const price =
+    variants[0]?.price != null
+      ? Number(
+        variants[0].price
+      )
+      : Number(
+        data.price || 0
+      );
+
+
+  const product = {
+
+    id: data.id,
+
+    name: data.name,
+
+    slug: data.slug,
+
+    description:
+      data.description || "",
+
+    type:
+      data.type || "",
+
+    material:
+      data.material || "",
+
+    category:
+      data.categories?.slug || "",
+
+    categoryName:
+      data.categories?.name || "",
+
+    price,
+
+    stock,
+
+    variants,
+
+    images,
+
+    image:
+      primaryImage?.storage_path || "",
+
+    imageAlt:
+      primaryImage?.alt_text ||
+      data.name
+  };
+
+
+  console.log(
+    "PRODUCT FROM SUPABASE:",
+    product
+  );
+
+
+  renderProduct(
+    product
+  );
+
+
+  await loadRelatedProducts(
+    product
+  );
+
+
   updateCartCount();
 }
+
+
+// ========================================
+// Render product
+// ========================================
+
+function renderProduct(product) {
+
+  // ====================================
+  // Main image
+  // ====================================
+
+  if (
+    productImage
+  ) {
+
+    if (product.image) {
+
+      productImage.src =
+        product.image;
+
+      productImage.alt =
+        product.imageAlt;
+
+    } else {
+
+      productImage.removeAttribute(
+        "src"
+      );
+
+      productImage.alt =
+        product.name;
+    }
+
+
+    productImage.loading =
+      "eager";
+
+    productImage.decoding =
+      "async";
+
+
+    productImage.addEventListener(
+      "error",
+      () => {
+
+        productImage.removeAttribute(
+          "src"
+        );
+
+      },
+      {
+        once: true
+      }
+    );
+  }
+
+
+  // ====================================
+  // Basic information
+  // ====================================
+
+  if (productName) {
+
+    productName.textContent =
+      product.name;
+  }
+
+
+  if (productBand) {
+
+    /*
+     * فعلاً band در دیتابیس ما نداریم.
+     * به جای آن category را نمایش می‌دهیم.
+     */
+
+    productBand.textContent =
+      product.categoryName ||
+      "";
+
+    productBand.hidden =
+      !product.categoryName;
+  }
+
+
+  if (productDescription) {
+
+    productDescription.textContent =
+      product.description;
+  }
+
+
+  if (productType) {
+
+    productType.textContent =
+      product.type;
+  }
+
+
+  if (productPrice) {
+
+    productPrice.textContent =
+      formatPrice(
+        product.price
+      );
+  }
+
+
+  // ====================================
+  // Stock
+  // ====================================
+
+  if (productStock) {
+
+    if (product.stock > 0) {
+
+      productStock.textContent =
+        `${product.stock} IN STOCK`;
+
+    } else {
+
+      productStock.textContent =
+        "OUT OF STOCK";
+    }
+  }
+
+
+  // ====================================
+  // Size / Variants
+  // ====================================
+
+  renderVariants(
+    product
+  );
+
+
+  // ====================================
+  // Quantity
+  // ====================================
+
+  setupQuantity(
+    product
+  );
+
+
+  // ====================================
+  // Add to cart
+  // ====================================
+
+  setupAddToCart(
+    product
+  );
+}
+
+
+// ========================================
+// Render variants / sizes
+// ========================================
+
+function renderVariants(product) {
+
+  if (!sizeOptions) {
+    return;
+  }
+
+
+  sizeOptions.innerHTML =
+    "";
+
+
+  const variants =
+    product.variants
+      .filter(
+        variant =>
+          variant.stock > 0
+      );
+
+
+  // No variants
+  if (!variants.length) {
+
+    const empty =
+      document.createElement(
+        "p"
+      );
+
+    empty.textContent =
+      "One Size";
+
+    sizeOptions.appendChild(
+      empty
+    );
+
+    return;
+  }
+
+
+  let selectedSize =
+    variants.length === 1
+      ? variants[0].size
+      : null;
+
+
+  variants.forEach(
+    variant => {
+
+      const btn =
+        document.createElement(
+          "button"
+        );
+
+
+      btn.type =
+        "button";
+
+
+      btn.className =
+        "size-btn";
+
+
+      btn.textContent =
+        variant.size ||
+        "One Size";
+
+
+      if (
+        variant.size ===
+        selectedSize
+      ) {
+
+        btn.classList.add(
+          "selected"
+        );
+      }
+
+
+      btn.addEventListener(
+        "click",
+        () => {
+
+          sizeOptions
+            .querySelectorAll(
+              ".size-btn"
+            )
+            .forEach(
+              item =>
+                item.classList
+                  .remove(
+                    "selected"
+                  )
+            );
+
+
+          btn.classList.add(
+            "selected"
+          );
+
+
+          selectedSize =
+            variant.size;
+        }
+      );
+
+
+      sizeOptions.appendChild(
+        btn
+      );
+    }
+  );
+
+
+  /*
+   * selectedSize را روی عنصر ذخیره می‌کنیم
+   * تا setupAddToCart بتواند آن را بخواند.
+   */
+
+  sizeOptions.dataset.selectedSize =
+    selectedSize || "";
+}
+
+
+// ========================================
+// Quantity controls
+// ========================================
+
+function setupQuantity(product) {
+
+  if (
+    !qtyInput ||
+    !qtyDecrease ||
+    !qtyIncrease
+  ) {
+    return;
+  }
+
+
+  qtyInput.type =
+    "number";
+
+  qtyInput.min =
+    "1";
+
+  qtyInput.max =
+    String(
+      Math.max(
+        1,
+        product.stock
+      )
+    );
+
+
+  qtyDecrease.type =
+    "button";
+
+  qtyIncrease.type =
+    "button";
+
+
+  function setQuantity(value) {
+
+    const next =
+      Number.parseInt(
+        value,
+        10
+      );
+
+
+    const quantity =
+      Number.isFinite(next)
+        ? Math.min(
+          product.stock,
+          Math.max(
+            1,
+            next
+          )
+        )
+        : 1;
+
+
+    qtyInput.value =
+      String(quantity);
+  }
+
+
+  qtyDecrease.onclick =
+    () => {
+
+      setQuantity(
+        Number(
+          qtyInput.value
+        ) - 1
+      );
+    };
+
+
+  qtyIncrease.onclick =
+    () => {
+
+      setQuantity(
+        Number(
+          qtyInput.value
+        ) + 1
+      );
+    };
+
+
+  qtyInput.onchange =
+    () => {
+
+      setQuantity(
+        qtyInput.value
+      );
+    };
+}
+
+
+// ========================================
+// Add to cart
+// ========================================
+
+function setupAddToCart(product) {
+
+  if (!addToCartBtn) {
+    return;
+  }
+
+
+  if (product.stock <= 0) {
+
+    addToCartBtn.disabled =
+      true;
+
+    addToCartBtn.textContent =
+      "OUT OF STOCK";
+
+    return;
+  }
+
+
+  addToCartBtn.addEventListener(
+    "click",
+    () => {
+
+      const quantity =
+        Math.min(
+          product.stock,
+          Math.max(
+            1,
+            Number.parseInt(
+              qtyInput?.value,
+              10
+            ) || 1
+          )
+        );
+
+
+      const cart =
+        readCart();
+
+
+      const currentQuantity =
+        getCartQuantity(
+          cart,
+          product.id
+        );
+
+
+      if (
+        currentQuantity +
+        quantity >
+        product.stock
+      ) {
+
+        if (
+          typeof showWarning ===
+          "function"
+        ) {
+
+          showWarning(
+            "You cannot add more than the available stock.",
+            "⚠ Stock Limit"
+          );
+        }
+
+        return;
+      }
+
+
+      // Selected size
+      const selectedSize =
+        sizeOptions?.dataset
+          .selectedSize ||
+        null;
+
+
+      // Find existing item
+      const existingItem =
+        cart.find(
+          item =>
+
+            String(
+              item.productId
+            ) ===
+            String(
+              product.id
+            ) &&
+
+            (item.size || null) ===
+            selectedSize
+        );
+
+
+      if (existingItem) {
+
+        existingItem.quantity +=
+          quantity;
+
+        existingItem.name =
+          product.name;
+
+        existingItem.price =
+          product.price;
+
+        existingItem.image =
+          product.image || "";
+
+      } else {
+
+        cart.push({
+
+          productId:
+            product.id,
+
+          name:
+            product.name,
+
+          size:
+            selectedSize,
+
+          quantity,
+
+          price:
+            product.price,
+
+          image:
+            product.image || ""
+        });
+      }
+
+
+      saveCart(
+        cart
+      );
+
+
+      if (
+        typeof showSuccess ===
+        "function"
+      ) {
+
+        showSuccess(
+          `${quantity} × ${product.name} added to cart.`,
+          "✓ Added to Cart"
+        );
+      }
+
+
+      const originalText =
+        addToCartBtn.textContent;
+
+
+      addToCartBtn.textContent =
+        "✓ ADDED TO CART";
+
+
+      addToCartBtn.disabled =
+        true;
+
+
+      window.setTimeout(
+        () => {
+
+          addToCartBtn.textContent =
+            originalText;
+
+
+          addToCartBtn.disabled =
+            getCartQuantity(
+              readCart(),
+              product.id
+            ) >=
+            product.stock;
+
+        },
+        1500
+      );
+
+
+      updateCartCount();
+    }
+  );
+}
+
+
+// ========================================
+// Related products
+// ========================================
+
+async function loadRelatedProducts(
+  product
+) {
+
+  if (!relatedProductsGrid) {
+    return;
+  }
+
+
+  /*
+   * فعلاً محصولات مرتبط را
+   * بر اساس category می‌گیریم.
+   */
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from("products")
+    .select(`
+            id,
+            name,
+            price,
+            type,
+            categories (
+                name,
+                slug
+            ),
+            product_variants (
+                stock,
+                price
+            ),
+            product_images (
+                image_url,
+                alt_text,
+                is_primary,
+                sort_order
+            )
+        `)
+    .eq(
+      "is_active",
+      true
+    )
+    .eq(
+      "categories.slug",
+      product.category
+    )
+    .neq(
+      "id",
+      product.id
+    )
+    .limit(4);
+
+
+  if (error) {
+
+    console.error(
+      "Error loading related products:",
+      error
+    );
+
+    return;
+  }
+
+
+  const relatedProducts =
+    (data || []).map(
+      item => {
+
+        const variants =
+          Array.isArray(
+            item.product_variants
+          )
+            ? item.product_variants
+            : [];
+
+
+        const images =
+          Array.isArray(
+            item.product_images
+          )
+            ? item.product_images
+            : [];
+
+
+        images.sort(
+          (a, b) =>
+            (a.sort_order || 0) -
+            (b.sort_order || 0)
+        );
+
+
+        const primaryImage =
+          images.find(
+            image =>
+              image.is_primary
+          ) ||
+          images[0] ||
+          null;
+
+
+        const stock =
+          variants.reduce(
+            (total, variant) =>
+              total +
+              Number(
+                variant.stock ||
+                0
+              ),
+            0
+          );
+
+
+        const price =
+          variants[0]?.price != null
+            ? Number(
+              variants[0].price
+            )
+            : Number(
+              item.price || 0
+            );
+
+
+        return {
+
+          id:
+            item.id,
+
+          name:
+            item.name,
+
+          type:
+            item.type || "",
+
+          category:
+            item.categories?.slug ||
+            "",
+
+          price,
+
+          stock,
+
+          image:
+            primaryImage?.storage_path ||
+            "",
+
+          imageAlt:
+            primaryImage?.alt_text ||
+            item.name
+        };
+      }
+    );
+
+
+  renderRelatedProducts(
+    relatedProducts
+  );
+}
+
+
+// ========================================
+// Render related products
+// ========================================
+
+function renderRelatedProducts(
+  relatedProducts
+) {
+
+  relatedProductsGrid.innerHTML =
+    "";
+
+
+  if (
+    relatedProducts.length ===
+    0
+  ) {
+
+    const empty =
+      document.createElement(
+        "p"
+      );
+
+
+    empty.textContent =
+      "No related products";
+
+
+    empty.style.cssText =
+      "grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.5);";
+
+
+    relatedProductsGrid.appendChild(
+      empty
+    );
+
+
+    return;
+  }
+
+
+  relatedProducts.forEach(
+    relProduct => {
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "related-product-card";
+
+
+      card.tabIndex =
+        0;
+
+
+      card.setAttribute(
+        "role",
+        "link"
+      );
+
+
+      // Image
+
+      const imageWrap =
+        document.createElement(
+          "div"
+        );
+
+
+      imageWrap.className =
+        "related-image";
+
+
+      if (
+        relProduct.image
+      ) {
+
+        const image =
+          document.createElement(
+            "img"
+          );
+
+
+        image.src =
+          relProduct.image;
+
+
+        image.alt =
+          relProduct.imageAlt;
+
+
+        image.loading =
+          "lazy";
+
+
+        image.decoding =
+          "async";
+
+
+        image.addEventListener(
+          "error",
+          () => {
+
+            image.removeAttribute(
+              "src"
+            );
+
+          },
+          {
+            once: true
+          }
+        );
+
+
+        imageWrap.appendChild(
+          image
+        );
+      }
+
+
+      // Info
+
+      const info =
+        document.createElement(
+          "div"
+        );
+
+
+      info.className =
+        "related-info";
+
+
+      const name =
+        document.createElement(
+          "h3"
+        );
+
+
+      name.className =
+        "related-name";
+
+
+      name.textContent =
+        relProduct.name;
+
+
+      const price =
+        document.createElement(
+          "p"
+        );
+
+
+      price.className =
+        "related-price";
+
+
+      price.textContent =
+        formatPrice(
+          relProduct.price
+        );
+
+
+      info.append(
+        name,
+        price
+      );
+
+
+      card.append(
+        imageWrap,
+        info
+      );
+
+
+      // Open product
+
+      const openDetail =
+        () => {
+
+          window.location.href =
+            `product-detail.html?id=${encodeURIComponent(
+              relProduct.id
+            )}`;
+        };
+
+
+      card.addEventListener(
+        "click",
+        openDetail
+      );
+
+
+      card.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key ===
+            "Enter" ||
+            event.key ===
+            " "
+          ) {
+
+            event.preventDefault();
+
+            openDetail();
+          }
+        }
+      );
+
+
+      relatedProductsGrid.appendChild(
+        card
+      );
+    }
+  );
+}
+
+
+// ========================================
+// Start
+// ========================================
+
+updateCartCount();
+
+loadProduct();
