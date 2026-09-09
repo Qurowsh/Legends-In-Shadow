@@ -144,12 +144,21 @@
         transform: translateY(-3px) scale(1.02);
       }
 
-      /* محتوای صفحه بالاتر از لایه‌های نور قرار می‌گیرد */
+      /* محتوای اصلی بالاتر از لایه‌های نور قرار می‌گیرد */
       body.bands-page main,
-      body.bands-page .main-header,
       body.bands-page .main-footer {
         position: relative;
         z-index: 1;
+      }
+
+      /* هدر باید همیشه به بالای صفحه چسبیده بماند */
+      body.bands-page .main-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        z-index: 10;
       }
 
       /* در موبایل هاور کارت جمع‌تر می‌شود */
