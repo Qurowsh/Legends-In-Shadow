@@ -14,7 +14,6 @@
     <title>NICHERZ</title>
     <!-- استایل اصلی صفحه را وصل می‌کند. -->
     <link rel="stylesheet" href="style.css" />
-    <!-- اصلاحات ظاهری پس‌زمینه صفحه را اضافه می‌کند. -->
     <!-- تصویر لوگو را برای آیکن تب مرورگر استفاده می‌کند. -->
     <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
     <!-- فونت اصلی پروژه را اضافه می‌کند. -->
@@ -22,10 +21,148 @@
       href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap"
       rel="stylesheet"
     />
+
+    <!-- ظاهر صفحه بندها را با صفحه محصولات یکدست می‌کند. -->
+    <style>
+      /* پس‌زمینه اصلی صفحه بندها */
+      body.bands-page {
+        background:
+          radial-gradient(circle at top, rgba(255,255,255,.06), transparent 26%),
+          #000;
+      }
+
+      /* دود و نور سفید مثل صفحه محصولات */
+      body.bands-page::before {
+        background:
+          radial-gradient(circle at 50% 12%, rgba(255,255,255,.22), transparent 20%),
+          radial-gradient(circle at 50% 35%, rgba(220,220,220,.14), transparent 30%),
+          radial-gradient(circle at 80% 20%, rgba(255,255,255,.08), transparent 18%),
+          linear-gradient(180deg, rgba(255,255,255,.05), transparent 36%);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        animation: bandsAmbientGlow 4.6s ease-in-out infinite alternate;
+        filter: blur(12px);
+        opacity: .75;
+        z-index: 0;
+      }
+
+      /* لایه دوم نور متحرک صفحه */
+      body.bands-page::after {
+        background:
+          radial-gradient(circle at 15% 70%, rgba(255,255,255,.08), transparent 22%),
+          radial-gradient(circle at 85% 25%, rgba(255,255,255,.06), transparent 20%);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        animation: bandsSmokeMove 18s ease-in-out infinite alternate;
+        filter: blur(35px);
+        opacity: .7;
+        z-index: 0;
+      }
+
+      /* انیمیشن نور پس‌زمینه */
+      @keyframes bandsAmbientGlow {
+        0% { opacity: .45; filter: blur(12px); }
+        50% { opacity: .9; filter: blur(20px); }
+        100% { opacity: .65; filter: blur(15px); }
+      }
+
+      /* حرکت نرم دود */
+      @keyframes bandsSmokeMove {
+        0% { transform: translate(-3em, 2em) scale(1); }
+        50% { transform: translate(5em, -4em) scale(1.08); }
+        100% { transform: translate(-2em, -7em) scale(.96); }
+      }
+
+      /* کارت‌های بند با همان ظاهر کارت محصولات */
+      body.bands-page .card {
+        background: linear-gradient(180deg, rgba(26,26,26,.96), rgba(8,8,8,.98));
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 1.2em;
+        box-shadow:
+          0 18px 35px rgba(0,0,0,.55),
+          inset 0 1px 0 rgba(255,255,255,.08),
+          0 0 0 1px rgba(255,255,255,.02);
+      }
+
+      /* نور داخلی کارت */
+      body.bands-page .card::before {
+        border: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,.18), transparent 38%, rgba(255,255,255,.04));
+        opacity: 0;
+        transition: opacity .35s ease;
+        z-index: 0;
+      }
+
+      /* حالت هاور کارت */
+      body.bands-page .card:hover {
+        transform: translateY(-16px) scale(1.025);
+        border-color: rgba(255,255,255,.7);
+        box-shadow:
+          0 20px 48px rgba(255,255,255,.12),
+          0 0 28px rgba(255,255,255,.18),
+          0 26px 60px rgba(0,0,0,.88),
+          0 0 24px rgba(255,255,255,.1);
+      }
+
+      /* فعال شدن نور داخلی هنگام هاور */
+      body.bands-page .card:hover::before {
+        opacity: 1;
+        border-color: transparent;
+        box-shadow: none;
+      }
+
+      /* تصویر بند با قاب تمیز مثل کارت محصول */
+      body.bands-page .band-img {
+        border: 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* دکمه محصولات مرتبط با ظاهر فروشگاه */
+      body.bands-page .Bio {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        border: 1px solid rgba(255,255,255,.35);
+        background: rgba(255,255,255,.04);
+        border-radius: 0;
+        color: #fff;
+        box-shadow: 0 0 14px rgba(255,255,255,.05);
+      }
+
+      /* هاور دکمه محصولات مرتبط */
+      body.bands-page .Bio:hover {
+        background: #fff;
+        color: #000;
+        border-color: rgba(255,255,255,.7);
+        text-shadow: none;
+        box-shadow: 0 0 22px rgba(255,255,255,.24);
+        transform: translateY(-3px) scale(1.02);
+      }
+
+      /* محتوای صفحه بالاتر از لایه‌های نور قرار می‌گیرد */
+      body.bands-page main,
+      body.bands-page .main-header,
+      body.bands-page .main-footer {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* در موبایل هاور کارت جمع‌تر می‌شود */
+      @media (max-width: 600px) {
+        body.bands-page .card:hover {
+          transform: translateY(-7px) scale(1.01);
+        }
+      }
+    </style>
   </head>
 
   <!-- محتوایی که کاربر در صفحه می‌بیند. -->
-  <body>
+  <body class="bands-page">
     <!-- هدر و منوی اصلی سایت. -->
     <header class="main-header">
       <!-- منوی جابه‌جایی بین بخش‌های سایت. -->
