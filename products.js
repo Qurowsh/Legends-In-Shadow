@@ -135,18 +135,28 @@ function searchProducts(query) {
     if (!shippingAmount) return;
 
     const shipping = 200000;
-    shippingAmount.textContent = formatToman(shipping);
+    const shippingText = formatToman(shipping);
+
+    if (shippingAmount.textContent !== shippingText) {
+      shippingAmount.textContent = shippingText;
+    }
 
     if (subtotalAmount && totalAmount) {
       const subtotalText = subtotalAmount.textContent.replace(/[^0-9۰-۹]/g, "");
       const digits = subtotalText.replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
       const subtotal = Number(digits) || 0;
-      totalAmount.textContent = formatToman(subtotal + shipping);
+      const totalText = formatToman(subtotal + shipping);
+
+      if (totalAmount.textContent !== totalText) {
+        totalAmount.textContent = totalText;
+      }
     }
   }
 
   // تغییرات بعدی رندر سبد را هم زیر نظر می‌گیرد.
   const observer = new MutationObserver((mutations) => {
+    let shouldRefresh = false;
+
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === Node.TEXT_NODE && /\$\d+(?:\.\d{1,2})?/.test(node.nodeValue)) {
@@ -157,11 +167,14 @@ function searchProducts(query) {
         } else if (node.nodeType === Node.ELEMENT_NODE) {
           formatCurrencyText(node);
         }
+        shouldRefresh = true;
       });
     });
 
-    removeUnwantedCartSections();
-    updateCartAmounts();
+    if (shouldRefresh) {
+      removeUnwantedCartSections();
+      updateCartAmounts();
+    }
   });
 
   // تبدیل اولیه قیمت‌ها و تنظیم سبد بعد از آماده شدن DOM.
