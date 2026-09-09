@@ -27,21 +27,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(
-      circle at 50% 12%,
-      rgba(255, 255, 255, 0.22),
-      transparent 20%
-    ),
-    radial-gradient(
-      circle at 50% 35%,
-      rgba(220, 220, 220, 0.14),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(255, 255, 255, 0.08),
-      transparent 18%
-    ),
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.22), transparent 20%),
+    radial-gradient(circle at 50% 35%, rgba(220, 220, 220, 0.14), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08), transparent 18%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 36%);
   pointer-events: none;
   z-index: 0;
@@ -81,20 +69,9 @@ body::before {
 }
 /* این بخش @keyframes ambientGlow را تنظیم می‌کند. */
 @keyframes ambientGlow {
-  0% {
-    opacity: 0.5;
-    filter: blur(12px);
-  }
-  /* این بخش 50% را تنظیم می‌کند. */
-  50% {
-    opacity: 1;
-    filter: blur(20px);
-  }
-  /* این بخش 100% را تنظیم می‌کند. */
-  100% {
-    opacity: 0.7;
-    filter: blur(15px);
-  }
+  0% { opacity: 0.5; filter: blur(12px); }
+  50% { opacity: 1; filter: blur(20px); }
+  100% { opacity: 0.7; filter: blur(15px); }
 }
 /* این بخش .smoke-background را تنظیم می‌کند. */
 .smoke-background {
@@ -116,43 +93,16 @@ body::before {
   animation: smokeMove 18s ease-in-out infinite alternate;
 }
 /* این بخش .smoke-one را تنظیم می‌کند. */
-.smoke-one {
-  top: -10em;
-  left: -8em;
-  animation-duration: 20s;
-}
+.smoke-one { top: -10em; left: -8em; animation-duration: 20s; }
 /* این بخش .smoke-two را تنظیم می‌کند. */
-.smoke-two {
-  right: -12em;
-  bottom: -10em;
-  width: 42em;
-  height: 42em;
-  animation-duration: 24s;
-  animation-delay: -7s;
-}
+.smoke-two { right: -12em; bottom: -10em; width: 42em; height: 42em; animation-duration: 24s; animation-delay: -7s; }
 /* این بخش .smoke-three را تنظیم می‌کند. */
-.smoke-three {
-  top: 35%;
-  left: 40%;
-  width: 25em;
-  height: 25em;
-  opacity: 0.5;
-  animation-duration: 28s;
-  animation-delay: -12s;
-}
+.smoke-three { top: 35%; left: 40%; width: 25em; height: 25em; opacity: 0.5; animation-duration: 28s; animation-delay: -12s; }
 /* این بخش @keyframes smokeMove را تنظیم می‌کند. */
 @keyframes smokeMove {
-  0% {
-    transform: translate(-5em, 3em) scale(1);
-  }
-  /* این بخش 50% را تنظیم می‌کند. */
-  50% {
-    transform: translate(8em, -6em) scale(1.15);
-  }
-  /* این بخش 100% را تنظیم می‌کند. */
-  100% {
-    transform: translate(-3em, -10em) scale(0.95);
-  }
+  0% { transform: translate(-5em, 3em) scale(1); }
+  50% { transform: translate(8em, -6em) scale(1.15); }
+  100% { transform: translate(-3em, -10em) scale(0.95); }
 }
 /* این بخش .shop-header را تنظیم می‌کند. */
 .shop-header {
@@ -162,9 +112,7 @@ body::before {
   background: rgba(6, 6, 6, 0.82);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 0 30px rgba(255, 255, 255, 0.05),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
 }
 /* این بخش .shop-header::after را تنظیم می‌کند. */
 .shop-header::after {
@@ -175,12 +123,7 @@ body::before {
   width: min(84%, 64em);
   height: 40px;
   transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 255, 255, 0.34),
-    rgba(180, 180, 180, 0.14),
-    transparent 72%
-  );
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.34), rgba(180, 180, 180, 0.14), transparent 72%);
   filter: blur(24px);
   opacity: 1;
   pointer-events: none;
@@ -188,20 +131,9 @@ body::before {
 }
 /* این بخش @keyframes headerGlow را تنظیم می‌کند. */
 @keyframes headerGlow {
-  0% {
-    opacity: 0.35;
-    transform: translateX(-50%) scaleX(0.9);
-  }
-  /* این بخش 50% را تنظیم می‌کند. */
-  50% {
-    opacity: 0.9;
-    transform: translateX(-50%) scaleX(1.06);
-  }
-  /* این بخش 100% را تنظیم می‌کند. */
-  100% {
-    opacity: 0.45;
-    transform: translateX(-50%) scaleX(0.98);
-  }
+  0% { opacity: 0.35; transform: translateX(-50%) scaleX(0.9); }
+  50% { opacity: 0.9; transform: translateX(-50%) scaleX(1.06); }
+  100% { opacity: 0.45; transform: translateX(-50%) scaleX(0.98); }
 }
 /* این بخش .shop-header-inner را تنظیم می‌کند. */
 .shop-header-inner {
@@ -214,11 +146,7 @@ body::before {
   gap: 1.5em;
 }
 /* این بخش .brand-wrap را تنظیم می‌کند. */
-.brand-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.8em;
-}
+.brand-wrap { display: flex; align-items: center; gap: 0.8em; }
 /* این بخش .brand-mark, .footer-logo را تنظیم می‌کند. */
 .brand-mark,
 .footer-logo {
@@ -235,628 +163,144 @@ body::before {
   overflow: hidden;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
 }
-/* این بخش .brand-mark::before, .footer-logo::before, .cart-pill::before را تنظیم می‌کند. */
+/* این بخش shimmer عناصر را تنظیم می‌کند. */
 .brand-mark::before,
 .footer-logo::before,
 .cart-pill::before {
   content: "";
   position: absolute;
   inset: -30%;
-  background: linear-gradient(
-    120deg,
-    transparent 35%,
-    rgba(255, 255, 255, 0.45) 50%,
-    transparent 65%
-  );
+  background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.45) 50%, transparent 65%);
   transform: translateX(-120%) rotate(14deg);
   animation: shimmer 4s ease-in-out infinite;
 }
 /* این بخش .brand-copy را تنظیم می‌کند. */
-.brand-copy {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-/* این بخش .brand-name, .footer-brand h3 را تنظیم می‌کند. */
+.brand-copy { display: flex; flex-direction: column; line-height: 1; }
+/* این بخش نام برند را تنظیم می‌کند. */
 .brand-name,
-.footer-brand h3 {
-  font-size: 0.92em;
-  letter-spacing: 0.2em;
-  color: #fff;
-}
-/* این بخش .brand-copy small, .footer-brand p, .footer-links a, .footer-bottom را تنظیم می‌کند. */
+.footer-brand h3 { font-size: 0.92em; letter-spacing: 0.2em; color: #fff; }
+/* این بخش متن‌های کم‌رنگ را تنظیم می‌کند. */
 .brand-copy small,
 .footer-brand p,
 .footer-links a,
-.footer-bottom {
-  color: rgba(255, 255, 255, 0.7);
-}
-/* این بخش .brand-copy small را تنظیم می‌کند. */
-.brand-copy small {
-  margin-top: 0.2em;
-  letter-spacing: 0.32em;
-  font-size: 0.55em;
-}
+.footer-bottom { color: rgba(255, 255, 255, 0.7); }
+/* این بخش زیرعنوان برند را تنظیم می‌کند. */
+.brand-copy small { margin-top: 0.2em; letter-spacing: 0.32em; font-size: 0.55em; }
 /* این بخش .header-nav را تنظیم می‌کند. */
-.header-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5em;
-  flex-wrap: wrap;
-}
-/* این بخش .header-nav a را تنظیم می‌کند. */
-.header-nav a {
-  color: rgba(255, 255, 255, 0.72);
-  text-decoration: none;
-  font-size: 0.7em;
-  letter-spacing: 0.18em;
-  transition: color 0.2s ease;
-}
-/* این بخش .header-nav a:hover, .header-nav a:focus-visible را تنظیم می‌کند. */
+.header-nav { display: flex; align-items: center; justify-content: center; gap: 1.5em; flex-wrap: wrap; }
+/* این بخش لینک‌های هدر را تنظیم می‌کند. */
+.header-nav a { color: rgba(255, 255, 255, 0.72); text-decoration: none; font-size: 0.7em; letter-spacing: 0.18em; transition: color 0.2s ease; }
+/* این بخش Hover و Focus لینک‌های هدر را تنظیم می‌کند. */
 .header-nav a:hover,
-.header-nav a:focus-visible {
-  color: #fff;
-}
+.header-nav a:focus-visible { color: #fff; }
 /* این بخش .cart-pill را تنظیم می‌کند. */
-.cart-pill {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
-  padding: 0.7em 1em;
-  font-size: 0.68em;
-  letter-spacing: 0.14em;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.05);
-}
-/* این بخش .cart-pill:hover را تنظیم می‌کند. */
-.cart-pill:hover {
-  transform: translateY(-2px);
-  background: #fff;
-  color: #000;
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.16);
-}
+.cart-pill { position: relative; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.04); color: #fff; padding: 0.7em 1em; font-size: 0.68em; letter-spacing: 0.14em; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 0 14px rgba(255, 255, 255, 0.05); }
+/* این بخش Hover سبد را تنظیم می‌کند. */
+.cart-pill:hover { transform: translateY(-2px); background: #fff; color: #000; box-shadow: 0 0 18px rgba(255, 255, 255, 0.16); }
 /* این بخش @keyframes shimmer را تنظیم می‌کند. */
 @keyframes shimmer {
-  0% {
-    transform: translateX(-120%) rotate(14deg);
-    opacity: 0;
-  }
-  /* این بخش 25% را تنظیم می‌کند. */
-  25% {
-    opacity: 1;
-  }
-  /* این بخش 50% را تنظیم می‌کند. */
-  50% {
-    transform: translateX(120%) rotate(14deg);
-    opacity: 1;
-  }
-  /* این بخش 100% را تنظیم می‌کند. */
-  100% {
-    transform: translateX(120%) rotate(14deg);
-    opacity: 0;
-  }
+  0% { transform: translateX(-120%) rotate(14deg); opacity: 0; }
+  25% { opacity: 1; }
+  50% { transform: translateX(120%) rotate(14deg); opacity: 1; }
+  100% { transform: translateX(120%) rotate(14deg); opacity: 0; }
 }
 /* این بخش .shop-page را تنظیم می‌کند. */
-.shop-page {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-}
+.shop-page { position: relative; z-index: 1; min-height: 100vh; }
 /* این بخش .shop-hero را تنظیم می‌کند. */
-.shop-hero {
-  min-height: 52vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2.5em 2em 2em;
-  text-align: center;
-}
+.shop-hero { min-height: 52vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2.5em 2em 2em; text-align: center; }
 /* این بخش .shop-title را تنظیم می‌کند. */
-.shop-title {
-  margin: 0;
-  font-size: 6em;
-  letter-spacing: 0.08em;
-  color: #fff;
-}
+.shop-title { margin: 0; font-size: 6em; letter-spacing: 0.08em; color: #fff; }
 /* این بخش .shop-subtitle را تنظیم می‌کند. */
-.shop-subtitle {
-  margin-top: 1em;
-  font-size: 1.3em;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.65);
-}
+.shop-subtitle { margin-top: 1em; font-size: 1.3em; letter-spacing: 0.2em; color: rgba(255, 255, 255, 0.65); }
 /* این بخش .products-section را تنظیم می‌کند. */
-.products-section {
-  padding: 1.5em 2em 5em;
-}
+.products-section { padding: 1.5em 2em 5em; }
 /* این بخش .products-container را تنظیم می‌کند. */
-.products-container {
-  width: min(90%, 80em);
-  margin: 0 auto;
-  min-height: 20em;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1.6em;
-  align-items: stretch;
-}
+.products-container { width: min(90%, 80em); margin: 0 auto; min-height: 20em; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.6em; align-items: stretch; }
 /* این بخش .product-card را تنظیم می‌کند. */
-.product-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(26, 26, 26, 0.96),
-    rgba(8, 8, 8, 0.98)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 1.2em;
-  box-shadow:
-    0 18px 35px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.02);
-  transition:
-    transform 0.22s ease,
-    box-shadow 0.22s ease,
-    border-color 0.22s ease,
-    filter 0.22s ease;
-  animation: cardFloat 3.5s ease-in-out infinite;
-  isolation: isolate;
-}
-/* این بخش .product-card:nth-child(2n) را تنظیم می‌کند. */
-.product-card:nth-child(2n) {
-  animation-delay: 0.15s;
-}
-/* این بخش .product-card:nth-child(3n) را تنظیم می‌کند. */
-.product-card:nth-child(3n) {
-  animation-delay: 0.35s;
-}
-/* این بخش .product-card:hover را تنظیم می‌کند. */
-.product-card:hover {
-  transform: translateY(-16px) scale(1.025);
-  border-color: rgba(255, 255, 255, 0.7);
-  filter: brightness(1.16);
-  box-shadow:
-    0 20px 48px rgba(255, 255, 255, 0.12),
-    0 0 28px rgba(255, 255, 255, 0.18),
-    0 26px 60px rgba(0, 0, 0, 0.88),
-    0 0 24px rgba(255, 255, 255, 0.1);
-}
-/* این بخش .product-card::before را تنظیم می‌کند. */
-.product-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.18),
-    transparent 38%,
-    rgba(255, 255, 255, 0.04)
-  );
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  pointer-events: none;
-  z-index: 0;
-}
-/* این بخش .product-card:hover::before را تنظیم می‌کند. */
-.product-card:hover::before {
-  opacity: 1;
-}
-/* این بخش .product-image را تنظیم می‌کند. */
-.product-image {
-  position: relative;
-  width: 100%;
-  height: 290px;
-  overflow: hidden;
-  background: #0d0d0d;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-/* این بخش .product-image img را تنظیم می‌کند. */
-.product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition:
-    transform 0.55s ease,
-    filter 0.55s ease,
-    opacity 0.55s ease;
-}
-/* این بخش .product-card:hover .product-image img را تنظیم می‌کند. */
-.product-card:hover .product-image img {
-  transform: scale(1.16);
-  filter: saturate(1.2) contrast(1.16) brightness(1.15);
-}
-/* این بخش .product-info را تنظیم می‌کند. */
-.product-info {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55em;
-  padding: 1.15em 1.15em 1.3em;
-  flex: 1;
-  background: rgba(10, 10, 10, 0.9);
-}
-/* این بخش .product-band, .product-type را تنظیم می‌کند. */
+.product-card { position: relative; display: flex; flex-direction: column; overflow: hidden; background: linear-gradient(180deg, rgba(26, 26, 26, 0.96), rgba(8, 8, 8, 0.98)); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 1.2em; box-shadow: 0 18px 35px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.02); transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, filter 0.22s ease; animation: cardFloat 3.5s ease-in-out infinite; isolation: isolate; }
+/* این بخش تأخیر انیمیشن بعضی کارت‌ها را تنظیم می‌کند. */
+.product-card:nth-child(2n) { animation-delay: 0.15s; }
+.product-card:nth-child(3n) { animation-delay: 0.35s; }
+/* این بخش Hover کارت محصول را تنظیم می‌کند. */
+.product-card:hover { transform: translateY(-16px) scale(1.025); border-color: rgba(255, 255, 255, 0.7); filter: brightness(1.16); box-shadow: 0 20px 48px rgba(255, 255, 255, 0.12), 0 0 28px rgba(255, 255, 255, 0.18), 0 26px 60px rgba(0, 0, 0, 0.88), 0 0 24px rgba(255, 255, 255, 0.1); }
+/* این بخش نور داخلی کارت را تنظیم می‌کند. */
+.product-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 38%, rgba(255, 255, 255, 0.04)); opacity: 0; transition: opacity 0.35s ease; pointer-events: none; z-index: 0; }
+.product-card:hover::before { opacity: 1; }
+/* این بخش تصویر محصول را تنظیم می‌کند. */
+.product-image { position: relative; width: 100%; height: 290px; overflow: hidden; background: #0d0d0d; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.product-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.55s ease, filter 0.55s ease, opacity 0.55s ease; }
+.product-card:hover .product-image img { transform: scale(1.16); filter: saturate(1.2) contrast(1.16) brightness(1.15); }
+/* این بخش اطلاعات محصول را تنظیم می‌کند. */
+.product-info { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 0.55em; padding: 1.15em 1.15em 1.3em; flex: 1; background: rgba(10, 10, 10, 0.9); }
 .product-band,
-.product-type {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: clamp(0.58em, 0.7vw, 0.7em);
-  line-height: 1.4;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-/* این بخش .product-name را تنظیم می‌کند. */
-.product-name {
-  margin: 0;
-  font-size: clamp(1.35em, 1.8vw, 2.15em);
-  line-height: 1.05;
-  color: #fff;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
-}
-/* این بخش .product-bottom را تنظیم می‌کند. */
-.product-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75em;
-  margin-top: auto;
-  padding-top: 0.8em;
-}
-/* این بخش .product-price را تنظیم می‌کند. */
-.product-price {
-  font-size: 1.2em;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.06em;
-}
-/* این بخش .add-cart را تنظیم می‌کند. */
-.add-cart {
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
-  padding: 0.75em 0.95em;
-  font-size: 0.68em;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-/* این بخش .add-cart:hover را تنظیم می‌کند. */
-.add-cart:hover {
-  transform: translateY(-3px) scale(1.05);
-  background: linear-gradient(135deg, #ffffff, #d9d9d9);
-  color: #000;
-  box-shadow:
-    0 0 22px rgba(255, 255, 255, 0.36),
-    0 0 34px rgba(255, 255, 255, 0.14);
-}
-/* این بخش @keyframes cardFloat را تنظیم می‌کند. */
-@keyframes cardFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  /* این بخش 50% را تنظیم می‌کند. */
-  50% {
-    transform: translateY(-8px);
-  }
-}
-/* این بخش .shop-footer را تنظیم می‌کند. */
-.shop-footer {
-  position: relative;
-  z-index: 1;
-  padding: 3em 1.5em 2em;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 10, 10, 0.9);
-}
-/* این بخش .footer-grid را تنظیم می‌کند. */
-.footer-grid {
-  width: min(90%, 80em);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 2em;
-}
-/* این بخش .footer-brand را تنظیم می‌کند. */
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 1em;
-}
-/* این بخش .footer-brand h3, .footer-links h4 را تنظیم می‌کند. */
+.product-type { margin: 0; color: rgba(255, 255, 255, 0.72); font-size: clamp(0.58em, 0.7vw, 0.7em); line-height: 1.4; letter-spacing: 0.18em; text-transform: uppercase; }
+.product-name { margin: 0; font-size: clamp(1.35em, 1.8vw, 2.15em); line-height: 1.05; color: #fff; letter-spacing: 0.05em; text-transform: uppercase; text-shadow: 0 0 12px rgba(255, 255, 255, 0.08); }
+.product-bottom { display: flex; justify-content: space-between; align-items: center; gap: 0.75em; margin-top: auto; padding-top: 0.8em; }
+.product-price { font-size: 1.2em; font-weight: 700; color: #fff; letter-spacing: 0.06em; }
+.add-cart { border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.04); color: #fff; padding: 0.75em 0.95em; font-size: 0.68em; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; transition: all 0.18s ease; }
+.add-cart:hover { transform: translateY(-3px) scale(1.05); background: linear-gradient(135deg, #ffffff, #d9d9d9); color: #000; box-shadow: 0 0 22px rgba(255, 255, 255, 0.36), 0 0 34px rgba(255, 255, 255, 0.14); }
+@keyframes cardFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+/* این بخش فوتر را تنظیم می‌کند. */
+.shop-footer { position: relative; z-index: 1; padding: 3em 1.5em 2em; border-top: 1px solid rgba(255, 255, 255, 0.08); background: rgba(10, 10, 10, 0.9); }
+.footer-grid { width: min(90%, 80em); margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2em; }
+.footer-brand { display: flex; align-items: center; gap: 1em; }
 .footer-brand h3,
-.footer-links h4 {
-  margin: 0 0 0.6em;
-  color: #fff;
-  letter-spacing: 0.18em;
-  font-size: 0.72em;
-}
-/* این بخش .footer-brand p, .footer-links a را تنظیم می‌کند. */
+.footer-links h4 { margin: 0 0 0.6em; color: #fff; letter-spacing: 0.18em; font-size: 0.72em; }
 .footer-brand p,
-.footer-links a {
-  margin: 0;
-  display: block;
-  text-decoration: none;
-  font-size: 0.78em;
-  letter-spacing: 0.08em;
-  line-height: 1.8;
-}
-/* این بخش .footer-links را تنظیم می‌کند. */
-.footer-links {
-  display: flex;
-  flex-direction: column;
-}
-/* این بخش .footer-links a:hover را تنظیم می‌کند. */
-.footer-links a:hover {
-  color: #fff;
-}
-/* این بخش .footer-bottom را تنظیم می‌کند. */
-.footer-bottom {
-  width: min(90%, 80em);
-  margin: 2em auto 0;
-  padding-top: 1em;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  justify-content: space-between;
-  gap: 1em;
-  font-size: 0.7em;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-/* این بخش .shop-categories را تنظیم می‌کند. */
-.shop-categories {
-  width: min(90%, 80em);
-  margin: 0 auto 3em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.8em;
-}
-/* این بخش .category-btn را تنظیم می‌کند. */
-.category-btn {
-  position: relative;
-  padding: 0.7em 1.3em;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.025);
-  color: rgba(255, 255, 255, 0.65);
-  font-family: Arial, sans-serif;
-  font-size: 0.8em;
-  letter-spacing: 0.12em;
-  cursor: pointer;
-  transition:
-    color 0.35s ease,
-    background 0.35s ease,
-    border-color 0.35s ease,
-    box-shadow 0.35s ease,
-    transform 0.35s ease;
-}
-/* این بخش .category-btn::after را تنظیم می‌کند. */
-.category-btn::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -1px;
-  width: 0;
-  height: 1px;
-  background: #fff;
-  transform: translateX(-50%);
-  transition: width 0.35s ease;
-}
-/* این بخش .category-btn:hover را تنظیم می‌کند. */
-.category-btn:hover {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.06);
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 18px rgba(255, 255, 255, 0.283),
-    inset 0 0 12px rgba(255, 255, 255, 0.025);
-}
-/* این بخش .category-btn:hover::after را تنظیم می‌کند. */
-.category-btn:hover::after {
-  width: 70%;
-}
-/* این بخش .category-btn.active را تنظیم می‌کند. */
-.category-btn.active {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 0 20px rgba(255, 255, 255, 0.08),
-    inset 0 0 15px rgba(255, 255, 255, 0.03);
-}
-/* این بخش .category-btn.active::after را تنظیم می‌کند. */
-.category-btn.active::after {
-  width: 70%;
-}
-/* این بخش @media (prefers-reduced-motion: reduce) را تنظیم می‌کند. */
+.footer-links a { margin: 0; display: block; text-decoration: none; font-size: 0.78em; letter-spacing: 0.08em; line-height: 1.8; }
+.footer-links { display: flex; flex-direction: column; }
+.footer-links a:hover { color: #fff; }
+.footer-bottom { width: min(90%, 80em); margin: 2em auto 0; padding-top: 1em; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; gap: 1em; font-size: 0.7em; letter-spacing: 0.18em; text-transform: uppercase; }
+/* این بخش دسته‌بندی‌ها را تنظیم می‌کند. */
+.shop-categories { width: min(90%, 80em); margin: 0 auto 3em; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 0.8em; }
+.category-btn { position: relative; padding: 0.7em 1.3em; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.025); color: rgba(255, 255, 255, 0.65); font-family: Arial, sans-serif; font-size: 0.8em; letter-spacing: 0.12em; cursor: pointer; transition: color 0.35s ease, background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease; }
+.category-btn::after { content: ""; position: absolute; left: 50%; bottom: -1px; width: 0; height: 1px; background: #fff; transform: translateX(-50%); transition: width 0.35s ease; }
+.category-btn:hover { color: #fff; border-color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.06); transform: translateY(-2px); box-shadow: 0 0 18px rgba(255, 255, 255, 0.283), inset 0 0 12px rgba(255, 255, 255, 0.025); }
+.category-btn:hover::after,
+.category-btn.active::after { width: 70%; }
+.category-btn.active { color: #fff; border-color: rgba(255, 255, 255, 0.75); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 20px rgba(255, 255, 255, 0.08), inset 0 0 15px rgba(255, 255, 255, 0.03); }
+/* این بخش حرکت کمتر را برای کاربرانی که آن را انتخاب کرده‌اند فعال می‌کند. */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  /* این بخش *, *::before, *::after را تنظیم می‌کند. */
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  /* این بخش .shop-header, .shop-hero, .products-section, .shop-footer را تنظیم می‌کند. */
-  .shop-header,
-  .shop-hero,
-  .products-section,
-  .shop-footer {
-    opacity: 1;
-    transform: none;
-    animation: none;
-  }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .shop-header, .shop-hero, .products-section, .shop-footer { opacity: 1; transform: none; animation: none; }
 }
-/* این بخش @media (max-width: 1024px) را تنظیم می‌کند. */
+/* این بخش چیدمان تبلت را تنظیم می‌کند. */
 @media (max-width: 1024px) {
-  .products-container {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.4em;
-  }
+  .products-container { grid-template-columns: repeat(4, 1fr); gap: 1.4em; }
 }
-/* این بخش @media (max-width: 768px) را تنظیم می‌کند. */
+/* این بخش چیدمان موبایل را تنظیم می‌کند. */
 @media (max-width: 768px) {
-  .products-container {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.2em;
-  }
+  .products-container { grid-template-columns: repeat(3, 1fr); gap: 1.2em; }
 }
-/* این بخش @media (max-width: 40em) را تنظیم می‌کند. */
+/* این بخش چیدمان پایه موبایل را تنظیم می‌کند. */
 @media (max-width: 40em) {
-  .shop-header-inner {
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0.9em 0;
-  }
-  /* این بخش .header-nav را تنظیم می‌کند. */
-  .header-nav {
-    width: 100%;
-    gap: 0.8em 1em;
-  }
-  /* این بخش .header-nav a, .cart-pill را تنظیم می‌کند. */
-  .header-nav a,
-  .cart-pill {
-    letter-spacing: 0.12em;
-  }
-  /* این بخش .shop-hero را تنظیم می‌کند. */
-  .shop-hero {
-    min-height: 34vh;
-    padding: 2em 1em 1.2em;
-  }
-  /* این بخش .shop-title را تنظیم می‌کند. */
-  .shop-title {
-    font-size: 3.2em;
-    letter-spacing: 0.06em;
-  }
-  /* این بخش .shop-subtitle را تنظیم می‌کند. */
-  .shop-subtitle {
-    margin-top: 0.8em;
-    font-size: 0.9em;
-    letter-spacing: 0.16em;
-  }
-  /* این بخش .products-section را تنظیم می‌کند. */
-  .products-section {
-    padding: 0.8em 1em 3em;
-  }
-  /* این بخش .products-container را تنظیم می‌کند. */
-  .products-container {
-    width: 100%;
-    grid-template-columns: 1fr;
-    gap: 1em;
-  }
-  /* این بخش .product-card را تنظیم می‌کند. */
-  .product-card {
-    border-radius: 1em;
-    box-shadow:
-      0 12px 24px rgba(0, 0, 0, 0.48),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    animation: none;
-  }
-  /* این بخش .product-card:hover را تنظیم می‌کند. */
-  .product-card:hover {
-    transform: translateY(-6px) scale(1.005);
-  }
-  /* این بخش .product-image را تنظیم می‌کند. */
-  .product-image {
-    height: 220px;
-    min-height: 220px;
-  }
-  /* این بخش .product-image img را تنظیم می‌کند. */
-  .product-image img {
-    transform: none !important;
-    filter: none !important;
-  }
-  /* این بخش .product-info را تنظیم می‌کند. */
-  .product-info {
-    gap: 0.45em;
-    padding: 0.95em 0.9em 1em;
-  }
-  /* این بخش .product-band, .product-type را تنظیم می‌کند. */
-  .product-band,
-  .product-type {
-    font-size: 0.62em;
-    line-height: 1.35;
-    letter-spacing: 0.12em;
-  }
-  /* این بخش .product-name را تنظیم می‌کند. */
-  .product-name {
-    font-size: clamp(1.35em, 5vw, 1.6em);
-    line-height: 1.12;
-  }
-  /* این بخش .product-bottom را تنظیم می‌کند. */
-  .product-bottom {
-    gap: 0.55em;
-    padding-top: 0.7em;
-  }
-  /* این بخش .product-price را تنظیم می‌کند. */
-  .product-price {
-    font-size: 1.05em;
-  }
-  /* این بخش .add-cart را تنظیم می‌کند. */
-  .add-cart {
-    padding: 0.7em 0.7em;
-    font-size: 0.58em;
-    letter-spacing: 0.12em;
-  }
-  /* این بخش .shop-footer را تنظیم می‌کند. */
-  .shop-footer {
-    padding: 2.2em 1em 1.5em;
-  }
-  /* این بخش .footer-grid را تنظیم می‌کند. */
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5em 1em;
-  }
-  /* این بخش .footer-bottom را تنظیم می‌کند. */
-  .footer-bottom {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    letter-spacing: 0.12em;
-  }
-  /* این بخش .shop-categories را تنظیم می‌کند. */
-  .shop-categories {
-    width: 94%;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 0.5em 0.2em 1em;
-    margin-bottom: 2em;
-    scrollbar-width: none;
-  }
-  /* این بخش .shop-categories::-webkit-scrollbar را تنظیم می‌کند. */
-  .shop-categories::-webkit-scrollbar {
-    display: none;
-  }
-  /* این بخش .category-btn را تنظیم می‌کند. */
-  .category-btn {
-    flex: 0 0 auto;
-    font-size: 0.72em;
-    padding: 0.65em 1em;
-  }
+  .shop-header-inner { flex-wrap: wrap; justify-content: center; padding: 0.9em 0; }
+  .header-nav { width: 100%; gap: 0.8em 1em; }
+  .header-nav a, .cart-pill { letter-spacing: 0.12em; }
+  .shop-hero { min-height: 34vh; padding: 2em 1em 1.2em; }
+  .shop-title { font-size: 3.2em; letter-spacing: 0.06em; }
+  .shop-subtitle { margin-top: 0.8em; font-size: 0.9em; letter-spacing: 0.16em; }
+  .products-section { padding: 0.8em 1em 3em; }
+  .products-container { width: 100%; grid-template-columns: 1fr; gap: 1em; }
+  .product-card { border-radius: 1em; box-shadow: 0 12px 24px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.06); animation: none; }
+  .product-card:hover { transform: translateY(-6px) scale(1.005); }
+  .product-image { height: 220px; min-height: 220px; }
+  .product-image img { transform: none !important; filter: none !important; }
+  .product-info { gap: 0.45em; padding: 0.95em 0.9em 1em; }
+  .product-band, .product-type { font-size: 0.62em; line-height: 1.35; letter-spacing: 0.12em; }
+  .product-name { font-size: clamp(1.35em, 5vw, 1.6em); line-height: 1.12; }
+  .product-bottom { gap: 0.55em; padding-top: 0.7em; }
+  .product-price { font-size: 1.05em; }
+  .add-cart { padding: 0.7em 0.7em; font-size: 0.58em; letter-spacing: 0.12em; }
+  .shop-footer { padding: 2.2em 1em 1.5em; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.5em 1em; }
+  .footer-bottom { flex-direction: column; align-items: center; text-align: center; letter-spacing: 0.12em; }
+  .shop-categories { width: 94%; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding: 0.5em 0.2em 1em; margin-bottom: 2em; scrollbar-width: none; }
+  .shop-categories::-webkit-scrollbar { display: none; }
+  .category-btn { flex: 0 0 auto; font-size: 0.72em; padding: 0.65em 1em; }
 }
-
-/* Consolidated shop header, cart shimmer, and smoke fixes. */
-/* این فایل فقط اصلاحات نهایی هدر و دود پس‌زمینه فروشگاه را انجام می‌دهد. */
-
-/* هدر را روی بالاترین نقطه صفحه ثابت می‌کند. */
+/* این بخش هدر صفحات داخلی را ثابت می‌کند. */
 .shop-header {
   position: fixed !important;
   top: 0 !important;
@@ -868,283 +312,98 @@ body::before {
   opacity: 1 !important;
   animation: none !important;
 }
-
-/* محتوای اصلی را به اندازه هدر از بالا فاصله می‌دهد. */
-.shop-page {
-  padding-top: 4.5em;
-}
-
-/* لینک سبد خرید را مثل یک دکمه واقعی نگه می‌دارد. */
-.cart-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden !important;
-  text-decoration: none !important;
-  isolation: isolate;
-  z-index: 1;
-}
-
-/* درخشش مورب سبد خرید را داخل خود دکمه محدود می‌کند. */
-.cart-pill::before {
-  content: "";
-  position: absolute;
-  top: -40%;
-  left: -55%;
-  width: 45%;
-  height: 180%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.18),
-    rgba(255, 255, 255, 0.72),
-    rgba(255, 255, 255, 0.18),
-    transparent
-  );
-  transform: translateX(0) skewX(-18deg);
-  pointer-events: none;
-  z-index: 2;
-  animation: cartShimmer 4s ease-in-out infinite;
-}
-
-/* حرکت آرام نور سبد خرید. */
-@keyframes cartShimmer {
-  0%, 20% {
-    transform: translateX(0) skewX(-18deg);
-    opacity: 0;
-  }
-
-  30% {
-    opacity: 1;
-  }
-
-  65%, 100% {
-    transform: translateX(360%) skewX(-18deg);
-    opacity: 0;
-  }
-}
-
-/* درخشش نرم زیر هدر را نگه می‌دارد. */
-.shop-header::after {
-  display: block;
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -18px;
-  width: min(82%, 64em);
-  height: 30px;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 255, 255, 0.24),
-    rgba(200, 200, 200, 0.09),
-    transparent 72%
-  );
-  filter: blur(18px);
-  opacity: 0.7;
-  pointer-events: none;
-  animation: headerGlowFix 4.2s ease-in-out infinite alternate;
-}
-
-/* حرکت نرم نور زیر هدر. */
-@keyframes headerGlowFix {
-  0% {
-    opacity: 0.3;
-    transform: translateX(-50%) scaleX(0.9);
-  }
-
-  50% {
-    opacity: 0.75;
-    transform: translateX(-50%) scaleX(1.05);
-  }
-
-  100% {
-    opacity: 0.4;
-    transform: translateX(-50%) scaleX(0.96);
-  }
-}
-
-/* در موبایل هدر را کوتاه و کاملاً چسبیده به بالای صفحه نگه می‌دارد. */
+/* این بخش فاصله صفحه فروشگاه از هدر را تنظیم می‌کند. */
+.shop-page { padding-top: 4.5em; }
+/* این بخش لینک سبد را تنظیم می‌کند. */
+.cart-pill { display: inline-flex; align-items: center; justify-content: center; position: relative; overflow: hidden !important; text-decoration: none !important; isolation: isolate; z-index: 1; }
+/* این بخش shimmer سبد را داخل دکمه نگه می‌دارد. */
+.cart-pill::before { content: ""; position: absolute; top: -40%; left: -55%; width: 45%; height: 180%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18), transparent); transform: translateX(0) skewX(-18deg); pointer-events: none; z-index: 2; animation: cartShimmer 4s ease-in-out infinite; }
+@keyframes cartShimmer { 0%,20% { transform: translateX(0) skewX(-18deg); opacity: 0; } 30% { opacity: 1; } 65%,100% { transform: translateX(360%) skewX(-18deg); opacity: 0; } }
+/* این بخش نور زیر هدر را تنظیم می‌کند. */
+.shop-header::after { display: block; content: ""; position: absolute; left: 50%; bottom: -18px; width: min(82%, 64em); height: 30px; transform: translateX(-50%); background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.24), rgba(200, 200, 200, 0.09), transparent 72%); filter: blur(18px); opacity: 0.7; pointer-events: none; animation: headerGlowFix 4.2s ease-in-out infinite alternate; }
+@keyframes headerGlowFix { 0% { opacity: 0.3; transform: translateX(-50%) scaleX(0.9); } 50% { opacity: 0.75; transform: translateX(-50%) scaleX(1.05); } 100% { opacity: 0.4; transform: translateX(-50%) scaleX(0.96); } }
+/* این بخش دود پس‌زمینه را تقویت می‌کند. */
+body::before { opacity: 1 !important; }
+.smoke { background: rgba(255, 255, 255, 0.15) !important; opacity: 0.9; }
+.smoke-three { opacity: 0.75 !important; }
+/* این بخش اصلاحات مشترک هدر و سبد را تکمیل می‌کند. */
 @media (max-width: 700px) {
+  /* هدر موبایل را در یک ساختار مرتب و وسط‌چین قرار می‌دهد. */
   .shop-header-inner {
-    width: calc(100% - 1em) !important;
-    min-height: 4em !important;
-    gap: 0.45em !important;
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 0.7em 0.9em !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    gap: 0.65em !important;
   }
-
+  /* لوگو و نام برند را وسط هدر قرار می‌دهد. */
   .brand-wrap {
-    gap: 0.45em !important;
-    flex-shrink: 0;
+    justify-content: center !important;
+    justify-self: center !important;
+    gap: 0.55em !important;
   }
-
+  /* اندازه لوگوی موبایل را خواناتر می‌کند. */
   .brand-mark {
-    width: 2em !important;
-    height: 2em !important;
-    font-size: 0.9em !important;
+    width: 2.15em !important;
+    height: 2.15em !important;
+    font-size: 1em !important;
   }
-
+  /* اندازه نام برند را در موبایل بیشتر می‌کند. */
   .brand-name {
-    font-size: 0.72em !important;
-    letter-spacing: 0.12em !important;
+    font-size: 0.88em !important;
+    letter-spacing: 0.14em !important;
   }
-
+  /* زیرعنوان برند را خواناتر می‌کند. */
   .brand-copy small {
-    font-size: 0.42em !important;
-    letter-spacing: 0.2em !important;
+    font-size: 0.5em !important;
+    letter-spacing: 0.22em !important;
   }
-
+  /* منوی موبایل را وسط‌چین و چندخطی می‌کند. */
   .header-nav {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    gap: 0.5em !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-end !important;
+    width: 100% !important;
+    flex: none !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.7em 1.15em !important;
   }
-
+  /* متن لینک‌های موبایل را از حالت خیلی ریز خارج می‌کند. */
   .header-nav a {
-    font-size: 0.48em !important;
-    letter-spacing: 0.08em !important;
+    font-size: 0.68em !important;
+    letter-spacing: 0.11em !important;
     white-space: nowrap !important;
   }
-
+  /* گزینه غیرفعال قبلی را روی موبایل هم پنهان نگه می‌دارد. */
   .header-nav a:nth-child(4) {
     display: none !important;
   }
-
+  /* دکمه سبد را وسط و خوانا قرار می‌دهد. */
   .header-actions {
-    flex-shrink: 0 !important;
+    justify-self: center !important;
   }
-
   .cart-pill {
-    padding: 0.55em 0.65em !important;
-    font-size: 0.5em !important;
-    letter-spacing: 0.08em !important;
+    padding: 0.58em 0.85em !important;
+    font-size: 0.62em !important;
+    letter-spacing: 0.1em !important;
     white-space: nowrap !important;
   }
-
-  .shop-page {
-    padding-top: 4em !important;
+  /* فاصله محتوای صفحات داخلی را با هدر چندخطی هماهنگ می‌کند. */
+  .shop-page,
+  .product-detail-page,
+  .cart-page {
+    padding-top: 8.5em !important;
   }
-
-  .shop-header::after {
-    bottom: -12px;
-    height: 22px;
-    filter: blur(14px);
-  }
-}
-
-/* دود اصلی پس‌زمینه را روشن‌تر نگه می‌دارد. */
-body::before {
-  opacity: 1 !important;
-}
-
-/* حباب‌های دود را واضح‌تر می‌کند بدون تغییر حرکت آن‌ها. */
-.smoke {
-  background: rgba(255, 255, 255, 0.15) !important;
-  opacity: 0.9;
-}
-
-/* لایه سوم دود را هم کمی روشن‌تر نگه می‌دارد. */
-.smoke-three {
-  opacity: 0.75 !important;
-}
-
-/* Consolidated shared internal-page header and cart fixes. */
-/* این فایل اصلاحات مشترک هدر صفحات داخلی را یکسان می‌کند. */
-
-/* لینک سبد خرید را مثل یک دکمه واقعی نگه می‌دارد. */
-.cart-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden !important;
-  text-decoration: none !important;
-  isolation: isolate;
-  z-index: 1;
-}
-
-/* شایمر را داخل خود دکمه محدود می‌کند. */
-.cart-pill::before {
-  content: "";
-  position: absolute;
-  top: -40%;
-  left: -55%;
-  width: 45%;
-  height: 180%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.18),
-    rgba(255, 255, 255, 0.72),
-    rgba(255, 255, 255, 0.18),
-    transparent
-  );
-  transform: translateX(0) skewX(-18deg);
-  pointer-events: none;
-  z-index: 2;
-  animation: pageCartShimmer 4s ease-in-out infinite;
-}
-
-/* حرکت مورب شایمر. */
-@keyframes pageCartShimmer {
-  0%, 20% {
-    transform: translateX(0) skewX(-18deg);
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
-  }
-  65%, 100% {
-    transform: translateX(360%) skewX(-18deg);
-    opacity: 0;
+  /* صفحه تماس را نیز از هدر فاصله می‌دهد. */
+  .contact-page main {
+    padding-top: 7em !important;
   }
 }
-
-/* خط و نور زیر هدر را مثل صفحه اصلی برمی‌گرداند. */
-.shop-header::after {
-  display: block;
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -18px;
-  width: min(82%, 64em);
-  height: 30px;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 255, 255, 0.24),
-    rgba(200, 200, 200, 0.09),
-    transparent 72%
-  );
-  filter: blur(18px);
-  opacity: 0.7;
-  pointer-events: none;
-  animation: pageHeaderGlow 4.2s ease-in-out infinite alternate;
-}
-
-/* حرکت نرم خط نور زیر هدر. */
-@keyframes pageHeaderGlow {
-  0% {
-    opacity: 0.3;
-    transform: translateX(-50%) scaleX(0.9);
-  }
-  50% {
-    opacity: 0.75;
-    transform: translateX(-50%) scaleX(1.05);
-  }
-  100% {
-    opacity: 0.4;
-    transform: translateX(-50%) scaleX(0.96);
-  }
-}
-
-/* در موبایل خط زیر هدر را کمی جمع‌تر نگه می‌دارد. */
-@media (max-width: 40em) {
-  .shop-header::after {
-    width: 86%;
-    bottom: -14px;
-    height: 24px;
-  }
+/* این بخش صفحات خیلی باریک را کمی جمع‌تر می‌کند. */
+@media (max-width: 420px) {
+  .shop-header-inner { padding-inline: 0.65em !important; }
+  .header-nav { gap: 0.6em 0.85em !important; }
+  .header-nav a { font-size: 0.62em !important; letter-spacing: 0.08em !important; }
+  .cart-pill { font-size: 0.58em !important; }
 }
