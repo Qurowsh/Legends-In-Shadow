@@ -120,13 +120,16 @@ function searchProducts(query) {
     body li,
     body label,
     body span,
-    body small {
+    body small,
+    body h1,
+    body h2,
+    body h3,
+    body h4,
+    body h5,
+    body h6 {
       font-family: "Estedad", Arial, sans-serif;
     }
 
-    h1,
-    h2,
-    h3,
     .hero-title,
     .shop-title,
     .brand-name,
