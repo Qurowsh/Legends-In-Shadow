@@ -102,3 +102,106 @@ function searchProducts(query) {
       product.type.toLowerCase().includes(lowerQuery),
   );
 }
+
+// فونت فارسی و استایل متن‌های معمول سایت را اضافه می‌کند.
+(function setupPersianTheme() {
+  // یک استایل داخلی می‌سازد تا به فایل‌های HTML جدید نیاز نباشد.
+  const style = document.createElement("style");
+  style.textContent = `
+    @import url("https://fonts.cdnfonts.com/css/estedad");
+
+    body,
+    body button,
+    body input,
+    body textarea,
+    body select,
+    body p,
+    body a,
+    body li,
+    body label,
+    body span,
+    body small {
+      font-family: "Estedad", Arial, sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    .hero-title,
+    .shop-title,
+    .brand-name,
+    .footer-brand h3,
+    .quote {
+      font-family: "Death Crow", "Metal Mania", cursive;
+    }
+
+    .product-price,
+    .related-price,
+    .item-price,
+    .item-total,
+    #subtotalAmount,
+    #shippingAmount,
+    #taxAmount,
+    #discountAmount,
+    #totalAmount {
+      font-family: "Estedad", Arial, sans-serif;
+      direction: rtl;
+      unicode-bidi: plaintext;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+// قیمت‌های قابل نمایش را به واحد فان چوق تبدیل می‌کند.
+(function setupChoghCurrency() {
+  // یک عدد را با ظاهر مناسب برای قیمت سایت نمایش می‌دهد.
+  function formatChogh(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return value;
+    const formatted = Number.isInteger(number) ? String(number) : number.toFixed(2);
+    return `${formatted} چوق (تومان)`;
+  }
+
+  // متن‌های صفحه را پیدا می‌کند و دلار را با واحد جدید جایگزین می‌کند.
+  function formatCurrencyText(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+
+    while ((node = walker.nextNode())) {
+      if (node.parentElement?.closest("script, style, noscript")) continue;
+      if (/\$\d+(?:\.\d{1,2})?/.test(node.nodeValue)) nodes.push(node);
+    }
+
+    nodes.forEach((textNode) => {
+      textNode.nodeValue = textNode.nodeValue.replace(/\$(\d+(?:\.\d{1,2})?)/g, (_, value) => formatChogh(value));
+    });
+  }
+
+  // تغییرات بعدی مثل رندر کارت‌ها و محاسبه سبد را هم زیر نظر می‌گیرد.
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE && /\$\d+(?:\.\d{1,2})?/.test(node.nodeValue)) {
+          node.nodeValue = node.nodeValue.replace(/\$(\d+(?:\.\d{1,2})?)/g, (_, value) => formatChogh(value));
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          formatCurrencyText(node);
+        }
+      });
+    });
+  });
+
+  // تبدیل اولیه قیمت‌ها را بعد از آماده شدن DOM انجام می‌دهد.
+  function startCurrencyFormatting() {
+    if (!document.body) return;
+    formatCurrencyText(document.body);
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // اگر این فایل زود اجرا شود، منتظر آماده شدن DOM می‌ماند.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startCurrencyFormatting, { once: true });
+  } else {
+    startCurrencyFormatting();
+  }
+})();
