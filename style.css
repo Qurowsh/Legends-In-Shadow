@@ -1963,6 +1963,9 @@ body.bands-page .shop-footer {
     justify-content: center;
     align-items: center;
   }
+  .container,.input{
+    max-width: 150px;
+  }
 
     .shop-header-inner {
         width:
@@ -1975,6 +1978,8 @@ body.bands-page .shop-footer {
     .header-nav {
         gap:
             0.2em 0.85em;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .header-nav > a {
