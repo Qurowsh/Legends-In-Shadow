@@ -12,7 +12,6 @@ DECLARE
     v_discount numeric := 0;
     v_code text;
 BEGIN
-    -- Basic validation
     v_code := upper(trim(coalesce(p_code, '')));
 
     IF v_code = '' THEN
@@ -29,11 +28,10 @@ BEGIN
         );
     END IF;
 
-    -- Find promo code
     SELECT *
     INTO v_promo
     FROM public.promo_codes
-    WHERE upper(code) = v_code
+    WHERE upper(trim(code)) = v_code
     LIMIT 1;
 
     IF NOT FOUND THEN
@@ -43,7 +41,6 @@ BEGIN
         );
     END IF;
 
-    -- Active check
     IF NOT v_promo.is_active THEN
         RETURN jsonb_build_object(
             'valid', false,
@@ -51,7 +48,6 @@ BEGIN
         );
     END IF;
 
-    -- Start date
     IF v_promo.starts_at IS NOT NULL
        AND now() < v_promo.starts_at THEN
         RETURN jsonb_build_object(
@@ -60,7 +56,6 @@ BEGIN
         );
     END IF;
 
-    -- Expiration date
     IF v_promo.expires_at IS NOT NULL
        AND now() > v_promo.expires_at THEN
         RETURN jsonb_build_object(
@@ -69,7 +64,6 @@ BEGIN
         );
     END IF;
 
-    -- Maximum usage
     IF v_promo.max_uses IS NOT NULL
        AND v_promo.used_count >= v_promo.max_uses THEN
         RETURN jsonb_build_object(
@@ -78,7 +72,6 @@ BEGIN
         );
     END IF;
 
-    -- Minimum order amount
     IF p_order_subtotal < v_promo.minimum_order THEN
         RETURN jsonb_build_object(
             'valid', false,
@@ -88,8 +81,8 @@ BEGIN
         );
     END IF;
 
-    -- Calculate discount
-    IF lower(v_promo.discount_type) = 'percent' THEN
+    -- Percentage discount
+    IF lower(v_promo.discount_type) = 'percentage' THEN
 
         IF v_promo.discount_value < 0
            OR v_promo.discount_value > 100 THEN
@@ -104,6 +97,7 @@ BEGIN
                 p_order_subtotal * v_promo.discount_value / 100
             );
 
+    -- Fixed discount
     ELSIF lower(v_promo.discount_type) = 'fixed' THEN
 
         IF v_promo.discount_value < 0 THEN
@@ -124,7 +118,7 @@ BEGIN
 
     END IF;
 
-    -- Discount cannot exceed subtotal
+    -- Never allow discount to exceed subtotal
     v_discount := LEAST(v_discount, p_order_subtotal);
 
     RETURN jsonb_build_object(
@@ -135,6 +129,5 @@ BEGIN
         'discount_amount', v_discount,
         'minimum_order', v_promo.minimum_order
     );
-
 END;
 $$;

@@ -1,95 +1,19 @@
 import { supabase } from "./js/supabase.js";
 
 
-/* =========================================================
-   STATE
-   ========================================================= */
-
 let currentUser = null;
 let currentCart = null;
-
 let cartItems = [];
-let products = [];
-
-let eventsInitialized = false;
-
-
-/* =========================================================
-   DOM
-   ========================================================= */
-
-const checkoutLoading =
-    document.getElementById("checkoutLoading");
-
-const checkoutPageError =
-    document.getElementById("checkoutPageError");
-
-const checkoutPageErrorText =
-    document.getElementById("checkoutPageErrorText");
-
-const checkoutContent =
-    document.getElementById("checkoutContent");
-
-const checkoutForm =
-    document.getElementById("checkoutForm");
-
-const shippingName =
-    document.getElementById("shippingName");
-
-const shippingPhone =
-    document.getElementById("shippingPhone");
-
-const shippingAddress =
-    document.getElementById("shippingAddress");
-
-const placeOrderBtn =
-    document.getElementById("placeOrderBtn");
-
-const checkoutItems =
-    document.getElementById("checkoutItems");
-
-const checkoutSubtotal =
-    document.getElementById("checkoutSubtotal");
-
-const checkoutShipping =
-    document.getElementById("checkoutShipping");
-
-const checkoutTax =
-    document.getElementById("checkoutTax");
-
-const checkoutDiscount =
-    document.getElementById("checkoutDiscount");
-
-const checkoutTotal =
-    document.getElementById("checkoutTotal");
-
-const checkoutCartCount =
-    document.getElementById("checkoutCartCount");
-
-const successModal =
-    document.getElementById("successModal");
-
-const successOrderId =
-    document.getElementById("successOrderId");
-
-const orderErrorModal =
-    document.getElementById("orderErrorModal");
-
-const orderErrorText =
-    document.getElementById("orderErrorText");
-
-const closeErrorModal =
-    document.getElementById("closeErrorModal");
-
-const errorModalOk =
-    document.getElementById("errorModalOk");
+let cartProducts = [];
+let appliedPromo = null;
 
 
-/* =========================================================
+/* ========================================
    HELPERS
-   ========================================================= */
+======================================== */
 
 function formatPrice(value) {
+
     const price =
         Number(value) || 0;
 
@@ -100,7 +24,10 @@ function formatPrice(value) {
 
 
 function escapeHtml(value) {
-    return String(value ?? "")
+
+    return String(
+        value ?? ""
+    )
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -109,7 +36,12 @@ function escapeHtml(value) {
 }
 
 
+/* ========================================
+   IMAGE
+======================================== */
+
 function getProductImageUrl(storagePath) {
+
     if (!storagePath) {
         return "";
     }
@@ -129,9 +61,10 @@ function getProductImageUrl(storagePath) {
         rawPath.replace(/^\/+/, "");
 
     if (path.startsWith("product-images/")) {
-        path = path.substring(
-            "product-images/".length
-        );
+        path =
+            path.substring(
+                "product-images/".length
+            );
     }
 
     const { data } =
@@ -143,874 +76,1122 @@ function getProductImageUrl(storagePath) {
 }
 
 
-/* =========================================================
-   UI STATE
-   ========================================================= */
+/* ========================================
+   PROMO STORAGE
+======================================== */
 
-function showLoading() {
-    if (checkoutLoading) {
-        checkoutLoading.hidden = false;
-    }
+function getStoredPromo() {
 
-    if (checkoutContent) {
-        checkoutContent.hidden = true;
-    }
+    try {
 
-    if (checkoutPageError) {
-        checkoutPageError.hidden = true;
+        const raw =
+            sessionStorage.getItem(
+                "appliedPromo"
+            );
+
+        if (!raw) {
+            return null;
+        }
+
+        const promo =
+            JSON.parse(raw);
+
+        if (
+            !promo ||
+            !promo.code
+        ) {
+            return null;
+        }
+
+        return promo;
+
+    } catch (error) {
+
+        console.error(
+            "Failed to read promo:",
+            error
+        );
+
+        return null;
     }
 }
 
 
-function showContent() {
-    if (checkoutLoading) {
-        checkoutLoading.hidden = true;
-    }
+function clearStoredPromo() {
 
-    if (checkoutPageError) {
-        checkoutPageError.hidden = true;
-    }
+    sessionStorage.removeItem(
+        "appliedPromo"
+    );
 
-    if (checkoutContent) {
-        checkoutContent.hidden = false;
-    }
+    appliedPromo = null;
 }
 
+
+/* ========================================
+   ERROR UI
+======================================== */
 
 function showPageError(message) {
-    if (checkoutLoading) {
-        checkoutLoading.hidden = true;
-    }
 
-    if (checkoutContent) {
-        checkoutContent.hidden = true;
-    }
+    const errorSection =
+        document.getElementById(
+            "checkoutPageError"
+        );
 
-    if (checkoutPageError) {
-        checkoutPageError.hidden = false;
-    }
+    const errorText =
+        document.getElementById(
+            "checkoutPageErrorText"
+        );
 
-    if (checkoutPageErrorText) {
-        checkoutPageErrorText.textContent =
+    const content =
+        document.getElementById(
+            "checkoutContent"
+        );
+
+    if (errorText) {
+        errorText.textContent =
             message;
     }
+
+    if (errorSection) {
+        errorSection.hidden = false;
+    }
+
+    if (content) {
+        content.hidden = true;
+    }
 }
 
 
-/* =========================================================
+function hidePageError() {
+
+    const errorSection =
+        document.getElementById(
+            "checkoutPageError"
+        );
+
+    if (errorSection) {
+        errorSection.hidden = true;
+    }
+}
+
+
+function showOrderError(message) {
+
+    const modal =
+        document.getElementById(
+            "orderErrorModal"
+        );
+
+    const text =
+        document.getElementById(
+            "orderErrorText"
+        );
+
+    if (text) {
+        text.textContent =
+            message;
+    }
+
+    if (modal) {
+        modal.hidden = false;
+    }
+}
+
+
+function closeOrderError() {
+
+    const modal =
+        document.getElementById(
+            "orderErrorModal"
+        );
+
+    if (modal) {
+        modal.hidden = true;
+    }
+}
+
+
+/* ========================================
    AUTH
-   ========================================================= */
+======================================== */
 
 async function getCurrentUser() {
+
     const {
-        data: { user },
+        data: { session },
         error
-    } = await supabase.auth.getUser();
+    } =
+        await supabase.auth.getSession();
 
     if (error) {
+
         console.error(
-            "Failed to get current user:",
+            "Auth error:",
             error
         );
 
         return null;
     }
 
-    return user || null;
+    return session?.user || null;
 }
 
 
-/* =========================================================
-   CART
-   ========================================================= */
+/* ========================================
+   LOAD CART
+======================================== */
 
-async function getUserCart() {
+async function loadCart() {
+
     if (!currentUser) {
-        return null;
+
+        window.location.href =
+            "login.html?redirect=checkout.html";
+
+        return false;
     }
+
 
     const {
-        data,
-        error
-    } = await supabase
-        .from("carts")
-        .select("*")
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .order(
-            "created_at",
-            {
-                ascending: true
-            }
-        )
-        .limit(1)
-        .maybeSingle();
+        data: cart,
+        error: cartError
+    } =
+        await supabase
+            .from("carts")
+            .select(`
+                id,
+                user_id,
+                created_at,
+                updated_at
+            `)
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .maybeSingle();
 
-    if (error) {
+
+    if (cartError) {
+
         console.error(
-            "Failed to load cart:",
-            error
+            "Cart error:",
+            cartError
         );
 
-        return null;
+        showPageError(
+            "خطا در دریافت سبد خرید."
+        );
+
+        return false;
     }
 
-    return data || null;
-}
 
+    if (!cart) {
 
-async function loadCartItems() {
-    cartItems = [];
+        showPageError(
+            "سبد خرید شما خالی است."
+        );
 
-    if (!currentCart) {
-        return;
+        return false;
     }
+
+
+    currentCart =
+        cart;
+
 
     const {
-        data,
-        error
-    } = await supabase
-        .from("cart_items")
-        .select(`
-            id,
-            cart_id,
-            product_variant_id,
-            quantity
-        `)
-        .eq(
-            "cart_id",
-            currentCart.id
-        )
-        .order(
-            "id",
-            {
-                ascending: true
-            }
-        );
+        data: items,
+        error: itemsError
+    } =
+        await supabase
+            .from("cart_items")
+            .select(`
+                id,
+                cart_id,
+                product_variant_id,
+                quantity,
+                created_at,
+                updated_at
+            `)
+            .eq(
+                "cart_id",
+                cart.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
 
-    if (error) {
+
+    if (itemsError) {
+
         console.error(
-            "Failed to load cart items:",
-            error
+            "Cart items error:",
+            itemsError
         );
 
-        return;
+        showPageError(
+            "خطا در دریافت محصولات سبد خرید."
+        );
+
+        return false;
     }
+
 
     cartItems =
-        data || [];
-}
+        items || [];
 
 
-/* =========================================================
-   PRODUCTS
-   ========================================================= */
+    if (!cartItems.length) {
 
-async function loadProducts() {
-    const {
-        data,
-        error
-    } = await supabase
-        .from("products")
-        .select(`
-            id,
-            name,
-            price,
-            is_active,
-            product_variants (
-                id,
-                size,
-                stock,
-                price,
-                sku
-            ),
-            product_images (
-                id,
-                storage_path,
-                alt_text,
-                is_primary,
-                sort_order
-            )
-        `)
-        .eq(
-            "is_active",
-            true
+        showPageError(
+            "سبد خرید شما خالی است."
         );
-
-    if (error) {
-        console.error(
-            "Failed to load products:",
-            error
-        );
-
-        products = [];
-
-        return;
-    }
-
-    products =
-        (data || []).map(product => {
-            const variants =
-                Array.isArray(
-                    product.product_variants
-                )
-                    ? product.product_variants
-                    : [];
-
-            const images =
-                Array.isArray(
-                    product.product_images
-                )
-                    ? product.product_images
-                    : [];
-
-            const primaryImage =
-                images.find(
-                    image => image.is_primary
-                ) ||
-                [...images].sort(
-                    (a, b) =>
-                        Number(
-                            a.sort_order || 0
-                        ) -
-                        Number(
-                            b.sort_order || 0
-                        )
-                )[0];
-
-            return {
-                id: product.id,
-                name: product.name,
-                price:
-                    Number(product.price) || 0,
-                image:
-                    getProductImageUrl(
-                        primaryImage?.storage_path
-                    ),
-                variants
-            };
-        });
-}
-
-
-/* =========================================================
-   PRODUCT HELPERS
-   ========================================================= */
-
-function findProductByVariantId(
-    variantId
-) {
-    return products.find(
-        product =>
-            Array.isArray(
-                product.variants
-            ) &&
-            product.variants.some(
-                variant =>
-                    Number(variant.id) ===
-                    Number(variantId)
-            )
-    );
-}
-
-
-function findVariant(
-    product,
-    variantId
-) {
-    if (
-        !product ||
-        !Array.isArray(
-            product.variants
-        )
-    ) {
-        return null;
-    }
-
-    return product.variants.find(
-        variant =>
-            Number(variant.id) ===
-            Number(variantId)
-    );
-}
-
-
-function getVariantPrice(
-    product,
-    variant
-) {
-    if (
-        variant &&
-        variant.price !== null &&
-        variant.price !== undefined
-    ) {
-        return (
-            Number(variant.price) || 0
-        );
-    }
-
-    return (
-        Number(product?.price) || 0
-    );
-}
-
-
-/* =========================================================
-   DISPLAY ITEMS
-   ========================================================= */
-
-function getDisplayItems() {
-    return cartItems
-        .map(item => {
-            const product =
-                findProductByVariantId(
-                    item.product_variant_id
-                );
-
-            if (!product) {
-                return null;
-            }
-
-            const variant =
-                findVariant(
-                    product,
-                    item.product_variant_id
-                );
-
-            const quantity =
-                Number(item.quantity) || 0;
-
-            const price =
-                getVariantPrice(
-                    product,
-                    variant
-                );
-
-            return {
-                id: item.id,
-                variantId:
-                    item.product_variant_id,
-                quantity,
-                product,
-                variant,
-                price,
-                total:
-                    price * quantity
-            };
-        })
-        .filter(Boolean);
-}
-
-
-/* =========================================================
-   RENDER ITEMS
-   ========================================================= */
-
-function renderItems() {
-    if (!checkoutItems) {
-        return;
-    }
-
-    const items =
-        getDisplayItems();
-
-    checkoutItems.innerHTML = "";
-
-    if (items.length === 0) {
-        checkoutItems.innerHTML = `
-            <div class="checkout-empty">
-                YOUR CART IS EMPTY
-            </div>
-        `;
-
-        return;
-    }
-
-    items.forEach(item => {
-        const element =
-            document.createElement("article");
-
-        element.className =
-            "checkout-item";
-
-        const size =
-            item.variant?.size ||
-            "One Size";
-
-        const image =
-            item.product.image;
-
-        element.innerHTML = `
-            <div class="checkout-item-image">
-
-                ${image
-                ? `
-                            <img
-                                src="${image}"
-                                alt="${escapeHtml(
-                    item.product.name
-                )}"
-                                loading="lazy"
-                                onerror="
-                                    this.style.display='none';
-                                "
-                            >
-                        `
-                : `
-                            <div class="checkout-no-image">
-                                NO IMAGE
-                            </div>
-                        `
-            }
-
-            </div>
-
-            <div class="checkout-item-details">
-
-                <h3 class="checkout-item-name">
-                    ${escapeHtml(
-                item.product.name
-            )}
-                </h3>
-
-                <div class="checkout-item-meta">
-                    SIZE:
-                    ${escapeHtml(
-                String(size)
-            )}
-                </div>
-
-                <div class="checkout-item-bottom">
-
-                    <span class="checkout-item-price">
-                        ${formatPrice(
-                item.price
-            )}
-                    </span>
-
-                    <span class="checkout-item-quantity">
-                        ×
-                        ${new Intl.NumberFormat(
-                "fa-IR"
-            ).format(
-                item.quantity
-            )}
-                    </span>
-
-                </div>
-
-            </div>
-        `;
-
-        checkoutItems.appendChild(
-            element
-        );
-    });
-}
-
-
-/* =========================================================
-   SUMMARY
-   ========================================================= */
-
-function renderSummary() {
-    const items =
-        getDisplayItems();
-
-    const subtotal =
-        items.reduce(
-            (
-                total,
-                item
-            ) =>
-                total +
-                item.total,
-            0
-        );
-
-    const shipping = 0;
-    const tax = 0;
-    const discount = 0;
-
-    const total =
-        subtotal +
-        shipping +
-        tax -
-        discount;
-
-    if (checkoutSubtotal) {
-        checkoutSubtotal.textContent =
-            formatPrice(subtotal);
-    }
-
-    if (checkoutShipping) {
-        checkoutShipping.textContent =
-            formatPrice(shipping);
-    }
-
-    if (checkoutTax) {
-        checkoutTax.textContent =
-            formatPrice(tax);
-    }
-
-    if (checkoutDiscount) {
-        checkoutDiscount.textContent =
-            formatPrice(discount);
-    }
-
-    if (checkoutTotal) {
-        checkoutTotal.textContent =
-            formatPrice(
-                Math.max(0, total)
-            );
-    }
-}
-
-
-/* =========================================================
-   CART COUNT
-   ========================================================= */
-
-function updateCartCount() {
-    if (!checkoutCartCount) {
-        return;
-    }
-
-    const count =
-        cartItems.reduce(
-            (
-                total,
-                item
-            ) =>
-                total +
-                (
-                    Number(
-                        item.quantity
-                    ) || 0
-                ),
-            0
-        );
-
-    checkoutCartCount.textContent =
-        `(${count})`;
-}
-
-
-/* =========================================================
-   PROFILE
-   ========================================================= */
-
-async function loadProfile() {
-    if (!currentUser) {
-        return;
-    }
-
-    const {
-        data,
-        error
-    } = await supabase
-        .from("profiles")
-        .select(`
-            full_name,
-            phone,
-            address
-        `)
-        .eq(
-            "id",
-            currentUser.id
-        )
-        .maybeSingle();
-
-    /*
-        Profile خراب نباشد باعث خراب شدن Checkout شود.
-        اگر خطایی باشد فقط اطلاعات Profile پر نمی‌شود.
-    */
-    if (error) {
-        console.error(
-            "Failed to load profile:",
-            error
-        );
-
-        return;
-    }
-
-    if (!data) {
-        return;
-    }
-
-    if (
-        shippingName &&
-        data.full_name
-    ) {
-        shippingName.value =
-            data.full_name;
-    }
-
-    if (
-        shippingPhone &&
-        data.phone
-    ) {
-        shippingPhone.value =
-            data.phone;
-    }
-
-    if (
-        shippingAddress &&
-        data.address
-    ) {
-        shippingAddress.value =
-            data.address;
-    }
-}
-
-
-/* =========================================================
-   VALIDATION
-   ========================================================= */
-
-function validateForm() {
-    const name =
-        shippingName?.value.trim() || "";
-
-    const phone =
-        shippingPhone?.value.trim() || "";
-
-    const address =
-        shippingAddress?.value.trim() || "";
-
-    if (!name) {
-        showOrderError(
-            "لطفاً نام و نام خانوادگی را وارد کنید."
-        );
-
-        shippingName?.focus();
 
         return false;
     }
 
-    if (!phone) {
-        showOrderError(
-            "لطفاً شماره تلفن را وارد کنید."
-        );
-
-        shippingPhone?.focus();
-
-        return false;
-    }
-
-    if (phone.length < 8) {
-        showOrderError(
-            "شماره تلفن واردشده معتبر نیست."
-        );
-
-        shippingPhone?.focus();
-
-        return false;
-    }
-
-    if (!address) {
-        showOrderError(
-            "لطفاً آدرس کامل را وارد کنید."
-        );
-
-        shippingAddress?.focus();
-
-        return false;
-    }
-
-    if (address.length < 10) {
-        showOrderError(
-            "لطفاً آدرس کامل‌تری وارد کنید."
-        );
-
-        shippingAddress?.focus();
-
-        return false;
-    }
 
     return true;
 }
 
 
-/* =========================================================
-   ORDER ERROR MODAL
-   ========================================================= */
+/* ========================================
+   LOAD PRODUCT VARIANTS
+======================================== */
 
-function showOrderError(message) {
-    if (!orderErrorModal) {
+async function loadProducts() {
+
+    if (!cartItems.length) {
         return;
     }
 
-    if (orderErrorText) {
-        orderErrorText.textContent =
-            message;
-    }
 
-    orderErrorModal.hidden =
-        false;
-}
-
-
-function hideOrderError() {
-    if (!orderErrorModal) {
-        return;
-    }
-
-    orderErrorModal.hidden =
-        true;
-}
-
-
-function translateError(error) {
-    const message =
-        String(
-            error?.message || ""
-        ).trim();
-
-    const lower =
-        message.toLowerCase();
-
-    if (
-        lower.includes(
-            "cart is empty"
-        )
-    ) {
-        return "سبد خرید شما خالی است.";
-    }
-
-    if (
-        lower.includes(
-            "cart not found"
-        )
-    ) {
-        return "سبد خرید پیدا نشد.";
-    }
-
-    if (
-        lower.includes(
-            "must be logged in"
-        )
-    ) {
-        return "برای ثبت سفارش باید وارد حساب خود شوید.";
-    }
-
-    if (
-        lower.includes(
-            "not enough stock"
-        )
-    ) {
-        return (
-            "موجودی یکی از محصولات برای تعداد درخواستی کافی نیست. "
-            +
-            "لطفاً سبد خرید را بررسی کنید."
+    const variantIds =
+        cartItems.map(
+            item =>
+                item.product_variant_id
         );
+
+
+    const {
+        data,
+        error
+    } =
+        await supabase
+            .from("product_variants")
+            .select(`
+                id,
+                product_id,
+                size,
+                sku,
+                stock,
+                price,
+
+                products (
+                    id,
+                    name,
+                    slug,
+                    description,
+                    material,
+                    is_active,
+
+                    product_images (
+                        id,
+                        storage_path,
+                        alt_text,
+                        is_primary,
+                        sort_order
+                    )
+                )
+            `)
+            .in(
+                "id",
+                variantIds
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Product variants error:",
+            error
+        );
+
+        showPageError(
+            "خطا در دریافت اطلاعات محصولات."
+        );
+
+        return;
     }
 
-    if (
-        lower.includes(
-            "shipping name"
-        )
-    ) {
-        return "نام گیرنده را وارد کنید.";
-    }
 
-    if (
-        lower.includes(
-            "shipping phone"
-        )
-    ) {
-        return "شماره تلفن را وارد کنید.";
-    }
+    cartProducts =
+        (data || []).map(
+            variant => {
 
-    if (
-        lower.includes(
-            "shipping address"
-        )
-    ) {
-        return "آدرس را وارد کنید.";
-    }
+                const product =
+                    Array.isArray(
+                        variant.products
+                    )
+                        ? variant.products[0]
+                        : variant.products;
 
-    return (
-        message ||
-        "ثبت سفارش انجام نشد. دوباره تلاش کنید."
+
+                const images =
+                    [
+                        ...(product?.product_images || [])
+                    ].sort(
+                        (a, b) => {
+
+                            if (
+                                a.is_primary &&
+                                !b.is_primary
+                            ) {
+                                return -1;
+                            }
+
+                            if (
+                                !a.is_primary &&
+                                b.is_primary
+                            ) {
+                                return 1;
+                            }
+
+                            return (
+                                Number(a.sort_order || 0) -
+                                Number(b.sort_order || 0)
+                            );
+                        }
+                    );
+
+
+                const image =
+                    images.length
+                        ? getProductImageUrl(
+                            images[0].storage_path
+                        )
+                        : "";
+
+
+                return {
+
+                    variantId:
+                        variant.id,
+
+                    productId:
+                        variant.product_id,
+
+                    name:
+                        product?.name ||
+                        "Product",
+
+                    slug:
+                        product?.slug ||
+                        "",
+
+                    material:
+                        product?.material ||
+                        "",
+
+                    size:
+                        variant.size ||
+                        "One Size",
+
+                    sku:
+                        variant.sku ||
+                        "",
+
+                    stock:
+                        Number(
+                            variant.stock
+                        ) || 0,
+
+                    price:
+                        Number(
+                            variant.price
+                        ) || 0,
+
+                    image
+                };
+            }
+        );
+}
+
+
+/* ========================================
+   FIND PRODUCT
+======================================== */
+
+function getCartProduct(item) {
+
+    return cartProducts.find(
+        product =>
+            Number(product.variantId) ===
+            Number(item.product_variant_id)
     );
 }
 
 
-/* =========================================================
-   SUCCESS
-   ========================================================= */
+/* ========================================
+   CALCULATE SUBTOTAL
+======================================== */
 
-function showSuccess(orderId) {
-    if (
-        successOrderId
-    ) {
-        successOrderId.textContent =
-            `#${orderId}`;
-    }
+function calculateSubtotal() {
 
-    if (successModal) {
-        successModal.hidden =
-            false;
-    }
+    return cartItems.reduce(
+        (total, item) => {
+
+            const product =
+                getCartProduct(item);
+
+            if (!product) {
+                return total;
+            }
+
+            const quantity =
+                Number(item.quantity) || 0;
+
+            return (
+                total +
+                product.price * quantity
+            );
+        },
+        0
+    );
 }
 
 
-/* =========================================================
-   CREATE ORDER
-   ========================================================= */
+/* ========================================
+   VALIDATE PROMO
+======================================== */
 
-async function createOrder() {
+async function validatePromo(
+    code,
+    subtotal
+) {
+
+    if (!code) {
+        return null;
+    }
+
+
     const {
         data,
         error
     } =
         await supabase.rpc(
-            "create_order",
+            "validate_promo_code",
             {
-                p_shipping_name:
-                    shippingName.value.trim(),
-
-                p_shipping_phone:
-                    shippingPhone.value.trim(),
-
-                p_shipping_address:
-                    shippingAddress.value.trim()
+                p_code: code,
+                p_order_subtotal: subtotal
             }
         );
 
+
     if (error) {
+
+        console.error(
+            "Promo validation error:",
+            error
+        );
+
         throw error;
     }
 
-    return data;
+
+    if (
+        !data ||
+        data.valid !== true
+    ) {
+
+        return {
+            valid: false,
+            message:
+                data?.message ||
+                "کد تخفیف نامعتبر است."
+        };
+    }
+
+
+    return {
+
+        valid: true,
+
+        code:
+            String(
+                data.code || code
+            ).toUpperCase(),
+
+        discount_type:
+            data.discount_type,
+
+        discount_value:
+            Number(
+                data.discount_value
+            ) || 0,
+
+        discount_amount:
+            Number(
+                data.discount_amount
+            ) || 0,
+
+        minimum_order:
+            Number(
+                data.minimum_order
+            ) || 0
+    };
 }
 
 
-/* =========================================================
-   SUBMIT
-   ========================================================= */
+/* ========================================
+   REFRESH PROMO
+======================================== */
 
-async function handleSubmit(event) {
-    event.preventDefault();
+async function refreshAppliedPromo() {
+
+    appliedPromo =
+        getStoredPromo();
+
+
+    if (!appliedPromo?.code) {
+        return;
+    }
+
+
+    const subtotal =
+        calculateSubtotal();
+
+
+    if (subtotal <= 0) {
+
+        clearStoredPromo();
+
+        return;
+    }
+
+
+    try {
+
+        const promo =
+            await validatePromo(
+                appliedPromo.code,
+                subtotal
+            );
+
+
+        if (
+            !promo ||
+            promo.valid !== true
+        ) {
+
+            clearStoredPromo();
+
+            return;
+        }
+
+
+        appliedPromo =
+            promo;
+
+
+        sessionStorage.setItem(
+            "appliedPromo",
+            JSON.stringify(
+                promo
+            )
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Failed to refresh promo:",
+            error
+        );
+
+        clearStoredPromo();
+    }
+}
+
+
+/* ========================================
+   RENDER CART ITEMS
+======================================== */
+
+function renderItems() {
+
+    const container =
+        document.getElementById(
+            "checkoutItems"
+        );
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    cartItems.forEach(
+        item => {
+
+            const product =
+                getCartProduct(item);
+
+            if (!product) {
+                return;
+            }
+
+
+            const quantity =
+                Number(item.quantity) || 0;
+
+
+            const total =
+                product.price * quantity;
+
+
+            const element =
+                document.createElement(
+                    "article"
+                );
+
+
+            element.className =
+                "checkout-item";
+
+
+            element.innerHTML = `
+
+                <div class="checkout-item-image">
+
+                    ${product.image
+                    ? `
+                            <img
+                                src="${escapeHtml(product.image)}"
+                                alt="${escapeHtml(product.name)}"
+                            >
+                          `
+                    : `
+                            <div class="checkout-item-no-image">
+                                N
+                            </div>
+                          `
+                }
+
+                </div>
+
+
+                <div class="checkout-item-info">
+
+                    <h3>
+                        ${escapeHtml(product.name)}
+                    </h3>
+
+                    <p>
+                        SIZE:
+                        ${escapeHtml(product.size)}
+                    </p>
+
+                    ${product.sku
+                    ? `
+                            <p>
+                                SKU:
+                                ${escapeHtml(product.sku)}
+                            </p>
+                          `
+                    : ""
+                }
+
+                    <p>
+                        QTY:
+                        ${quantity}
+                    </p>
+
+                </div>
+
+
+                <div class="checkout-item-price">
+
+                    ${formatPrice(total)}
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                element
+            );
+        }
+    );
+}
+
+
+/* ========================================
+   RENDER SUMMARY
+======================================== */
+
+function renderSummary() {
+
+    const subtotal =
+        calculateSubtotal();
+
+    const shipping =
+        0;
+
+    const tax =
+        0;
+
+    const discount =
+        Math.min(
+            Number(
+                appliedPromo?.discount_amount
+            ) || 0,
+            subtotal
+        );
+
+    const total =
+        Math.max(
+            0,
+            subtotal +
+            shipping +
+            tax -
+            discount
+        );
+
+
+    const subtotalElement =
+        document.getElementById(
+            "checkoutSubtotal"
+        );
+
+    const shippingElement =
+        document.getElementById(
+            "checkoutShipping"
+        );
+
+    const taxElement =
+        document.getElementById(
+            "checkoutTax"
+        );
+
+    const discountElement =
+        document.getElementById(
+            "checkoutDiscount"
+        );
+
+    const totalElement =
+        document.getElementById(
+            "checkoutTotal"
+        );
+
+
+    if (subtotalElement) {
+        subtotalElement.textContent =
+            formatPrice(subtotal);
+    }
+
+
+    if (shippingElement) {
+        shippingElement.textContent =
+            formatPrice(shipping);
+    }
+
+
+    if (taxElement) {
+        taxElement.textContent =
+            formatPrice(tax);
+    }
+
+
+    if (discountElement) {
+
+        discountElement.textContent =
+            discount > 0
+                ? `-${formatPrice(discount)}`
+                : formatPrice(0);
+    }
+
+
+    if (totalElement) {
+        totalElement.textContent =
+            formatPrice(total);
+    }
+}
+
+
+/* ========================================
+   CART COUNT
+======================================== */
+
+function updateCartCount() {
+
+    const count =
+        cartItems.reduce(
+            (total, item) =>
+                total +
+                (
+                    Number(item.quantity) || 0
+                ),
+            0
+        );
+
+
+    const element =
+        document.getElementById(
+            "checkoutCartCount"
+        );
+
+
+    if (element) {
+
+        element.textContent =
+            `(${new Intl.NumberFormat("fa-IR").format(count)})`;
+    }
+}
+
+
+/* ========================================
+   FORM VALIDATION
+======================================== */
+
+function getShippingData() {
+
+    const nameInput =
+        document.getElementById(
+            "shippingName"
+        );
+
+    const phoneInput =
+        document.getElementById(
+            "shippingPhone"
+        );
+
+    const addressInput =
+        document.getElementById(
+            "shippingAddress"
+        );
+
+
+    const name =
+        nameInput?.value.trim() || "";
+
+    const phone =
+        phoneInput?.value.trim() || "";
+
+    const address =
+        addressInput?.value.trim() || "";
+
+
+    if (!name) {
+
+        showOrderError(
+            "لطفاً نام و نام خانوادگی گیرنده را وارد کنید."
+        );
+
+        nameInput?.focus();
+
+        return null;
+    }
+
+
+    if (!phone) {
+
+        showOrderError(
+            "لطفاً شماره تماس را وارد کنید."
+        );
+
+        phoneInput?.focus();
+
+        return null;
+    }
+
+
+    if (!address) {
+
+        showOrderError(
+            "لطفاً آدرس کامل خود را وارد کنید."
+        );
+
+        addressInput?.focus();
+
+        return null;
+    }
+
+
+    return {
+        name,
+        phone,
+        address
+    };
+}
+
+
+/* ========================================
+   RPC ERROR TRANSLATION
+======================================== */
+
+function translateRpcError(message) {
+
+    const text =
+        String(
+            message || ""
+        ).toLowerCase();
+
+
+    if (text.includes("cart is empty")) {
+        return "سبد خرید شما خالی است.";
+    }
+
+
+    if (text.includes("insufficient stock")) {
+        return "موجودی یکی از محصولات کافی نیست.";
+    }
+
+
+    if (text.includes("shipping name")) {
+        return "نام و نام خانوادگی الزامی است.";
+    }
+
+
+    if (text.includes("shipping phone")) {
+        return "شماره تماس الزامی است.";
+    }
+
+
+    if (text.includes("shipping address")) {
+        return "آدرس ارسال الزامی است.";
+    }
+
+
+    if (text.includes("must be logged in")) {
+        return "لطفاً ابتدا وارد حساب کاربری شوید.";
+    }
+
+
+    if (text.includes("cart not found")) {
+        return "سبد خرید پیدا نشد.";
+    }
+
+
+    if (text.includes("promo")) {
+        return "کد تخفیف معتبر نیست یا شرایط استفاده از آن برقرار نیست.";
+    }
+
+
+    if (text.includes("order not found")) {
+        return "سفارش موردنظر پیدا نشد.";
+    }
+
+
+    if (text.includes("already paid")) {
+        return "این سفارش قبلاً پرداخت شده است.";
+    }
+
+
+    if (text.includes("active payment already exists")) {
+        return "برای این سفارش یک تراکنش فعال وجود دارد.";
+    }
+
+
+    if (text.includes("order is cancelled")) {
+        return "این سفارش لغو شده است.";
+    }
+
+
+    return (
+        message ||
+        "خطایی هنگام انجام عملیات رخ داد."
+    );
+}
+
+
+/* ========================================
+   CREATE PAYMENT
+======================================== */
+
+async function createPayment(orderId) {
+
+    if (!orderId) {
+        throw new Error(
+            "Order ID is required."
+        );
+    }
+
+
+    /*
+     * The amount is NOT sent from the browser.
+     *
+     * create_payment() reads orders.total
+     * directly from PostgreSQL.
+     */
+
+
+    const {
+        data: paymentId,
+        error
+    } =
+        await supabase.rpc(
+            "create_payment",
+            {
+                p_order_id:
+                    Number(orderId),
+
+                p_gateway:
+                    "unknown"
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Create payment error:",
+            error
+        );
+
+        throw error;
+    }
+
+
+    if (!paymentId) {
+
+        throw new Error(
+            "Payment ID was not returned."
+        );
+    }
+
+
+    return paymentId;
+}
+
+
+/* ========================================
+   PLACE ORDER + CREATE PAYMENT
+======================================== */
+
+async function placeOrder() {
 
     if (!currentUser) {
+
         window.location.href =
             "login.html?redirect=checkout.html";
 
         return;
     }
 
-    if (!validateForm()) {
-        return;
-    }
 
     if (
-        !cartItems ||
-        cartItems.length === 0
+        !currentCart ||
+        !cartItems.length
     ) {
+
         showOrderError(
             "سبد خرید شما خالی است."
         );
@@ -1018,158 +1199,347 @@ async function handleSubmit(event) {
         return;
     }
 
-    if (!placeOrderBtn) {
+
+    const shipping =
+        getShippingData();
+
+
+    if (!shipping) {
         return;
     }
 
-    placeOrderBtn.disabled =
-        true;
+
+    const button =
+        document.getElementById(
+            "placeOrderBtn"
+        );
+
 
     const buttonText =
-        placeOrderBtn.querySelector(
+        button?.querySelector(
             ".checkout-submit-text"
         );
 
-    if (buttonText) {
-        buttonText.textContent =
-            "PROCESSING...";
-    }
+
+    const originalText =
+        buttonText?.textContent ||
+        "ثبت سفارش";
+
 
     try {
 
-        const orderId =
-            await createOrder();
-
-        if (
-            orderId === null ||
-            orderId === undefined
-        ) {
-            throw new Error(
-                "Order ID was not returned."
-            );
+        if (button) {
+            button.disabled = true;
         }
 
+
+        if (buttonText) {
+            buttonText.textContent =
+                "در حال ثبت سفارش...";
+        }
+
+
         /*
-            RPC در صورت موفقیت cart_items را پاک کرده.
-            برای هماهنگ شدن UI هم state را پاک می‌کنیم.
-        */
-        cartItems = [];
+         * Revalidate promo immediately
+         * before creating the order.
+         */
 
-        renderItems();
-        renderSummary();
-        updateCartCount();
+        await refreshAppliedPromo();
 
-        showSuccess(
+
+        const promoCode =
+            appliedPromo?.code ||
+            null;
+
+
+        /* ====================================
+           STEP 1
+           Create Order
+        ==================================== */
+
+        const {
+            data: orderId,
+            error: orderError
+        } =
+            await supabase.rpc(
+                "create_order_from_cart",
+                {
+
+                    p_shipping_name:
+                        shipping.name,
+
+                    p_shipping_phone:
+                        shipping.phone,
+
+                    p_shipping_address:
+                        shipping.address,
+
+                    p_promo_code:
+                        promoCode,
+
+                    p_shipping:
+                        0,
+
+                    p_tax:
+                        0
+                }
+            );
+
+
+        if (orderError) {
+
+            console.error(
+                "Create order error:",
+                orderError
+            );
+
+            showOrderError(
+                translateRpcError(
+                    orderError.message
+                )
+            );
+
+            return;
+        }
+
+
+        if (!orderId) {
+
+            showOrderError(
+                "سفارش ایجاد شد اما شناسه سفارش دریافت نشد."
+            );
+
+            return;
+        }
+
+
+        /*
+         * Save order ID temporarily.
+         */
+
+        sessionStorage.setItem(
+            "lastOrderId",
+            String(orderId)
+        );
+
+
+        /* ====================================
+           STEP 2
+           Create Payment
+        ==================================== */
+
+        if (buttonText) {
+            buttonText.textContent =
+                "در حال آماده‌سازی پرداخت...";
+        }
+
+
+        let paymentId;
+
+
+        try {
+
+            paymentId =
+                await createPayment(
+                    orderId
+                );
+
+        } catch (paymentError) {
+
+            console.error(
+                "Payment creation failed:",
+                paymentError
+            );
+
+
+            /*
+             * Important:
+             *
+             * The order has already been created.
+             * We do NOT silently pretend the order
+             * was successfully paid.
+             *
+             * The order remains unpaid/pending
+             * and can be handled later.
+             */
+
+            showOrderError(
+                `سفارش #${orderId} ثبت شد، اما آماده‌سازی پرداخت انجام نشد.`
+            );
+
+            return;
+        }
+
+
+        /*
+         * Save payment ID so the next payment
+         * step can use it.
+         */
+
+        sessionStorage.setItem(
+            "lastPaymentId",
+            String(paymentId)
+        );
+
+
+        /*
+         * Promo is now attached to the order
+         * and no longer needs to remain
+         * in checkout session storage.
+         */
+
+        clearStoredPromo();
+
+
+        /*
+         * IMPORTANT:
+         *
+         * We do NOT show the final success modal
+         * yet.
+         *
+         * Payment has only been CREATED.
+         * It has NOT been VERIFIED.
+         *
+         * The next step will redirect the user
+         * to the real payment gateway.
+         */
+
+
+        console.log(
+            "Order created:",
             orderId
         );
+
+        console.log(
+            "Payment created:",
+            paymentId
+        );
+
+
+        showOrderError(
+            `سفارش #${orderId} ایجاد شد و آماده پرداخت است. اتصال درگاه در مرحله بعد انجام می‌شود.`
+        );
+
 
     } catch (error) {
 
         console.error(
-            "Order creation failed:",
+            "Checkout error:",
             error
         );
 
+
         showOrderError(
-            translateError(error)
+            translateRpcError(
+                error?.message
+            )
         );
 
     } finally {
 
-        placeOrderBtn.disabled =
-            false;
+        if (button) {
+            button.disabled = false;
+        }
+
 
         if (buttonText) {
             buttonText.textContent =
-                "PLACE ORDER";
+                originalText;
         }
     }
 }
 
 
-/* =========================================================
-   EVENTS
-   ========================================================= */
+/* ========================================
+   EVENT LISTENERS
+======================================== */
 
-function setupEvents() {
+function setupEventListeners() {
 
-    if (eventsInitialized) {
-        return;
-    }
+    const form =
+        document.getElementById(
+            "checkoutForm"
+        );
 
-    eventsInitialized = true;
 
-    if (checkoutForm) {
-        checkoutForm.addEventListener(
+    if (form) {
+
+        form.addEventListener(
             "submit",
-            handleSubmit
+            async event => {
+
+                event.preventDefault();
+
+                await placeOrder();
+            }
         );
     }
 
-    if (closeErrorModal) {
-        closeErrorModal.addEventListener(
+
+    const closeErrorButton =
+        document.getElementById(
+            "closeErrorModal"
+        );
+
+
+    if (closeErrorButton) {
+
+        closeErrorButton.addEventListener(
             "click",
-            hideOrderError
+            closeOrderError
         );
     }
 
-    if (errorModalOk) {
-        errorModalOk.addEventListener(
+
+    const errorOkButton =
+        document.getElementById(
+            "errorModalOk"
+        );
+
+
+    if (errorOkButton) {
+
+        errorOkButton.addEventListener(
             "click",
-            hideOrderError
+            closeOrderError
         );
     }
 
-    document
-        .querySelectorAll(
+
+    const errorBackdrop =
+        document.querySelector(
             "[data-close-error]"
-        )
-        .forEach(element => {
-            element.addEventListener(
-                "click",
-                hideOrderError
-            );
-        });
+        );
+
+
+    if (errorBackdrop) {
+
+        errorBackdrop.addEventListener(
+            "click",
+            closeOrderError
+        );
+    }
 }
 
 
-/* =========================================================
-   AUTH STATE
-   ========================================================= */
-
-supabase.auth.onAuthStateChange(
-    (
-        event,
-        session
-    ) => {
-
-        if (
-            event === "SIGNED_OUT" ||
-            !session
-        ) {
-
-            window.location.href =
-                "login.html?redirect=checkout.html";
-        }
-    }
-);
-
-
-/* =========================================================
+/* ========================================
    INIT
-   ========================================================= */
+======================================== */
 
 async function initCheckout() {
 
-    showLoading();
-
     try {
 
+        hidePageError();
+
+
         /*
-            1. User
-        */
+         * Get authenticated user.
+         */
+
         currentUser =
             await getCurrentUser();
+
 
         if (!currentUser) {
 
@@ -1181,15 +1551,29 @@ async function initCheckout() {
 
 
         /*
-            2. Cart
-        */
-        currentCart =
-            await getUserCart();
+         * Load cart.
+         */
 
-        if (!currentCart) {
+        const hasCart =
+            await loadCart();
+
+
+        if (!hasCart) {
+            return;
+        }
+
+
+        /*
+         * Load products.
+         */
+
+        await loadProducts();
+
+
+        if (!cartProducts.length) {
 
             showPageError(
-                "سبد خرید شما پیدا نشد."
+                "محصولات سبد خرید پیدا نشدند."
             );
 
             return;
@@ -1197,53 +1581,16 @@ async function initCheckout() {
 
 
         /*
-            3. Load cart + products
-        */
-        await Promise.all([
-            loadCartItems(),
-            loadProducts()
-        ]);
+         * Load and revalidate promo.
+         */
+
+        await refreshAppliedPromo();
 
 
         /*
-            4. Check cart
-        */
-        if (
-            cartItems.length === 0
-        ) {
+         * Render.
+         */
 
-            window.location.href =
-                "cart.html";
-
-            return;
-        }
-
-
-        /*
-            5. Check products
-        */
-        if (
-            products.length === 0
-        ) {
-
-            showPageError(
-                "محصولات سفارش قابل بارگذاری نیستند."
-            );
-
-            return;
-        }
-
-
-        /*
-            6. Profile
-            Profile should never block checkout.
-        */
-        await loadProfile();
-
-
-        /*
-            7. Render
-        */
         renderItems();
 
         renderSummary();
@@ -1252,32 +1599,39 @@ async function initCheckout() {
 
 
         /*
-            8. Events
-        */
-        setupEvents();
+         * Events.
+         */
+
+        setupEventListeners();
 
 
         /*
-            9. Finally show checkout
-        */
-        showContent();
+         * Show content.
+         */
+
+        const content =
+            document.getElementById(
+                "checkoutContent"
+            );
+
+
+        if (content) {
+            content.hidden = false;
+        }
 
     } catch (error) {
 
         console.error(
-            "Checkout initialization failed:",
+            "Checkout initialization error:",
             error
         );
 
+
         showPageError(
-            "خطا در بارگذاری Checkout."
+            "خطایی هنگام بارگذاری صفحه پرداخت رخ داد."
         );
     }
 }
 
-
-/* =========================================================
-   START
-   ========================================================= */
 
 initCheckout();

@@ -18,4 +18,4 @@ Thumbs.db
 
 # Logs
 *.log
-/node_modules
+/node_moduleslocal_backup.sql

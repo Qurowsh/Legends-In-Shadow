@@ -1,10 +1,11 @@
 import { supabase } from "./js/supabase.js";
 
 let products = [];
-let discountRate = 0;
+let appliedPromo = null;
 let currentUser = null;
 let currentUserCart = null;
 let currentDbCartItems = [];
+
 
 /* =========================================================
    PRICE
@@ -34,15 +35,12 @@ function getProductImageUrl(storagePath) {
     return "";
   }
 
-  // اگر storage_path خودش URL کامل باشد
   if (/^https?:\/\//i.test(rawPath)) {
     return rawPath;
   }
 
-  // اگر path معمولی داخل bucket باشد
   let path = rawPath.replace(/^\/+/, "");
 
-  // اگر اسم bucket هم داخل storage_path ذخیره شده باشد
   if (path.startsWith("product-images/")) {
     path = path.substring("product-images/".length);
   }
@@ -67,10 +65,15 @@ function getGuestCart() {
 
     return Array.isArray(cart) ? cart : [];
   } catch (error) {
-    console.error("Failed to read guest cart:", error);
+    console.error(
+      "Failed to read guest cart:",
+      error
+    );
+
     return [];
   }
 }
+
 
 function saveGuestCart(cart) {
   localStorage.setItem(
@@ -80,22 +83,93 @@ function saveGuestCart(cart) {
 }
 
 
+function clearGuestCart() {
+  localStorage.removeItem("cart");
+}
+
+
+/* =========================================================
+   PROMO STORAGE
+========================================================= */
+
+function getStoredPromo() {
+  try {
+    const raw =
+      sessionStorage.getItem(
+        "appliedPromo"
+      );
+
+    if (!raw) {
+      return null;
+    }
+
+    const promo =
+      JSON.parse(raw);
+
+    if (
+      !promo ||
+      !promo.code
+    ) {
+      return null;
+    }
+
+    return promo;
+
+  } catch (error) {
+    console.error(
+      "Failed to read stored promo:",
+      error
+    );
+
+    return null;
+  }
+}
+
+
+function saveStoredPromo(promo) {
+  if (!promo) {
+    clearStoredPromo();
+    return;
+  }
+
+  sessionStorage.setItem(
+    "appliedPromo",
+    JSON.stringify(promo)
+  );
+
+  appliedPromo = promo;
+}
+
+
+function clearStoredPromo() {
+  sessionStorage.removeItem(
+    "appliedPromo"
+  );
+
+  appliedPromo = null;
+}
+
+
 /* =========================================================
    AUTH
 ========================================================= */
 
 async function getCurrentUser() {
   const {
-    data: { user },
+    data: { session },
     error
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
 
   if (error) {
-    console.error("Failed to get current user:", error);
+    console.error(
+      "Failed to get auth session:",
+      error
+    );
+
     return null;
   }
 
-  return user || null;
+  return session?.user || null;
 }
 
 
@@ -104,87 +178,117 @@ async function getCurrentUser() {
 ========================================================= */
 
 async function loadProducts() {
-  const { data, error } = await supabase
+  const {
+    data,
+    error
+  } = await supabase
     .from("products")
     .select(`
-            id,
-            name,
-            slug,
-            description,
-            type,
-            price,
-            material,
-            is_active,
-            categories (
-                name,
-                slug
-            ),
-            product_variants (
-                id,
-                size,
-                stock,
-                price
-            ),
-            product_images (
-                id,
-                storage_path,
-                alt_text,
-                is_primary,
-                sort_order
-            )
-        `)
+      id,
+      name,
+      slug,
+      description,
+      type,
+      price,
+      material,
+      is_active,
+      categories (
+        name,
+        slug
+      ),
+      product_variants (
+        id,
+        size,
+        sku,
+        stock,
+        price
+      ),
+      product_images (
+        id,
+        storage_path,
+        alt_text,
+        is_primary,
+        sort_order
+      )
+    `)
     .eq("is_active", true);
 
   if (error) {
-    console.error("Failed to load products:", error);
+    console.error(
+      "Failed to load products:",
+      error
+    );
+
     products = [];
     return;
   }
 
-  products = (data || []).map(product => {
-    const variants = Array.isArray(product.product_variants)
-      ? product.product_variants
-      : [];
+  products =
+    (data || []).map(product => {
 
-    const images = Array.isArray(product.product_images)
-      ? product.product_images
-      : [];
+      const variants =
+        Array.isArray(
+          product.product_variants
+        )
+          ? product.product_variants
+          : [];
 
-    const primaryImage =
-      images.find(image => image.is_primary) ||
-      [...images].sort(
-        (a, b) =>
-          Number(a.sort_order || 0) -
-          Number(b.sort_order || 0)
-      )[0];
+      const images =
+        Array.isArray(
+          product.product_images
+        )
+          ? product.product_images
+          : [];
 
-    const imageUrl = getProductImageUrl(
-      primaryImage?.storage_path
-    );
+      const primaryImage =
+        images.find(
+          image =>
+            image.is_primary
+        ) ||
+        [...images].sort(
+          (a, b) =>
+            Number(
+              a.sort_order || 0
+            ) -
+            Number(
+              b.sort_order || 0
+            )
+        )[0];
 
-    const variantStocks = variants.map(
-      variant => Number(variant.stock) || 0
-    );
+      const imageUrl =
+        getProductImageUrl(
+          primaryImage?.storage_path
+        );
 
-    const totalStock = variantStocks.reduce(
-      (sum, stock) => sum + stock,
-      0
-    );
+      const totalStock =
+        variants.reduce(
+          (sum, variant) =>
+            sum +
+            (
+              Number(
+                variant.stock
+              ) || 0
+            ),
+          0
+        );
 
-    return {
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      description: product.description,
-      type: product.type,
-      material: product.material,
-      price: Number(product.price) || 0,
-      stock: totalStock,
-      image: imageUrl,
-      images,
-      variants
-    };
-  });
+      return {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        description: product.description,
+        type: product.type,
+        material: product.material,
+        price:
+          Number(
+            product.price
+          ) || 0,
+        stock: totalStock,
+        image: imageUrl,
+        images,
+        variants
+      };
+    });
 }
 
 
@@ -194,46 +298,75 @@ async function loadProducts() {
 
 function getProduct(productId) {
   return products.find(
-    product => Number(product.id) === Number(productId)
+    product =>
+      Number(product.id) ===
+      Number(productId)
   );
 }
 
-function getProductVariant(product, variantId) {
-  if (!product || !Array.isArray(product.variants)) {
+
+function getProductVariant(
+  product,
+  variantId
+) {
+  if (
+    !product ||
+    !Array.isArray(
+      product.variants
+    )
+  ) {
     return null;
   }
 
   return product.variants.find(
-    variant => Number(variant.id) === Number(variantId)
+    variant =>
+      Number(variant.id) ===
+      Number(variantId)
   );
 }
 
-function getProductPrice(product, variantId = null) {
+
+function getProductPrice(
+  product,
+  variantId = null
+) {
   if (!product) {
     return 0;
   }
 
-  if (variantId) {
-    const variant = getProductVariant(
-      product,
-      variantId
-    );
+  if (
+    variantId !== null &&
+    variantId !== undefined
+  ) {
+    const variant =
+      getProductVariant(
+        product,
+        variantId
+      );
 
     if (
       variant &&
       variant.price !== null &&
       variant.price !== undefined
     ) {
-      return Number(variant.price) || 0;
+      return (
+        Number(
+          variant.price
+        ) || 0
+      );
     }
   }
 
-  return Number(product.price) || 0;
+  return (
+    Number(
+      product.price
+    ) || 0
+  );
 }
 
 
 /* =========================================================
-   USER CART
+   GET OR CREATE USER CART
 ========================================================= */
 
 async function getOrCreateUserCart() {
@@ -241,16 +374,24 @@ async function getOrCreateUserCart() {
     return null;
   }
 
-  const { data: existingCart, error: fetchError } =
-    await supabase
-      .from("carts")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .order("created_at", {
+  const {
+    data: existingCart,
+    error: fetchError
+  } = await supabase
+    .from("carts")
+    .select("*")
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {
         ascending: true
-      })
-      .limit(1)
-      .maybeSingle();
+      }
+    )
+    .limit(1)
+    .maybeSingle();
 
   if (fetchError) {
     console.error(
@@ -265,14 +406,17 @@ async function getOrCreateUserCart() {
     return existingCart;
   }
 
-  const { data: newCart, error: createError } =
-    await supabase
-      .from("carts")
-      .insert({
-        user_id: currentUser.id
-      })
-      .select()
-      .single();
+  const {
+    data: newCart,
+    error: createError
+  } = await supabase
+    .from("carts")
+    .insert({
+      user_id:
+        currentUser.id
+    })
+    .select()
+    .single();
 
   if (createError) {
     console.error(
@@ -298,15 +442,27 @@ async function loadUserCartItems() {
     return;
   }
 
-  const { data, error } = await supabase
+  const {
+    data,
+    error
+  } = await supabase
     .from("cart_items")
     .select(`
-            id,
-            cart_id,
-            product_variant_id,
-            quantity
-        `)
-    .eq("cart_id", currentUserCart.id);
+      id,
+      cart_id,
+      product_variant_id,
+      quantity
+    `)
+    .eq(
+      "cart_id",
+      currentUserCart.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending: true
+      }
+    );
 
   if (error) {
     console.error(
@@ -317,7 +473,240 @@ async function loadUserCartItems() {
     return;
   }
 
-  currentDbCartItems = data || [];
+  currentDbCartItems =
+    data || [];
+}
+
+
+/* =========================================================
+   MERGE GUEST CART → USER CART
+========================================================= */
+
+async function mergeGuestCartIntoUserCart() {
+  if (
+    !currentUser ||
+    !currentUserCart
+  ) {
+    return;
+  }
+
+  const guestCart =
+    getGuestCart();
+
+  if (
+    !Array.isArray(guestCart) ||
+    guestCart.length === 0
+  ) {
+    return;
+  }
+
+  console.log(
+    "Merging guest cart into user cart..."
+  );
+
+  let allTransferred =
+    true;
+
+  for (
+    const guestItem of guestCart
+  ) {
+
+    const productId =
+      guestItem.productId ??
+      guestItem.id;
+
+    const quantity =
+      Number(
+        guestItem.quantity
+      ) || 1;
+
+    if (
+      !productId ||
+      quantity <= 0
+    ) {
+      allTransferred = false;
+      continue;
+    }
+
+    const product =
+      getProduct(
+        productId
+      );
+
+    if (!product) {
+      console.warn(
+        "Product not found while merging guest cart:",
+        productId
+      );
+
+      allTransferred = false;
+      continue;
+    }
+
+    let variantId =
+      guestItem.variantId ??
+      guestItem.product_variant_id ??
+      null;
+
+    if (
+      !variantId &&
+      Array.isArray(
+        product.variants
+      ) &&
+      product.variants.length > 0
+    ) {
+
+      const availableVariant =
+        product.variants.find(
+          variant =>
+            Number(
+              variant.stock
+            ) > 0
+        );
+
+      const fallbackVariant =
+        availableVariant ||
+        product.variants[0];
+
+      variantId =
+        fallbackVariant?.id ??
+        null;
+    }
+
+    if (!variantId) {
+      allTransferred = false;
+      continue;
+    }
+
+    const variant =
+      getProductVariant(
+        product,
+        variantId
+      );
+
+    if (!variant) {
+      allTransferred = false;
+      continue;
+    }
+
+    const stock =
+      Number(
+        variant.stock
+      ) || 0;
+
+    if (stock <= 0) {
+      allTransferred = false;
+      continue;
+    }
+
+    const existingItem =
+      currentDbCartItems.find(
+        item =>
+          Number(
+            item.product_variant_id
+          ) ===
+          Number(
+            variantId
+          )
+      );
+
+    let finalQuantity =
+      quantity;
+
+    if (existingItem) {
+      finalQuantity =
+        Number(
+          existingItem.quantity
+        ) +
+        quantity;
+    }
+
+    if (
+      finalQuantity >
+      stock
+    ) {
+      finalQuantity =
+        stock;
+    }
+
+    if (
+      finalQuantity <= 0
+    ) {
+      allTransferred = false;
+      continue;
+    }
+
+    if (existingItem) {
+
+      const {
+        error
+      } = await supabase
+        .from("cart_items")
+        .update({
+          quantity:
+            finalQuantity
+        })
+        .eq(
+          "id",
+          existingItem.id
+        )
+        .eq(
+          "cart_id",
+          currentUserCart.id
+        );
+
+      if (error) {
+        console.error(
+          "Failed to merge existing cart item:",
+          error
+        );
+
+        allTransferred = false;
+        continue;
+      }
+
+    } else {
+
+      const {
+        error
+      } = await supabase
+        .from("cart_items")
+        .insert({
+          cart_id:
+            currentUserCart.id,
+          product_variant_id:
+            Number(
+              variantId
+            ),
+          quantity:
+            finalQuantity
+        });
+
+      if (error) {
+        console.error(
+          "Failed to insert guest cart item:",
+          error
+        );
+
+        allTransferred = false;
+        continue;
+      }
+    }
+  }
+
+  await loadUserCartItems();
+
+  if (allTransferred) {
+    clearGuestCart();
+
+    console.log(
+      "Guest cart merged successfully."
+    );
+  } else {
+    console.warn(
+      "Guest cart was only partially merged."
+    );
+  }
 }
 
 
@@ -329,31 +718,63 @@ async function addVariantToUserCart(
   variantId,
   quantity = 1
 ) {
-  if (!currentUser || !currentUserCart) {
+  if (
+    !currentUser ||
+    !currentUserCart
+  ) {
     return false;
   }
 
-  const numericVariantId = Number(variantId);
-  const numericQuantity = Number(quantity) || 1;
+  const numericVariantId =
+    Number(
+      variantId
+    );
 
-  const existingItem = currentDbCartItems.find(
-    item =>
-      Number(item.product_variant_id) ===
-      numericVariantId
-  );
+  const numericQuantity =
+    Number(
+      quantity
+    ) || 1;
+
+  if (
+    !numericVariantId ||
+    numericQuantity <= 0
+  ) {
+    return false;
+  }
+
+  const existingItem =
+    currentDbCartItems.find(
+      item =>
+        Number(
+          item.product_variant_id
+        ) ===
+        numericVariantId
+    );
 
   if (existingItem) {
+
     const newQuantity =
-      Number(existingItem.quantity) +
+      Number(
+        existingItem.quantity
+      ) +
       numericQuantity;
 
-    const { error } = await supabase
+    const {
+      error
+    } = await supabase
       .from("cart_items")
       .update({
-        quantity: newQuantity
+        quantity:
+          newQuantity
       })
-      .eq("id", existingItem.id)
-      .eq("cart_id", currentUserCart.id);
+      .eq(
+        "id",
+        existingItem.id
+      )
+      .eq(
+        "cart_id",
+        currentUserCart.id
+      );
 
     if (error) {
       console.error(
@@ -363,13 +784,20 @@ async function addVariantToUserCart(
 
       return false;
     }
+
   } else {
-    const { error } = await supabase
+
+    const {
+      error
+    } = await supabase
       .from("cart_items")
       .insert({
-        cart_id: currentUserCart.id,
-        product_variant_id: numericVariantId,
-        quantity: numericQuantity
+        cart_id:
+          currentUserCart.id,
+        product_variant_id:
+          numericVariantId,
+        quantity:
+          numericQuantity
       });
 
     if (error) {
@@ -396,28 +824,64 @@ async function updateUserCartItem(
   itemId,
   quantity
 ) {
-  if (!currentUser || !currentUserCart) {
+  if (
+    !currentUser ||
+    !currentUserCart
+  ) {
     return false;
   }
 
-  const numericQuantity = Number(quantity);
+  const numericQuantity =
+    Number(quantity);
 
-  if (numericQuantity <= 0) {
-    return removeUserCartItem(itemId);
+  if (
+    !Number.isFinite(
+      numericQuantity
+    )
+  ) {
+    return false;
   }
 
-  const { error } = await supabase
+  if (
+    numericQuantity <= 0
+  ) {
+    return removeUserCartItem(
+      itemId
+    );
+  }
+
+  const {
+    data,
+    error
+  } = await supabase
     .from("cart_items")
     .update({
-      quantity: numericQuantity
+      quantity:
+        numericQuantity
     })
-    .eq("id", itemId)
-    .eq("cart_id", currentUserCart.id);
+    .eq(
+      "id",
+      itemId
+    )
+    .eq(
+      "cart_id",
+      currentUserCart.id
+    )
+    .select()
+    .maybeSingle();
 
   if (error) {
     console.error(
       "Failed to update cart item:",
       error
+    );
+
+    return false;
+  }
+
+  if (!data) {
+    console.error(
+      "Cart item update affected 0 rows."
     );
 
     return false;
@@ -433,16 +897,29 @@ async function updateUserCartItem(
    REMOVE USER CART ITEM
 ========================================================= */
 
-async function removeUserCartItem(itemId) {
-  if (!currentUser || !currentUserCart) {
+async function removeUserCartItem(
+  itemId
+) {
+  if (
+    !currentUser ||
+    !currentUserCart
+  ) {
     return false;
   }
 
-  const { error } = await supabase
+  const {
+    error
+  } = await supabase
     .from("cart_items")
     .delete()
-    .eq("id", itemId)
-    .eq("cart_id", currentUserCart.id);
+    .eq(
+      "id",
+      itemId
+    )
+    .eq(
+      "cart_id",
+      currentUserCart.id
+    );
 
   if (error) {
     console.error(
@@ -464,28 +941,28 @@ async function removeUserCartItem(itemId) {
 ========================================================= */
 
 function getCartItemsForDisplay() {
+
   if (currentUser) {
+
     return currentDbCartItems
       .map(dbItem => {
-        const product = products.find(
-          item => {
-            if (
-              !Array.isArray(
-                item.variants
-              )
-            ) {
-              return false;
-            }
 
-            return item.variants.some(
-              variant =>
-                Number(variant.id) ===
-                Number(
-                  dbItem.product_variant_id
-                )
-            );
-          }
-        );
+        const product =
+          products.find(
+            item =>
+              Array.isArray(
+                item.variants
+              ) &&
+              item.variants.some(
+                variant =>
+                  Number(
+                    variant.id
+                  ) ===
+                  Number(
+                    dbItem.product_variant_id
+                  )
+              )
+          );
 
         if (!product) {
           return null;
@@ -497,60 +974,110 @@ function getCartItemsForDisplay() {
             dbItem.product_variant_id
           );
 
+        if (!variant) {
+          return null;
+        }
+
         return {
-          cartItemId: dbItem.id,
-          productId: product.id,
+          cartItemId:
+            dbItem.id,
+
+          productId:
+            product.id,
+
           variantId:
             dbItem.product_variant_id,
+
           quantity:
-            Number(dbItem.quantity) || 1,
+            Number(
+              dbItem.quantity
+            ) || 1,
+
           product,
+
           variant,
-          price: getProductPrice(
-            product,
-            dbItem.product_variant_id
-          )
+
+          price:
+            getProductPrice(
+              product,
+              dbItem.product_variant_id
+            )
         };
       })
       .filter(Boolean);
   }
 
-  const guestCart = getGuestCart();
+
+  const guestCart =
+    getGuestCart();
 
   return guestCart
     .map(item => {
-      const product = getProduct(
-        item.productId ?? item.id
-      );
+
+      const productId =
+        item.productId ??
+        item.id;
+
+      const product =
+        getProduct(
+          productId
+        );
 
       if (!product) {
         return null;
       }
 
-      const variantId =
+      let variantId =
         item.variantId ??
         item.product_variant_id ??
         null;
 
-      const variant = variantId
-        ? getProductVariant(
-          product,
-          variantId
-        )
-        : null;
+      if (
+        !variantId &&
+        Array.isArray(
+          product.variants
+        ) &&
+        product.variants.length > 0
+      ) {
+        variantId =
+          product.variants[0].id;
+      }
+
+      const variant =
+        variantId
+          ? getProductVariant(
+            product,
+            variantId
+          )
+          : null;
+
+      if (!variant) {
+        return null;
+      }
 
       return {
-        cartItemId: null,
-        productId: product.id,
+        cartItemId:
+          null,
+
+        productId:
+          product.id,
+
         variantId,
+
         quantity:
-          Number(item.quantity) || 1,
+          Number(
+            item.quantity
+          ) || 1,
+
         product,
+
         variant,
-        price: getProductPrice(
-          product,
-          variantId
-        )
+
+        price:
+          getProductPrice(
+            product,
+            variantId
+          )
       };
     })
     .filter(Boolean);
@@ -562,6 +1089,7 @@ function getCartItemsForDisplay() {
 ========================================================= */
 
 function renderCart() {
+
   const cartItemsContainer =
     document.getElementById(
       "cartItemsContainer"
@@ -574,115 +1102,158 @@ function renderCart() {
   const cartItems =
     getCartItemsForDisplay();
 
-  cartItemsContainer.innerHTML = "";
+  cartItemsContainer.innerHTML =
+    "";
 
-  if (cartItems.length === 0) {
+  if (
+    cartItems.length === 0
+  ) {
+
     cartItemsContainer.innerHTML = `
-            <div class="empty-cart">
-                <h2>YOUR CART IS EMPTY</h2>
-                <p>There are no products in your cart.</p>
-                <a href="index-shop.html">
-                    CONTINUE SHOPPING
-                </a>
-            </div>
-        `;
+      <div class="empty-cart">
+        <h2>YOUR CART IS EMPTY</h2>
+
+        <p>
+          There are no products in your cart.
+        </p>
+
+        <a href="index-shop.html">
+          CONTINUE SHOPPING
+        </a>
+      </div>
+    `;
 
     updateSummary([]);
+
     updateCartCount(0);
 
     return;
   }
 
   cartItems.forEach(item => {
-    const product = item.product;
+
+    const product =
+      item.product;
 
     const itemTotal =
-      item.price * item.quantity;
+      item.price *
+      item.quantity;
 
     const variantSize =
-      item.variant?.size || "One Size";
+      item.variant?.size ||
+      "One Size";
 
     const itemElement =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    itemElement.className = "cart-item";
+    itemElement.className =
+      "cart-item";
 
     itemElement.innerHTML = `
-            <div class="cart-item-image">
-                ${product.image
+      <div class="cart-item-image">
+        ${product.image
         ? `
-                            <img
-                                src="${product.image}"
-                                alt="${escapeHtml(
+              <img
+                src="${escapeHtml(
+          product.image
+        )}"
+                alt="${escapeHtml(
           product.name
         )}"
-                                loading="lazy"
-                                onerror="this.style.display='none';"
-                            >
-                        `
+                loading="lazy"
+                onerror="this.style.display='none';"
+              >
+            `
         : `
-                            <div class="no-image">
-                                NO IMAGE
-                            </div>
-                        `
+              <div class="no-image">
+                NO IMAGE
+              </div>
+            `
       }
-            </div>
+      </div>
 
-            <div class="cart-item-info">
-                <h3 class="cart-item-name">
-                    ${escapeHtml(product.name)}
-                </h3>
+      <div class="cart-item-info">
 
-                <div class="cart-item-size">
-                    SIZE: ${escapeHtml(
-        String(variantSize)
+        <h3 class="cart-item-name">
+          ${escapeHtml(
+        product.name
       )}
-                </div>
+        </h3>
 
-                <div class="cart-item-price">
-                    ${formatPrice(item.price)}
-                </div>
-            </div>
+        <div class="cart-item-size">
+          SIZE:
+          ${escapeHtml(
+        String(
+          variantSize
+        )
+      )}
+        </div>
 
-            <div class="cart-item-actions">
+        ${item.variant?.sku
+        ? `
+              <div class="cart-item-sku">
+                SKU:
+                ${escapeHtml(
+          String(
+            item.variant.sku
+          )
+        )}
+              </div>
+            `
+        : ""
+      }
 
-                <div class="quantity-controls">
+        <div class="cart-item-price">
+          ${formatPrice(
+        item.price
+      )}
+        </div>
 
-                    <button
-                        type="button"
-                        class="quantity-btn decrease-btn"
-                        aria-label="Decrease quantity"
-                    >
-                        −
-                    </button>
+      </div>
 
-                    <span class="quantity">
-                        ${item.quantity}
-                    </span>
+      <div class="cart-item-actions">
 
-                    <button
-                        type="button"
-                        class="quantity-btn increase-btn"
-                        aria-label="Increase quantity"
-                    >
-                        +
-                    </button>
+        <div class="quantity-controls">
 
-                </div>
+          <button
+            type="button"
+            class="quantity-btn decrease-btn"
+            aria-label="Decrease quantity"
+          >
+            −
+          </button>
 
-                <div class="cart-item-total">
-                    ${formatPrice(itemTotal)}
-                </div>
+          <span class="quantity">
+            ${item.quantity}
+          </span>
 
-                <button
-                    type="button"
-                    class="remove-item"
-                >
-                    REMOVE
-                </button>
+          <button
+            type="button"
+            class="quantity-btn increase-btn"
+            aria-label="Increase quantity"
+          >
+            +
+          </button>
 
-            </div>
-        `;
+        </div>
+
+        <div class="cart-item-total">
+          ${formatPrice(
+        itemTotal
+      )}
+        </div>
+
+        <button
+          type="button"
+          class="remove-item"
+        >
+          REMOVE
+        </button>
+
+      </div>
+    `;
 
     const decreaseBtn =
       itemElement.querySelector(
@@ -722,7 +1293,9 @@ function renderCart() {
     removeBtn.addEventListener(
       "click",
       async () => {
-        await removeCartItem(item);
+        await removeCartItem(
+          item
+        );
       }
     );
 
@@ -731,12 +1304,15 @@ function renderCart() {
     );
   });
 
-  updateSummary(cartItems);
+  updateSummary(
+    cartItems
+  );
 
   updateCartCount(
     cartItems.reduce(
       (total, item) =>
-        total + item.quantity,
+        total +
+        item.quantity,
       0
     )
   );
@@ -747,45 +1323,55 @@ function renderCart() {
    CHANGE QUANTITY
 ========================================================= */
 
-async function changeQuantity(item, amount) {
-  const newQuantity =
-    Number(item.quantity) + Number(amount);
+async function changeQuantity(
+  item,
+  amount
+) {
 
-  // حذف وقتی تعداد به صفر می‌رسد
-  if (newQuantity <= 0) {
-    await removeCartItem(item);
+  const newQuantity =
+    Number(item.quantity) +
+    Number(amount);
+
+  if (
+    newQuantity <= 0
+  ) {
+    await removeCartItem(
+      item
+    );
+
     return;
   }
 
-  // فقط هنگام افزایش تعداد، موجودی را بررسی کن
+
   if (amount > 0) {
-    const variant = item.variant;
+
+    const variant =
+      item.variant;
 
     if (!variant) {
-      console.error(
-        "Product variant not found:",
-        item
-      );
       return;
     }
 
-    const stock = Number(variant.stock) || 0;
+    const stock =
+      Number(
+        variant.stock
+      ) || 0;
 
-    console.log(
-      "Stock:",
-      stock,
-      "New quantity:",
-      newQuantity
-    );
+    if (
+      newQuantity >
+      stock
+    ) {
+      showStockPopup(
+        stock
+      );
 
-    if (newQuantity > stock) {
-      showStockPopup(stock);
       return;
     }
   }
 
-  // کاربر لاگین کرده
+
   if (currentUser) {
+
     const success =
       await updateUserCartItem(
         item.cartItemId,
@@ -795,76 +1381,194 @@ async function changeQuantity(item, amount) {
     if (!success) {
       return;
     }
-  }
 
-  // مهمان
-  else {
-    const cart = getGuestCart();
+  } else {
 
-    const cartItem = cart.find(
-      cartItem => {
-        const productId =
-          cartItem.productId ??
-          cartItem.id;
+    const cart =
+      getGuestCart();
 
-        const variantId =
-          cartItem.variantId ??
-          cartItem.product_variant_id ??
-          null;
+    const cartItem =
+      cart.find(
+        cartItem => {
 
-        return (
-          Number(productId) ===
-          Number(item.productId) &&
-          Number(variantId || 0) ===
-          Number(item.variantId || 0)
-        );
-      }
-    );
+          const productId =
+            cartItem.productId ??
+            cartItem.id;
+
+          let variantId =
+            cartItem.variantId ??
+            cartItem.product_variant_id ??
+            null;
+
+          if (!variantId) {
+            variantId =
+              item.variantId;
+          }
+
+          return (
+            Number(
+              productId
+            ) ===
+            Number(
+              item.productId
+            ) &&
+            Number(
+              variantId || 0
+            ) ===
+            Number(
+              item.variantId || 0
+            )
+          );
+        }
+      );
 
     if (cartItem) {
-      cartItem.quantity = newQuantity;
-      saveGuestCart(cart);
+
+      cartItem.productId =
+        item.productId;
+
+      cartItem.variantId =
+        item.variantId;
+
+      cartItem.quantity =
+        newQuantity;
+
+      saveGuestCart(
+        cart
+      );
+
+    } else {
+
+      cart.push({
+        productId:
+          item.productId,
+
+        variantId:
+          item.variantId,
+
+        quantity:
+          newQuantity
+      });
+
+      saveGuestCart(
+        cart
+      );
     }
+  }
+
+  /*
+   * Promo amount depends on subtotal,
+   * so revalidate the stored promo
+   * after quantity changes.
+   */
+  if (appliedPromo) {
+    await refreshAppliedPromo();
   }
 
   renderCart();
 }
+
+
 /* =========================================================
    REMOVE CART ITEM
 ========================================================= */
 
-async function removeCartItem(item) {
+async function removeCartItem(
+  item
+) {
+
   if (currentUser) {
-    await removeUserCartItem(
-      item.cartItemId
-    );
+
+    const success =
+      await removeUserCartItem(
+        item.cartItemId
+      );
+
+    if (!success) {
+      return;
+    }
+
   } else {
-    const cart = getGuestCart();
 
-    const newCart = cart.filter(
-      cartItem => {
-        const productId =
-          cartItem.productId ??
-          cartItem.id;
+    const cart =
+      getGuestCart();
 
-        const variantId =
-          cartItem.variantId ??
-          cartItem.product_variant_id ??
-          null;
+    const newCart =
+      cart.filter(
+        cartItem => {
 
-        return !(
-          Number(productId) ===
-          Number(item.productId) &&
-          Number(variantId || 0) ===
-          Number(item.variantId || 0)
-        );
-      }
+          const productId =
+            cartItem.productId ??
+            cartItem.id;
+
+          let variantId =
+            cartItem.variantId ??
+            cartItem.product_variant_id ??
+            null;
+
+          if (!variantId) {
+            variantId =
+              item.variantId;
+          }
+
+          const sameProduct =
+            Number(
+              productId
+            ) ===
+            Number(
+              item.productId
+            );
+
+          const sameVariant =
+            Number(
+              variantId || 0
+            ) ===
+            Number(
+              item.variantId || 0
+            );
+
+          return !(
+            sameProduct &&
+            sameVariant
+          );
+        }
+      );
+
+    saveGuestCart(
+      newCart
     );
+  }
 
-    saveGuestCart(newCart);
+  if (appliedPromo) {
+    await refreshAppliedPromo();
   }
 
   renderCart();
+}
+
+
+/* =========================================================
+   GET SUBTOTAL
+========================================================= */
+
+function calculateSubtotal(
+  cartItems
+) {
+  return cartItems.reduce(
+    (total, item) =>
+      total +
+      (
+        Number(
+          item.price
+        ) || 0
+      ) *
+      (
+        Number(
+          item.quantity
+        ) || 0
+      ),
+    0
+  );
 }
 
 
@@ -872,7 +1576,10 @@ async function removeCartItem(item) {
    SUMMARY
 ========================================================= */
 
-function updateSummary(cartItems) {
+function updateSummary(
+  cartItems
+) {
+
   const subtotalAmount =
     document.getElementById(
       "subtotalAmount"
@@ -898,58 +1605,96 @@ function updateSummary(cartItems) {
       "totalAmount"
     );
 
-  const subtotal = cartItems.reduce(
-    (total, item) =>
-      total +
-      item.price *
-      item.quantity,
-    0
-  );
 
-  /*
-   * فعلاً ارسال و مالیات صفر هستند.
-   * بعداً می‌توانیم منطق واقعی آنها را اضافه کنیم.
-   */
-  const shipping = 0;
-  const tax = 0;
+  const subtotal =
+    calculateSubtotal(
+      cartItems
+    );
 
-  const discount =
-    subtotal *
-    (discountRate / 100);
+  const shipping =
+    0;
+
+  const tax =
+    0;
+
+
+  let discount =
+    0;
+
+  if (
+    appliedPromo &&
+    appliedPromo.discount_amount
+  ) {
+
+    discount =
+      Math.min(
+        Number(
+          appliedPromo.discount_amount
+        ) || 0,
+        subtotal
+      );
+  }
+
 
   const total =
-    subtotal +
-    shipping +
-    tax -
-    discount;
+    Math.max(
+      0,
+      subtotal +
+      shipping +
+      tax -
+      discount
+    );
+
 
   if (subtotalAmount) {
     subtotalAmount.textContent =
-      formatPrice(subtotal);
+      formatPrice(
+        subtotal
+      );
   }
 
   if (shippingAmount) {
     shippingAmount.textContent =
-      formatPrice(shipping);
+      formatPrice(
+        shipping
+      );
   }
 
   if (taxAmount) {
     taxAmount.textContent =
-      formatPrice(tax);
+      formatPrice(
+        tax
+      );
   }
 
   if (discountAmount) {
+
     discountAmount.textContent =
       discount > 0
-        ? `-${formatPrice(discount)}`
-        : formatPrice(0);
+        ? `-${formatPrice(
+          discount
+        )}`
+        : formatPrice(
+          0
+        );
   }
 
   if (totalAmount) {
     totalAmount.textContent =
       formatPrice(
-        Math.max(0, total)
+        total
       );
+  }
+
+
+  const discountRow =
+    document.getElementById(
+      "discountRow"
+    );
+
+  if (discountRow) {
+    discountRow.hidden =
+      discount <= 0;
   }
 }
 
@@ -961,46 +1706,159 @@ function updateSummary(cartItems) {
 async function updateCartCount(
   forcedCount = null
 ) {
+
   const cartCountElements =
     document.querySelectorAll(
-      "[data-cart-count], .cart-count"
+      "[data-cart-count], .cart-count, .cart-pill"
     );
 
-  let count = forcedCount;
+  let count =
+    forcedCount;
 
   if (count === null) {
+
     if (currentUser) {
-      count = currentDbCartItems.reduce(
-        (total, item) =>
-          total +
-          (Number(item.quantity) || 0),
-        0
-      );
+
+      count =
+        currentDbCartItems.reduce(
+          (total, item) =>
+            total +
+            (
+              Number(
+                item.quantity
+              ) || 0
+            ),
+          0
+        );
+
     } else {
-      count = getGuestCart().reduce(
-        (total, item) =>
-          total +
-          (Number(item.quantity) || 0),
-        0
-      );
+
+      count =
+        getGuestCart().reduce(
+          (total, item) =>
+            total +
+            (
+              Number(
+                item.quantity
+              ) || 0
+            ),
+          0
+        );
     }
   }
 
+  count =
+    Number(count) || 0;
+
   cartCountElements.forEach(
     element => {
-      element.textContent =
-        String(count);
+
+      if (
+        element.classList.contains(
+          "cart-pill"
+        )
+      ) {
+
+        element.textContent =
+          `CART (${count})`;
+
+      } else {
+
+        element.textContent =
+          String(count);
+      }
     }
   );
 }
 
 
 /* =========================================================
-   PROMO CODE
+   VALIDATE PROMO
+========================================================= */
+
+async function validatePromo(
+  code,
+  subtotal
+) {
+
+  if (!code) {
+    return null;
+  }
+
+  const {
+    data,
+    error
+  } = await supabase.rpc(
+    "validate_promo_code",
+    {
+      p_code:
+        code,
+
+      p_order_subtotal:
+        subtotal
+    }
+  );
+
+  if (error) {
+    console.error(
+      "Promo validation error:",
+      error
+    );
+
+    throw error;
+  }
+
+  if (
+    !data ||
+    data.valid !== true
+  ) {
+    return {
+      valid: false,
+      message:
+        data?.message ||
+        "کد تخفیف نامعتبر است."
+    };
+  }
+
+  return {
+    valid: true,
+
+    code:
+      String(
+        data.code || code
+      ).toUpperCase(),
+
+    discount_type:
+      data.discount_type,
+
+    discount_value:
+      Number(
+        data.discount_value
+      ) || 0,
+
+    discount_amount:
+      Number(
+        data.discount_amount
+      ) || 0,
+
+    minimum_order:
+      Number(
+        data.minimum_order
+      ) || 0
+  };
+}
+
+
+/* =========================================================
+   APPLY PROMO CODE
 ========================================================= */
 
 async function applyPromoCode() {
+
   const promoInput =
+    document.getElementById(
+      "promoInput"
+    ) ||
     document.getElementById(
       "promoCode"
     );
@@ -1015,58 +1873,141 @@ async function applyPromoCode() {
       .toUpperCase();
 
   if (!code) {
-    return;
-  }
 
-  const { data, error } =
-    await supabase
-      .from("promo_codes")
-      .select("*")
-      .eq("code", code)
-      .eq("is_active", true)
-      .maybeSingle();
-
-  if (error) {
-    console.error(
-      "Failed to check promo code:",
-      error
-    );
-
-    return;
-  }
-
-  if (!data) {
-    discountRate = 0;
-
-    alert("Invalid promo code.");
+    clearStoredPromo();
 
     renderCart();
 
     return;
   }
 
-  const now = new Date();
 
-  if (
-    data.starts_at &&
-    new Date(data.starts_at) > now
-  ) {
-    alert("This promo code is not active yet.");
+  const cartItems =
+    getCartItemsForDisplay();
+
+  const subtotal =
+    calculateSubtotal(
+      cartItems
+    );
+
+
+  if (subtotal <= 0) {
+
+    alert(
+      "سبد خرید شما خالی است."
+    );
+
     return;
   }
 
-  if (
-    data.expires_at &&
-    new Date(data.expires_at) < now
-  ) {
-    alert("This promo code has expired.");
+
+  try {
+
+    const promo =
+      await validatePromo(
+        code,
+        subtotal
+      );
+
+
+    if (
+      !promo ||
+      promo.valid !== true
+    ) {
+
+      clearStoredPromo();
+
+      alert(
+        promo?.message ||
+        "کد تخفیف نامعتبر است."
+      );
+
+      renderCart();
+
+      return;
+    }
+
+
+    saveStoredPromo(
+      promo
+    );
+
+
+    renderCart();
+
+
+    alert(
+      `کد تخفیف اعمال شد.\nمبلغ تخفیف: ${formatPrice(
+        promo.discount_amount
+      )}`
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Apply promo error:",
+      error
+    );
+
+    alert(
+      "خطایی هنگام بررسی کد تخفیف رخ داد."
+    );
+  }
+}
+
+
+/* =========================================================
+   REFRESH APPLIED PROMO
+========================================================= */
+
+async function refreshAppliedPromo() {
+
+  if (!appliedPromo?.code) {
     return;
   }
 
-  discountRate =
-    Number(data.discount_percent) || 0;
+  const cartItems =
+    getCartItemsForDisplay();
 
-  renderCart();
+  const subtotal =
+    calculateSubtotal(
+      cartItems
+    );
+
+  if (subtotal <= 0) {
+    clearStoredPromo();
+    return;
+  }
+
+  try {
+
+    const promo =
+      await validatePromo(
+        appliedPromo.code,
+        subtotal
+      );
+
+    if (
+      !promo ||
+      promo.valid !== true
+    ) {
+
+      clearStoredPromo();
+
+      return;
+    }
+
+    saveStoredPromo(
+      promo
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Failed to refresh promo:",
+      error
+    );
+  }
 }
 
 
@@ -1075,26 +2016,38 @@ async function applyPromoCode() {
 ========================================================= */
 
 async function handleCheckout() {
+
   if (!currentUser) {
+
     window.location.href =
       "login.html?redirect=cart.html";
 
     return;
   }
 
+
   if (
     !currentDbCartItems ||
     currentDbCartItems.length === 0
   ) {
-    alert("Your cart is empty.");
+
+    alert(
+      "Your cart is empty."
+    );
+
     return;
   }
 
+
   /*
-   * فعلاً فقط کاربر را به Checkout می‌فرستیم.
-   * محاسبه نهایی قیمت/موجودی باید در RPC امن
-   * سمت Supabase انجام شود.
+   * Make sure the promo is still valid
+   * before entering checkout.
    */
+  if (appliedPromo) {
+    await refreshAppliedPromo();
+  }
+
+
   window.location.href =
     "checkout.html";
 }
@@ -1105,36 +2058,51 @@ async function handleCheckout() {
 ========================================================= */
 
 function setupEventListeners() {
+
   const promoButton =
+    document.getElementById(
+      "promoBtn"
+    ) ||
     document.getElementById(
       "applyPromoBtn"
     );
 
   if (promoButton) {
+
     promoButton.addEventListener(
       "click",
       applyPromoCode
     );
   }
 
+
   const promoInput =
+    document.getElementById(
+      "promoInput"
+    ) ||
     document.getElementById(
       "promoCode"
     );
 
   if (promoInput) {
+
     promoInput.addEventListener(
       "keydown",
       event => {
+
         if (
-          event.key === "Enter"
+          event.key ===
+          "Enter"
         ) {
+
           event.preventDefault();
+
           applyPromoCode();
         }
       }
     );
   }
+
 
   const checkoutButton =
     document.getElementById(
@@ -1142,6 +2110,7 @@ function setupEventListeners() {
     );
 
   if (checkoutButton) {
+
     checkoutButton.addEventListener(
       "click",
       handleCheckout
@@ -1155,12 +2124,182 @@ function setupEventListeners() {
 ========================================================= */
 
 function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+}
+
+
+/* =========================================================
+   STOCK POPUP
+========================================================= */
+
+function showStockPopup(
+  stock
+) {
+
+  let popup =
+    document.getElementById(
+      "stockPopup"
+    );
+
+  if (!popup) {
+
+    popup =
+      document.createElement(
+        "div"
+      );
+
+    popup.id =
+      "stockPopup";
+
+    popup.innerHTML = `
+      <div class="stock-popup-backdrop"></div>
+
+      <div class="stock-popup">
+
+        <button
+          type="button"
+          class="stock-popup-close"
+          aria-label="Close"
+        >
+          ×
+        </button>
+
+        <div class="stock-popup-icon">
+          !
+        </div>
+
+        <div class="stock-popup-content">
+
+          <div class="stock-popup-label">
+            STOCK LIMIT
+          </div>
+
+          <h3>
+            موجودی کافی نیست
+          </h3>
+
+          <p>
+            فقط
+            <strong
+              class="stock-popup-number"
+            ></strong>
+            عدد از این محصول موجود است.
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="stock-popup-ok"
+        >
+          متوجه شدم
+        </button>
+
+      </div>
+    `;
+
+    document.body.appendChild(
+      popup
+    );
+
+    const closePopup =
+      () => {
+
+        popup.classList.remove(
+          "show"
+        );
+
+        setTimeout(
+          () => {
+
+            if (
+              popup &&
+              popup.parentNode
+            ) {
+              popup.remove();
+            }
+
+          },
+          250
+        );
+      };
+
+    popup
+      .querySelector(
+        ".stock-popup-backdrop"
+      )
+      .addEventListener(
+        "click",
+        closePopup
+      );
+
+    popup
+      .querySelector(
+        ".stock-popup-close"
+      )
+      .addEventListener(
+        "click",
+        closePopup
+      );
+
+    popup
+      .querySelector(
+        ".stock-popup-ok"
+      )
+      .addEventListener(
+        "click",
+        closePopup
+      );
+  }
+
+
+  const numberElement =
+    popup.querySelector(
+      ".stock-popup-number"
+    );
+
+  numberElement.textContent =
+    new Intl.NumberFormat(
+      "fa-IR"
+    ).format(
+      Number(stock)
+    );
+
+
+  popup.classList.remove(
+    "show"
+  );
+
+  requestAnimationFrame(
+    () => {
+      popup.classList.add(
+        "show"
+      );
+    }
+  );
 }
 
 
@@ -1169,21 +2308,50 @@ function escapeHtml(value) {
 ========================================================= */
 
 async function initCart() {
+
   try {
+
     await loadProducts();
 
     currentUser =
       await getCurrentUser();
 
+
+    appliedPromo =
+      getStoredPromo();
+
+
     if (currentUser) {
+
       currentUserCart =
         await getOrCreateUserCart();
 
-      await loadUserCartItems();
+
+      if (currentUserCart) {
+
+        await loadUserCartItems();
+
+        await mergeGuestCartIntoUserCart();
+      }
+
     } else {
-      currentUserCart = null;
-      currentDbCartItems = [];
+
+      currentUserCart =
+        null;
+
+      currentDbCartItems =
+        [];
     }
+
+
+    /*
+     * Revalidate previously applied promo
+     * against the current subtotal.
+     */
+    if (appliedPromo) {
+      await refreshAppliedPromo();
+    }
+
 
     setupEventListeners();
 
@@ -1192,6 +2360,7 @@ async function initCart() {
     await updateCartCount();
 
   } catch (error) {
+
     console.error(
       "Cart initialization failed:",
       error
@@ -1205,112 +2374,75 @@ async function initCart() {
 ========================================================= */
 
 supabase.auth.onAuthStateChange(
-  async () => {
-    currentUser =
-      await getCurrentUser();
+  (
+    event,
+    session
+  ) => {
 
-    if (currentUser) {
-      currentUserCart =
-        await getOrCreateUserCart();
-
-      await loadUserCartItems();
-    } else {
-      currentUserCart = null;
-      currentDbCartItems = [];
+    if (
+      event ===
+      "INITIAL_SESSION"
+    ) {
+      return;
     }
 
-    renderCart();
-    await updateCartCount();
+
+    setTimeout(
+      async () => {
+
+        try {
+
+          currentUser =
+            session?.user ||
+            null;
+
+
+          if (currentUser) {
+
+            currentUserCart =
+              await getOrCreateUserCart();
+
+
+            if (currentUserCart) {
+
+              await loadUserCartItems();
+
+              await mergeGuestCartIntoUserCart();
+            }
+
+          } else {
+
+            currentUserCart =
+              null;
+
+            currentDbCartItems =
+              [];
+          }
+
+
+          if (appliedPromo) {
+            await refreshAppliedPromo();
+          }
+
+
+          renderCart();
+
+          await updateCartCount();
+
+        } catch (error) {
+
+          console.error(
+            "Auth state cart synchronization failed:",
+            error
+          );
+        }
+
+      },
+      0
+    );
   }
 );
-function showStockPopup(stock) {
-  let popup = document.getElementById("stockPopup");
 
-  if (!popup) {
-    popup = document.createElement("div");
-
-    popup.id = "stockPopup";
-
-    popup.innerHTML = `
-            <div class="stock-popup-backdrop"></div>
-
-            <div class="stock-popup">
-                <button
-                    type="button"
-                    class="stock-popup-close"
-                    aria-label="Close"
-                >
-                    ×
-                </button>
-
-                <div class="stock-popup-icon">
-                    !
-                </div>
-
-                <div class="stock-popup-content">
-                    <div class="stock-popup-label">
-                        STOCK LIMIT
-                    </div>
-
-                    <h3>موجودی کافی نیست</h3>
-
-                    <p>
-                        فقط
-                        <strong class="stock-popup-number"></strong>
-                        عدد از این محصول موجود است.
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    class="stock-popup-ok"
-                >
-                    متوجه شدم
-                </button>
-            </div>
-        `;
-
-    document.body.appendChild(popup);
-
-    const closePopup = () => {
-      popup.classList.remove("show");
-
-      setTimeout(() => {
-        if (popup && popup.parentNode) {
-          popup.remove();
-        }
-      }, 250);
-    };
-
-    popup
-      .querySelector(".stock-popup-backdrop")
-      .addEventListener("click", closePopup);
-
-    popup
-      .querySelector(".stock-popup-close")
-      .addEventListener("click", closePopup);
-
-    popup
-      .querySelector(".stock-popup-ok")
-      .addEventListener("click", closePopup);
-  }
-
-  const numberElement = popup.querySelector(
-    ".stock-popup-number"
-  );
-
-  numberElement.textContent =
-    new Intl.NumberFormat("fa-IR").format(
-      Number(stock)
-    );
-
-  // اگر Popup قبلاً ساخته شده ولی مخفی شده باشد
-  popup.classList.remove("show");
-
-  requestAnimationFrame(() => {
-    popup.classList.add("show");
-  });
-}
 
 /* =========================================================
    START

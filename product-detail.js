@@ -62,6 +62,14 @@ const relatedProductsGrid =
 
 
 // ========================================
+// Current selected variant
+// ========================================
+
+let currentProduct = null;
+let selectedVariant = null;
+
+
+// ========================================
 // Helpers
 // ========================================
 
@@ -102,7 +110,8 @@ function saveCart(cart) {
 
 function getCartQuantity(
   cart,
-  productId
+  productId,
+  variantId = null
 ) {
 
   return cart.reduce(
@@ -111,6 +120,14 @@ function getCartQuantity(
       if (
         String(item.productId) !==
         String(productId)
+      ) {
+        return total;
+      }
+
+      if (
+        variantId !== null &&
+        String(item.variantId ?? "") !==
+        String(variantId)
       ) {
         return total;
       }
@@ -181,37 +198,38 @@ async function loadProduct() {
   } = await supabase
     .from("products")
     .select(`
-            id,
-            name,
-            slug,
-            description,
-            type,
-            price,
-            material,
-            is_active,
+      id,
+      name,
+      slug,
+      description,
+      type,
+      price,
+      material,
+      is_active,
+      category_id,
 
-            categories (
-                id,
-                name,
-                slug
-            ),
+      categories (
+        id,
+        name,
+        slug
+      ),
 
-            product_variants (
-                id,
-                size,
-                sku,
-                stock,
-                price
-            ),
+      product_variants (
+        id,
+        size,
+        sku,
+        stock,
+        price
+      ),
 
-            product_images (
-                id,
-                storage_path,
-                alt_text,
-                is_primary,
-                sort_order
-            )
-        `)
+      product_images (
+        id,
+        storage_path,
+        alt_text,
+        is_primary,
+        sort_order
+      )
+    `)
     .eq("id", productId)
     .eq("is_active", true)
     .maybeSingle();
@@ -244,7 +262,7 @@ async function loadProduct() {
 
 
   // ====================================
-  // Normalize product data
+  // Normalize variants
   // ====================================
 
   const variants =
@@ -255,6 +273,18 @@ async function loadProduct() {
       : [];
 
 
+  // Sort variants by ID
+  variants.sort(
+    (a, b) =>
+      Number(a.id) -
+      Number(b.id)
+  );
+
+
+  // ====================================
+  // Normalize images
+  // ====================================
+
   const images =
     Array.isArray(
       data.product_images
@@ -263,7 +293,6 @@ async function loadProduct() {
       : [];
 
 
-  // Sort images
   images.sort(
     (a, b) =>
       (a.sort_order || 0) -
@@ -271,7 +300,6 @@ async function loadProduct() {
   );
 
 
-  // Primary image
   const primaryImage =
     images.find(
       image =>
@@ -281,19 +309,26 @@ async function loadProduct() {
     null;
 
 
+  // ====================================
   // Total stock
+  // ====================================
+
   const stock =
     variants.reduce(
       (total, variant) =>
         total +
-        Number(
-          variant.stock || 0
+        Math.max(
+          0,
+          Number(variant.stock) || 0
         ),
       0
     );
 
 
-  // Price
+  // ====================================
+  // Default price
+  // ====================================
+
   const price =
     variants[0]?.price != null
       ? Number(
@@ -304,13 +339,30 @@ async function loadProduct() {
       );
 
 
+  // ====================================
+  // Category
+  // ====================================
+
+  const categoryData =
+    Array.isArray(data.categories)
+      ? data.categories[0]
+      : data.categories;
+
+
+  // ====================================
+  // Product object
+  // ====================================
+
   const product = {
 
-    id: data.id,
+    id:
+      data.id,
 
-    name: data.name,
+    name:
+      data.name,
 
-    slug: data.slug,
+    slug:
+      data.slug,
 
     description:
       data.description || "",
@@ -321,11 +373,18 @@ async function loadProduct() {
     material:
       data.material || "",
 
+    categoryId:
+      data.category_id ||
+      categoryData?.id ||
+      null,
+
     category:
-      data.categories?.slug || "",
+      categoryData?.slug ||
+      "",
 
     categoryName:
-      data.categories?.name || "",
+      categoryData?.name ||
+      "",
 
     price,
 
@@ -336,12 +395,17 @@ async function loadProduct() {
     images,
 
     image:
-      primaryImage?.storage_path || "",
+      primaryImage?.storage_path ||
+      "",
 
     imageAlt:
       primaryImage?.alt_text ||
       data.name
   };
+
+
+  currentProduct =
+    product;
 
 
   console.log(
@@ -374,9 +438,7 @@ function renderProduct(product) {
   // Main image
   // ====================================
 
-  if (
-    productImage
-  ) {
+  if (productImage) {
 
     if (product.image) {
 
@@ -433,11 +495,6 @@ function renderProduct(product) {
 
   if (productBand) {
 
-    /*
-     * فعلاً band در دیتابیس ما نداریم.
-     * به جای آن category را نمایش می‌دهیم.
-     */
-
     productBand.textContent =
       product.categoryName ||
       "";
@@ -461,36 +518,8 @@ function renderProduct(product) {
   }
 
 
-  if (productPrice) {
-
-    productPrice.textContent =
-      formatPrice(
-        product.price
-      );
-  }
-
-
   // ====================================
-  // Stock
-  // ====================================
-
-  if (productStock) {
-
-    if (product.stock > 0) {
-
-      productStock.textContent =
-        `${product.stock} IN STOCK`;
-
-    } else {
-
-      productStock.textContent =
-        "OUT OF STOCK";
-    }
-  }
-
-
-  // ====================================
-  // Size / Variants
+  // Variants
   // ====================================
 
   renderVariants(
@@ -502,18 +531,14 @@ function renderProduct(product) {
   // Quantity
   // ====================================
 
-  setupQuantity(
-    product
-  );
+  setupQuantity();
 
 
   // ====================================
   // Add to cart
   // ====================================
 
-  setupAddToCart(
-    product
-  );
+  setupAddToCart();
 }
 
 
@@ -533,36 +558,126 @@ function renderVariants(product) {
 
 
   const variants =
-    product.variants
-      .filter(
-        variant =>
-          variant.stock > 0
-      );
+    Array.isArray(product.variants)
+      ? product.variants
+      : [];
 
 
+  // ====================================
   // No variants
+  // ====================================
+
   if (!variants.length) {
 
-    const empty =
-      document.createElement(
-        "p"
-      );
+    selectedVariant =
+      null;
 
-    empty.textContent =
-      "One Size";
+    sizeOptions.dataset.selectedVariantId =
+      "";
 
-    sizeOptions.appendChild(
-      empty
+    sizeOptions.dataset.selectedSize =
+      "";
+
+
+    if (productPrice) {
+
+      productPrice.textContent =
+        formatPrice(
+          product.price
+        );
+    }
+
+
+    updateVariantUI(
+      null,
+      product.stock
     );
+
 
     return;
   }
 
 
-  let selectedSize =
-    variants.length === 1
-      ? variants[0].size
-      : null;
+  // ====================================
+  // One Size / single variant
+  // ====================================
+
+  if (variants.length === 1) {
+
+    selectedVariant =
+      variants[0];
+
+
+    sizeOptions.dataset.selectedVariantId =
+      String(
+        selectedVariant.id
+      );
+
+
+    sizeOptions.dataset.selectedSize =
+      selectedVariant.size ||
+      "One Size";
+
+
+    const label =
+      document.createElement(
+        "button"
+      );
+
+
+    label.type =
+      "button";
+
+
+    label.className =
+      "size-btn selected";
+
+
+    label.textContent =
+      selectedVariant.size ||
+      "One Size";
+
+
+    label.disabled =
+      Number(
+        selectedVariant.stock
+      ) <= 0;
+
+
+    label.addEventListener(
+      "click",
+      () => {
+
+        selectVariant(
+          selectedVariant
+        );
+      }
+    );
+
+
+    sizeOptions.appendChild(
+      label
+    );
+
+
+    updateVariantUI(
+      selectedVariant
+    );
+
+
+    return;
+  }
+
+
+  // ====================================
+  // Multiple variants
+  // ====================================
+
+  const availableVariants =
+    variants.filter(
+      variant =>
+        Number(variant.stock) > 0
+    );
 
 
   variants.forEach(
@@ -587,13 +702,25 @@ function renderVariants(product) {
         "One Size";
 
 
-      if (
-        variant.size ===
-        selectedSize
-      ) {
+      btn.dataset.variantId =
+        String(
+          variant.id
+        );
+
+
+      const stock =
+        Number(
+          variant.stock
+        ) || 0;
+
+
+      if (stock <= 0) {
+
+        btn.disabled =
+          true;
 
         btn.classList.add(
-          "selected"
+          "disabled"
         );
       }
 
@@ -602,26 +729,13 @@ function renderVariants(product) {
         "click",
         () => {
 
-          sizeOptions
-            .querySelectorAll(
-              ".size-btn"
-            )
-            .forEach(
-              item =>
-                item.classList
-                  .remove(
-                    "selected"
-                  )
-            );
+          if (stock <= 0) {
+            return;
+          }
 
-
-          btn.classList.add(
-            "selected"
+          selectVariant(
+            variant
           );
-
-
-          selectedSize =
-            variant.size;
         }
       );
 
@@ -633,13 +747,204 @@ function renderVariants(product) {
   );
 
 
-  /*
-   * selectedSize را روی عنصر ذخیره می‌کنیم
-   * تا setupAddToCart بتواند آن را بخواند.
-   */
+  // ====================================
+  // Select first available variant
+  // ====================================
 
-  sizeOptions.dataset.selectedSize =
-    selectedSize || "";
+  const firstAvailable =
+    availableVariants[0] ||
+    variants[0];
+
+
+  selectVariant(
+    firstAvailable
+  );
+}
+
+
+// ========================================
+// Select variant
+// ========================================
+
+function selectVariant(
+  variant
+) {
+
+  if (!variant) {
+    return;
+  }
+
+
+  selectedVariant =
+    variant;
+
+
+  if (sizeOptions) {
+
+    sizeOptions.dataset.selectedVariantId =
+      String(
+        variant.id
+      );
+
+
+    sizeOptions.dataset.selectedSize =
+      variant.size ||
+      "One Size";
+
+
+    sizeOptions
+      .querySelectorAll(
+        ".size-btn"
+      )
+      .forEach(
+        button => {
+
+          button.classList.toggle(
+            "selected",
+            String(
+              button.dataset.variantId
+            ) ===
+            String(
+              variant.id
+            )
+          );
+        }
+      );
+  }
+
+
+  updateVariantUI(
+    variant
+  );
+}
+
+
+// ========================================
+// Update UI based on selected variant
+// ========================================
+
+function updateVariantUI(
+  variant,
+  fallbackStock = 0
+) {
+
+  const price =
+    variant?.price != null
+      ? Number(
+        variant.price
+      )
+      : Number(
+        currentProduct?.price || 0
+      );
+
+
+  const stock =
+    variant
+      ? Math.max(
+        0,
+        Number(
+          variant.stock
+        ) || 0
+      )
+      : Math.max(
+        0,
+        Number(
+          fallbackStock
+        ) || 0
+      );
+
+
+  // ====================================
+  // Price
+  // ====================================
+
+  if (productPrice) {
+
+    productPrice.textContent =
+      formatPrice(
+        price
+      );
+  }
+
+
+  // ====================================
+  // Stock
+  // ====================================
+
+  if (productStock) {
+
+    if (stock > 0) {
+
+      productStock.textContent =
+        `${stock} IN STOCK`;
+
+    } else {
+
+      productStock.textContent =
+        "OUT OF STOCK";
+    }
+  }
+
+
+  // ====================================
+  // Quantity max
+  // ====================================
+
+  if (qtyInput) {
+
+    qtyInput.max =
+      String(
+        Math.max(
+          1,
+          stock
+        )
+      );
+
+
+    const currentQuantity =
+      Number.parseInt(
+        qtyInput.value,
+        10
+      ) || 1;
+
+
+    qtyInput.value =
+      String(
+        Math.min(
+          Math.max(
+            1,
+            currentQuantity
+          ),
+          Math.max(
+            1,
+            stock
+          )
+        )
+      );
+  }
+
+
+  // ====================================
+  // Add button
+  // ====================================
+
+  if (addToCartBtn) {
+
+    addToCartBtn.disabled =
+      stock <= 0;
+
+
+    if (stock <= 0) {
+
+      addToCartBtn.textContent =
+        "OUT OF STOCK";
+
+    } else {
+
+      addToCartBtn.textContent =
+        "ADD TO CART";
+    }
+  }
 }
 
 
@@ -647,7 +952,7 @@ function renderVariants(product) {
 // Quantity controls
 // ========================================
 
-function setupQuantity(product) {
+function setupQuantity() {
 
   if (
     !qtyInput ||
@@ -661,26 +966,55 @@ function setupQuantity(product) {
   qtyInput.type =
     "number";
 
+
   qtyInput.min =
     "1";
-
-  qtyInput.max =
-    String(
-      Math.max(
-        1,
-        product.stock
-      )
-    );
 
 
   qtyDecrease.type =
     "button";
 
+
   qtyIncrease.type =
     "button";
 
 
+  function getCurrentStock() {
+
+    if (selectedVariant) {
+
+      return Math.max(
+        0,
+        Number(
+          selectedVariant.stock
+        ) || 0
+      );
+    }
+
+
+    return Math.max(
+      0,
+      Number(
+        currentProduct?.stock
+      ) || 0
+    );
+  }
+
+
   function setQuantity(value) {
+
+    const stock =
+      getCurrentStock();
+
+
+    if (stock <= 0) {
+
+      qtyInput.value =
+        "1";
+
+      return;
+    }
+
 
     const next =
       Number.parseInt(
@@ -692,7 +1026,7 @@ function setupQuantity(product) {
     const quantity =
       Number.isFinite(next)
         ? Math.min(
-          product.stock,
+          stock,
           Math.max(
             1,
             next
@@ -702,8 +1036,14 @@ function setupQuantity(product) {
 
 
     qtyInput.value =
-      String(quantity);
+      String(
+        quantity
+      );
   }
+
+
+  qtyInput.value =
+    "1";
 
 
   qtyDecrease.onclick =
@@ -742,32 +1082,103 @@ function setupQuantity(product) {
 // Add to cart
 // ========================================
 
-function setupAddToCart(product) {
+function setupAddToCart() {
 
   if (!addToCartBtn) {
     return;
   }
 
 
-  if (product.stock <= 0) {
-
-    addToCartBtn.disabled =
-      true;
-
-    addToCartBtn.textContent =
-      "OUT OF STOCK";
-
-    return;
-  }
-
-
-  addToCartBtn.addEventListener(
-    "click",
+  addToCartBtn.onclick =
     () => {
+
+      if (!currentProduct) {
+        return;
+      }
+
+
+      // ==================================
+      // Determine selected variant
+      // ==================================
+
+      let variant =
+        selectedVariant;
+
+
+      // For products with no variants
+      if (
+        !variant &&
+        currentProduct.variants.length === 0
+      ) {
+
+        variant = {
+          id: null,
+
+          size:
+            "One Size",
+
+          stock:
+            currentProduct.stock,
+
+          price:
+            currentProduct.price,
+
+          sku:
+            null
+        };
+      }
+
+
+      if (!variant) {
+
+        if (
+          typeof showWarning ===
+          "function"
+        ) {
+
+          showWarning(
+            "Please select a size.",
+            "⚠ Select Size"
+          );
+        }
+
+        return;
+      }
+
+
+      const variantStock =
+        Math.max(
+          0,
+          Number(
+            variant.stock
+          ) || 0
+        );
+
+
+      if (variantStock <= 0) {
+
+        if (
+          typeof showWarning ===
+          "function"
+        ) {
+
+          showWarning(
+            "This variant is out of stock.",
+            "⚠ Out of Stock"
+          );
+        }
+
+        return;
+      }
+
+
+      // ==================================
+      // Quantity
+      // ==================================
 
       const quantity =
         Math.min(
-          product.stock,
+          variantStock,
           Math.max(
             1,
             Number.parseInt(
@@ -778,6 +1189,10 @@ function setupAddToCart(product) {
         );
 
 
+      // ==================================
+      // Existing cart quantity
+      // ==================================
+
       const cart =
         readCart();
 
@@ -785,14 +1200,15 @@ function setupAddToCart(product) {
       const currentQuantity =
         getCartQuantity(
           cart,
-          product.id
+          currentProduct.id,
+          variant.id
         );
 
 
       if (
         currentQuantity +
         quantity >
-        product.stock
+        variantStock
       ) {
 
         if (
@@ -801,7 +1217,7 @@ function setupAddToCart(product) {
         ) {
 
           showWarning(
-            "You cannot add more than the available stock.",
+            "You cannot add more than the available stock for this size.",
             "⚠ Stock Limit"
           );
         }
@@ -810,29 +1226,66 @@ function setupAddToCart(product) {
       }
 
 
+      // ==================================
       // Selected size
+      // ==================================
+
       const selectedSize =
-        sizeOptions?.dataset
-          .selectedSize ||
-        null;
+        variant.size ||
+        "One Size";
 
 
-      // Find existing item
+      // ==================================
+      // Find existing cart item
+      // ==================================
+
       const existingItem =
         cart.find(
-          item =>
+          item => {
 
-            String(
-              item.productId
-            ) ===
-            String(
-              product.id
-            ) &&
+            const sameProduct =
+              String(
+                item.productId
+              ) ===
+              String(
+                currentProduct.id
+              );
 
-            (item.size || null) ===
-            selectedSize
+
+            const sameVariant =
+              String(
+                item.variantId ?? ""
+              ) ===
+              String(
+                variant.id ?? ""
+              );
+
+
+            return (
+              sameProduct &&
+              sameVariant
+            );
+          }
         );
 
+
+      // ==================================
+      // Price
+      // ==================================
+
+      const variantPrice =
+        variant.price != null
+          ? Number(
+            variant.price
+          )
+          : Number(
+            currentProduct.price
+          );
+
+
+      // ==================================
+      // Update existing item
+      // ==================================
 
       if (existingItem) {
 
@@ -840,42 +1293,74 @@ function setupAddToCart(product) {
           quantity;
 
         existingItem.name =
-          product.name;
+          currentProduct.name;
+
+        existingItem.size =
+          selectedSize;
+
+        existingItem.variantId =
+          variant.id;
+
+        existingItem.sku =
+          variant.sku ||
+          null;
 
         existingItem.price =
-          product.price;
+          variantPrice;
 
         existingItem.image =
-          product.image || "";
+          currentProduct.image ||
+          "";
+      }
 
-      } else {
+      // ==================================
+      // Create new cart item
+      // ==================================
+
+      else {
 
         cart.push({
 
           productId:
-            product.id,
+            currentProduct.id,
+
+          variantId:
+            variant.id,
 
           name:
-            product.name,
+            currentProduct.name,
 
           size:
             selectedSize,
 
+          sku:
+            variant.sku ||
+            null,
+
           quantity,
 
           price:
-            product.price,
+            variantPrice,
 
           image:
-            product.image || ""
+            currentProduct.image ||
+            ""
         });
       }
 
+
+      // ==================================
+      // Save
+      // ==================================
 
       saveCart(
         cart
       );
 
+
+      // ==================================
+      // Success message
+      // ==================================
 
       if (
         typeof showSuccess ===
@@ -883,11 +1368,15 @@ function setupAddToCart(product) {
       ) {
 
         showSuccess(
-          `${quantity} × ${product.name} added to cart.`,
+          `${quantity} × ${currentProduct.name} (${selectedSize}) added to cart.`,
           "✓ Added to Cart"
         );
       }
 
+
+      // ==================================
+      // Button feedback
+      // ==================================
 
       const originalText =
         addToCartBtn.textContent;
@@ -908,21 +1397,33 @@ function setupAddToCart(product) {
             originalText;
 
 
-          addToCartBtn.disabled =
+          const latestCart =
+            readCart();
+
+
+          const latestQuantity =
             getCartQuantity(
-              readCart(),
-              product.id
-            ) >=
-            product.stock;
+              latestCart,
+              currentProduct.id,
+              variant.id
+            );
+
+
+          addToCartBtn.disabled =
+            latestQuantity >=
+            variantStock;
 
         },
         1500
       );
 
 
+      // ==================================
+      // Update cart count
+      // ==================================
+
       updateCartCount();
-    }
-  );
+    };
 }
 
 
@@ -939,10 +1440,14 @@ async function loadRelatedProducts(
   }
 
 
-  /*
-   * فعلاً محصولات مرتبط را
-   * بر اساس category می‌گیریم.
-   */
+  // No category
+  if (!product.categoryId) {
+
+    renderRelatedProducts([]);
+
+    return;
+  }
+
 
   const {
     data,
@@ -950,36 +1455,49 @@ async function loadRelatedProducts(
   } = await supabase
     .from("products")
     .select(`
-            id,
-            name,
-            price,
-            type,
-            categories (
-                name,
-                slug
-            ),
-            product_variants (
-                stock,
-                price
-            ),
-            product_images (
-                image_url,
-                alt_text,
-                is_primary,
-                sort_order
-            )
-        `)
+      id,
+      name,
+      price,
+      type,
+      category_id,
+
+      categories (
+        id,
+        name,
+        slug
+      ),
+
+      product_variants (
+        id,
+        stock,
+        price
+      ),
+
+      product_images (
+        id,
+        storage_path,
+        alt_text,
+        is_primary,
+        sort_order
+      )
+    `)
     .eq(
       "is_active",
       true
     )
     .eq(
-      "categories.slug",
-      product.category
+      "category_id",
+      product.categoryId
     )
     .neq(
       "id",
       product.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
     )
     .limit(4);
 
@@ -1035,9 +1553,11 @@ async function loadRelatedProducts(
           variants.reduce(
             (total, variant) =>
               total +
-              Number(
-                variant.stock ||
-                0
+              Math.max(
+                0,
+                Number(
+                  variant.stock
+                ) || 0
               ),
             0
           );
@@ -1062,7 +1582,8 @@ async function loadRelatedProducts(
             item.name,
 
           type:
-            item.type || "",
+            item.type ||
+            "",
 
           category:
             item.categories?.slug ||
@@ -1097,6 +1618,11 @@ async function loadRelatedProducts(
 function renderRelatedProducts(
   relatedProducts
 ) {
+
+  if (!relatedProductsGrid) {
+    return;
+  }
+
 
   relatedProductsGrid.innerHTML =
     "";
@@ -1153,7 +1679,9 @@ function renderRelatedProducts(
       );
 
 
+      // ==================================
       // Image
+      // ==================================
 
       const imageWrap =
         document.createElement(
@@ -1212,7 +1740,9 @@ function renderRelatedProducts(
       }
 
 
+      // ==================================
       // Info
+      // ==================================
 
       const info =
         document.createElement(
@@ -1266,7 +1796,9 @@ function renderRelatedProducts(
       );
 
 
+      // ==================================
       // Open product
+      // ==================================
 
       const openDetail =
         () => {

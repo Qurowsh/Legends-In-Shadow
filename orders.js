@@ -3,16 +3,18 @@ import { supabase } from "./js/supabase.js";
 
 /* =========================================================
    STATE
-   ========================================================= */
+========================================================= */
 
 let currentUser = null;
 let orders = [];
 let orderItems = [];
 
+let selectedOrder = null;
+
 
 /* =========================================================
    DOM
-   ========================================================= */
+========================================================= */
 
 const ordersLoading =
     document.getElementById(
@@ -55,7 +57,9 @@ const ordersCartCount =
     );
 
 
-/* Modal */
+/* =========================================================
+   MODAL
+========================================================= */
 
 const orderDetailModal =
     document.getElementById(
@@ -129,8 +133,8 @@ const modalCreatedAt =
 
 
 /* =========================================================
-   FORMATTERS
-   ========================================================= */
+   HELPERS
+========================================================= */
 
 function formatPrice(value) {
 
@@ -142,6 +146,16 @@ function formatPrice(value) {
     ).format(
         Math.round(price)
     )} تومان`;
+}
+
+
+function formatNumber(value) {
+
+    return new Intl.NumberFormat(
+        "fa-IR"
+    ).format(
+        Number(value) || 0
+    );
 }
 
 
@@ -208,169 +222,240 @@ function escapeHtml(value) {
     return String(
         value ?? ""
     )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
 /* =========================================================
-   IMAGE
-   ========================================================= */
+   STATUS
+========================================================= */
 
-function getProductImageUrl(
-    storagePath
-) {
+function normalizeOrderStatus(status) {
 
-    if (!storagePath) {
-        return "";
-    }
-
-    const rawPath =
+    const value =
         String(
-            storagePath
-        ).trim();
-
-    if (!rawPath) {
-        return "";
-    }
-
-    if (
-        /^https?:\/\//i.test(
-            rawPath
+            status || "pending"
         )
-    ) {
-        return rawPath;
-    }
+            .trim()
+            .toLowerCase();
 
-    let path =
-        rawPath.replace(
-            /^\/+/,
-            ""
+    const allowed = [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled"
+    ];
+
+    return allowed.includes(value)
+        ? value
+        : "pending";
+}
+
+
+function getOrderStatusLabel(status) {
+
+    const labels = {
+
+        pending:
+            "PENDING",
+
+        confirmed:
+            "CONFIRMED",
+
+        processing:
+            "PROCESSING",
+
+        shipped:
+            "SHIPPED",
+
+        delivered:
+            "DELIVERED",
+
+        cancelled:
+            "CANCELLED"
+
+    };
+
+    const normalized =
+        normalizeOrderStatus(
+            status
         );
 
-    if (
-        path.startsWith(
-            "product-images/"
+    return (
+        labels[normalized] ||
+        "PENDING"
+    );
+}
+
+
+function normalizePaymentStatus(status) {
+
+    const value =
+        String(
+            status || "unpaid"
         )
-    ) {
-        path =
-            path.substring(
-                "product-images/".length
-            );
-    }
+            .trim()
+            .toLowerCase();
 
-    const { data } =
-        supabase.storage
-            .from(
-                "product-images"
-            )
-            .getPublicUrl(
-                path
-            );
+    const allowed = [
+        "unpaid",
+        "pending",
+        "paid",
+        "failed",
+        "cancelled",
+        "refunded"
+    ];
 
-    return data?.publicUrl || "";
+    return allowed.includes(value)
+        ? value
+        : "unpaid";
+}
+
+
+function getPaymentStatusLabel(status) {
+
+    const labels = {
+
+        unpaid:
+            "UNPAID",
+
+        pending:
+            "PAYMENT PENDING",
+
+        paid:
+            "PAID",
+
+        failed:
+            "PAYMENT FAILED",
+
+        cancelled:
+            "PAYMENT CANCELLED",
+
+        refunded:
+            "REFUNDED"
+
+    };
+
+    const normalized =
+        normalizePaymentStatus(
+            status
+        );
+
+    return (
+        labels[normalized] ||
+        "UNPAID"
+    );
 }
 
 
 /* =========================================================
-   UI
-   ========================================================= */
+   UI ERROR / LOADING
+========================================================= */
 
 function showLoading() {
 
-    ordersLoading.hidden =
-        false;
+    if (ordersLoading) {
+        ordersLoading.hidden = false;
+    }
 
-    ordersContent.hidden =
-        true;
+    if (ordersError) {
+        ordersError.hidden = true;
+    }
 
-    ordersError.hidden =
-        true;
+    if (ordersContent) {
+        ordersContent.hidden = true;
+    }
+}
+
+
+function hideLoading() {
+
+    if (ordersLoading) {
+        ordersLoading.hidden = true;
+    }
+}
+
+
+function showError(message) {
+
+    if (ordersErrorText) {
+        ordersErrorText.textContent =
+            message;
+    }
+
+    if (ordersError) {
+        ordersError.hidden = false;
+    }
+
+    if (ordersContent) {
+        ordersContent.hidden = true;
+    }
+
+    hideLoading();
 }
 
 
 function showContent() {
 
-    ordersLoading.hidden =
-        true;
+    if (ordersError) {
+        ordersError.hidden = true;
+    }
 
-    ordersError.hidden =
-        true;
+    if (ordersContent) {
+        ordersContent.hidden = false;
+    }
 
-    ordersContent.hidden =
-        false;
-}
-
-
-function showError(
-    message
-) {
-
-    ordersLoading.hidden =
-        true;
-
-    ordersContent.hidden =
-        true;
-
-    ordersError.hidden =
-        false;
-
-    ordersErrorText.textContent =
-        message;
+    hideLoading();
 }
 
 
 /* =========================================================
-   USER
-   ========================================================= */
+   AUTH
+========================================================= */
 
 async function getCurrentUser() {
 
     const {
         data: {
-            user
+            session
         },
         error
     } =
-        await supabase.auth.getUser();
+        await supabase.auth.getSession();
 
     if (error) {
 
         console.error(
-            "Failed to get current user:",
+            "Failed to get auth session:",
             error
         );
 
         return null;
     }
 
-    return user || null;
+    return (
+        session?.user ||
+        null
+    );
 }
 
 
 /* =========================================================
    LOAD ORDERS
-   ========================================================= */
+========================================================= */
 
 async function loadOrders() {
+
+    if (!currentUser) {
+        return false;
+    }
+
 
     const {
         data,
@@ -382,6 +467,7 @@ async function loadOrders() {
                 id,
                 user_id,
                 status,
+                payment_status,
                 subtotal,
                 shipping,
                 tax,
@@ -405,33 +491,45 @@ async function loadOrders() {
                 }
             );
 
+
     if (error) {
+
+        console.error(
+            "Failed to load orders:",
+            error
+        );
+
         throw error;
     }
 
+
     orders =
         data || [];
+
+    return true;
 }
 
 
 /* =========================================================
    LOAD ORDER ITEMS
-   ========================================================= */
+========================================================= */
 
 async function loadOrderItems() {
 
     orderItems = [];
 
-    if (
-        orders.length === 0
-    ) {
+
+    if (!orders.length) {
         return;
     }
 
+
     const orderIds =
         orders.map(
-            order => order.id
+            order =>
+                order.id
         );
+
 
     const {
         data,
@@ -455,15 +553,23 @@ async function loadOrderItems() {
                 orderIds
             )
             .order(
-                "id",
+                "created_at",
                 {
                     ascending: true
                 }
             );
 
+
     if (error) {
+
+        console.error(
+            "Failed to load order items:",
+            error
+        );
+
         throw error;
     }
+
 
     orderItems =
         data || [];
@@ -472,211 +578,272 @@ async function loadOrderItems() {
 
 /* =========================================================
    CART COUNT
-   ========================================================= */
+========================================================= */
 
 async function updateCartCount() {
 
-    const {
-        data: cart,
-        error
-    } =
-        await supabase
-            .from("carts")
-            .select("id")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: true
-                }
-            )
-            .limit(1)
-            .maybeSingle();
+    try {
 
-    if (error) {
+        const {
+            data: cart
+        } =
+            await supabase
+                .from("carts")
+                .select("id")
+                .eq(
+                    "user_id",
+                    currentUser?.id
+                )
+                .maybeSingle();
+
+
+        if (!cart) {
+
+            if (ordersCartCount) {
+                ordersCartCount.textContent =
+                    "(0)";
+            }
+
+            return;
+        }
+
+
+        const {
+            data: items,
+            error
+        } =
+            await supabase
+                .from("cart_items")
+                .select("quantity")
+                .eq(
+                    "cart_id",
+                    cart.id
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        const count =
+            (items || []).reduce(
+                (
+                    total,
+                    item
+                ) =>
+                    total +
+                    (
+                        Number(
+                            item.quantity
+                        ) || 0
+                    ),
+                0
+            );
+
+
+        if (ordersCartCount) {
+
+            ordersCartCount.textContent =
+                `(${formatNumber(count)})`;
+
+        }
+
+    } catch (error) {
 
         console.error(
-            "Failed to load cart:",
+            "Failed to update cart count:",
             error
         );
 
-        return;
+        if (ordersCartCount) {
+            ordersCartCount.textContent =
+                "(0)";
+        }
     }
-
-    if (!cart) {
-
-        ordersCartCount.textContent =
-            "(0)";
-
-        return;
-    }
-
-    const {
-        data: items,
-        error: itemsError
-    } =
-        await supabase
-            .from("cart_items")
-            .select("quantity")
-            .eq(
-                "cart_id",
-                cart.id
-            );
-
-    if (itemsError) {
-
-        console.error(
-            "Failed to load cart items:",
-            itemsError
-        );
-
-        return;
-    }
-
-    const count =
-        (items || []).reduce(
-            (
-                total,
-                item
-            ) =>
-                total +
-                (
-                    Number(
-                        item.quantity
-                    ) || 0
-                ),
-            0
-        );
-
-    ordersCartCount.textContent =
-        `(${count})`;
 }
 
 
 /* =========================================================
-   ORDER STATUS
-   ========================================================= */
-
-function getStatusLabel(
-    status
-) {
-
-    const value =
-        String(
-            status || "pending"
-        ).toLowerCase();
-
-    const labels = {
-        pending: "PENDING",
-        confirmed: "CONFIRMED",
-        processing: "PROCESSING",
-        shipped: "SHIPPED",
-        delivered: "DELIVERED",
-        cancelled: "CANCELLED"
-    };
-
-    return (
-        labels[value] ||
-        value.toUpperCase()
-    );
-}
-
-
-/* =========================================================
-   RENDER ORDER LIST
-   ========================================================= */
+   RENDER ORDERS
+========================================================= */
 
 function renderOrders() {
 
-    ordersList.innerHTML =
-        "";
+    if (!ordersList) {
+        return;
+    }
 
-    if (
-        orders.length === 0
-    ) {
 
-        ordersEmpty.hidden =
-            false;
+    ordersList.innerHTML = "";
+
+
+    if (!orders.length) {
+
+        if (ordersEmpty) {
+            ordersEmpty.hidden = false;
+        }
 
         return;
     }
 
-    ordersEmpty.hidden =
-        true;
+
+    if (ordersEmpty) {
+        ordersEmpty.hidden = true;
+    }
+
 
     orders.forEach(
         order => {
 
-            const item =
+            const orderId =
+                Number(order.id);
+
+
+            const status =
+                normalizeOrderStatus(
+                    order.status
+                );
+
+
+            const paymentStatus =
+                normalizePaymentStatus(
+                    order.payment_status
+                );
+
+
+            const items =
+                orderItems.filter(
+                    item =>
+                        Number(
+                            item.order_id
+                        ) === orderId
+                );
+
+
+            const itemCount =
+                items.reduce(
+                    (
+                        total,
+                        item
+                    ) =>
+                        total +
+                        (
+                            Number(
+                                item.quantity
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            const element =
                 document.createElement(
                     "article"
                 );
 
-            item.className =
-                "order-item";
 
-            const status =
-                String(
-                    order.status ||
-                    "pending"
-                ).toLowerCase();
+            element.className =
+                "order-card";
 
-            item.innerHTML = `
-                <div class="order-info">
 
-                    <h3 class="order-number">
-                        ORDER #${escapeHtml(
-                order.id
+            element.innerHTML = `
+                <div class="order-card-main">
+
+                    <div class="order-card-top">
+
+                        <div>
+                            <div class="order-card-number">
+                                ORDER #${escapeHtml(orderId)}
+                            </div>
+
+                            <div class="order-card-date">
+                                ${escapeHtml(
+                formatDate(order.created_at)
             )}
-                    </h3>
+                            </div>
+                        </div>
 
-                    <div class="order-date">
-                        ${formatDate(
-                order.created_at
+                        <span
+                            class="order-status ${escapeHtml(status)}"
+                        >
+                            ${escapeHtml(
+                getOrderStatusLabel(status)
             )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="order-card-info">
+
+                        <div class="order-card-info-item">
+
+                            <span>
+                                ITEMS
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                formatNumber(itemCount)
+            )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="order-card-info-item">
+
+                            <span>
+                                TOTAL
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                formatPrice(order.total)
+            )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="order-card-info-item">
+
+                            <span>
+                                PAYMENT
+                            </span>
+
+                            <strong class="payment-status ${escapeHtml(paymentStatus)}">
+                                ${escapeHtml(
+                getPaymentStatusLabel(
+                    paymentStatus
+                )
+            )}
+                            </strong>
+
+                        </div>
+
                     </div>
 
                 </div>
 
 
-                <div class="order-side">
-
-                    <strong class="order-total">
-                        ${formatPrice(
-                order.total
-            )}
-                    </strong>
-
-                    <span
-                        class="order-status ${escapeHtml(
-                status
-            )}"
-                    >
-                        ${escapeHtml(
-                getStatusLabel(
-                    status
-                )
-            )}
-                    </span>
+                <div class="order-card-action">
 
                     <button
                         type="button"
-                        class="order-view-button"
-                        data-order-id="${escapeHtml(
-                order.id
-            )}"
+                        class="orders-view-button"
+                        data-order-id="${escapeHtml(orderId)}"
                     >
-                        VIEW
+                        VIEW ORDER
                     </button>
 
                 </div>
             `;
 
+
             ordersList.appendChild(
-                item
+                element
             );
         }
     );
@@ -685,11 +852,9 @@ function renderOrders() {
 
 /* =========================================================
    SHOW ORDER DETAIL
-   ========================================================= */
+========================================================= */
 
-function showOrderDetail(
-    orderId
-) {
+function showOrderDetail(orderId) {
 
     const order =
         orders.find(
@@ -698,282 +863,383 @@ function showOrderDetail(
                 Number(orderId)
         );
 
+
     if (!order) {
         return;
     }
 
-    const items =
-        orderItems.filter(
-            item =>
-                Number(
-                    item.order_id
-                ) ===
-                Number(
-                    order.id
-                )
-        );
 
-
-    /* Header */
-
-    modalOrderTitle.textContent =
-        `ORDER #${order.id}`;
+    selectedOrder =
+        order;
 
 
     const status =
-        String(
-            order.status ||
-            "pending"
-        ).toLowerCase();
-
-    modalOrderStatus.className =
-        `order-status ${status}`;
-
-    modalOrderStatus.textContent =
-        getStatusLabel(status);
+        normalizeOrderStatus(
+            order.status
+        );
 
 
-    /* Items */
-
-    modalOrderItems.innerHTML =
-        "";
-
-    if (
-        items.length === 0
-    ) {
-
-        modalOrderItems.innerHTML = `
-            <div
-                style="
-                    padding: 1.5em 0;
-                    color: rgba(255,255,255,.35);
-                    text-align: center;
-                    font-size: .7em;
-                "
-            >
-                NO ORDER ITEMS
-            </div>
-        `;
-
-    } else {
-
-        items.forEach(
-            item => {
-
-                const itemElement =
-                    document.createElement(
-                        "div"
-                    );
-
-                itemElement.className =
-                    "modal-order-item";
+    const paymentStatus =
+        normalizePaymentStatus(
+            order.payment_status
+        );
 
 
-                const imagePath =
-                    item.storage_path ||
-                    item.image ||
-                    "";
+    /* -----------------------------------------
+       Header
+    ----------------------------------------- */
+
+    if (modalOrderTitle) {
+
+        modalOrderTitle.textContent =
+            `ORDER #${order.id}`;
+
+    }
 
 
-                const imageUrl =
-                    getProductImageUrl(
-                        imagePath
-                    );
+    if (modalOrderStatus) {
+
+        modalOrderStatus.className =
+            `order-status ${status}`;
+
+        modalOrderStatus.textContent =
+            getOrderStatusLabel(
+                status
+            );
+    }
 
 
-                /*
-                    order_items currently does not
-                    store storage_path, so image is
-                    optional. The item still displays
-                    correctly without it.
-                */
+    /* -----------------------------------------
+       Items
+    ----------------------------------------- */
 
-                const imageHtml =
-                    imageUrl
-                        ? `
-                            <div class="modal-item-image">
+    if (modalOrderItems) {
 
-                                <img
-                                    src="${imageUrl}"
-                                    alt="${escapeHtml(
-                            item.product_name
-                        )}"
-                                    loading="lazy"
-                                >
+        modalOrderItems.innerHTML = "";
+
+        const items =
+            orderItems.filter(
+                item =>
+                    Number(
+                        item.order_id
+                    ) ===
+                    Number(
+                        order.id
+                    )
+            );
+
+
+        if (!items.length) {
+
+            modalOrderItems.innerHTML = `
+                <div
+                    style="
+                        padding: 2em;
+                        text-align: center;
+                        color: rgba(255,255,255,.35);
+                        font-family: 'Vazirmatn', sans-serif;
+                    "
+                >
+                    سفارشی برای نمایش وجود ندارد.
+                </div>
+            `;
+
+        } else {
+
+            items.forEach(
+                item => {
+
+                    const element =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    element.className =
+                        "modal-order-item";
+
+
+                    element.innerHTML = `
+
+                        <div class="modal-order-item-main">
+
+                            <div class="modal-order-item-name">
+                                ${escapeHtml(
+                        item.product_name
+                    )}
+                            </div>
+
+
+                            <div class="modal-order-item-meta">
+
+                                ${item.sku
+                            ? `SKU: ${escapeHtml(item.sku)}`
+                            : ""
+                        }
+
+                                ${item.sku
+                            ? " · "
+                            : ""
+                        }
+
+                                ${escapeHtml(
+                            formatPrice(
+                                item.unit_price
+                            )
+                        )}
 
                             </div>
-                        `
-                        : `
-                            <div class="modal-item-image">
 
-                                <div class="modal-item-no-image">
-                                    N
-                                </div>
-
-                            </div>
-                        `;
+                        </div>
 
 
-                itemElement.innerHTML = `
-                    ${imageHtml}
+                        <div class="modal-order-item-qty">
+                            ×${escapeHtml(
+                            formatNumber(
+                                item.quantity
+                            )
+                        )}
+                        </div>
 
-                    <div>
 
-                        <div class="modal-item-name">
+                        <strong class="modal-order-item-total">
                             ${escapeHtml(
-                    item.product_name
-                )}
-                        </div>
+                            formatPrice(
+                                item.total_price
+                            )
+                        )}
+                        </strong>
 
-                        <div class="modal-item-meta">
-                            ${item.sku
-                        ? `SKU: ${escapeHtml(
-                            item.sku
-                        )}`
-                        : ""
-                    }
-
-                            &nbsp; · &nbsp;
-
-                            ×${new Intl.NumberFormat(
-                        "fa-IR"
-                    ).format(
-                        item.quantity
-                    )}
-
-                            &nbsp; · &nbsp;
-
-                            ${formatPrice(
-                        item.unit_price
-                    )}
-                        </div>
-
-                    </div>
-
-                    <strong class="modal-item-total">
-                        ${formatPrice(
-                        item.total_price
-                    )}
-                    </strong>
-                `;
+                    `;
 
 
-                modalOrderItems.appendChild(
-                    itemElement
+                    modalOrderItems.appendChild(
+                        element
+                    );
+                }
+            );
+        }
+    }
+
+
+    /* -----------------------------------------
+       Summary
+    ----------------------------------------- */
+
+    if (modalSubtotal) {
+
+        modalSubtotal.textContent =
+            formatPrice(
+                order.subtotal
+            );
+
+    }
+
+
+    if (modalShipping) {
+
+        modalShipping.textContent =
+            formatPrice(
+                order.shipping
+            );
+
+    }
+
+
+    if (modalTax) {
+
+        modalTax.textContent =
+            formatPrice(
+                order.tax
+            );
+
+    }
+
+
+    if (modalDiscount) {
+
+        modalDiscount.textContent =
+            Number(order.discount) > 0
+                ? `-${formatPrice(
+                    order.discount
+                )}`
+                : formatPrice(0);
+
+    }
+
+
+    if (modalTotal) {
+
+        modalTotal.textContent =
+            formatPrice(
+                order.total
+            );
+
+    }
+
+
+    /* -----------------------------------------
+       Shipping
+    ----------------------------------------- */
+
+    if (modalShippingName) {
+
+        modalShippingName.textContent =
+            order.shipping_name ||
+            "—";
+
+    }
+
+
+    if (modalShippingPhone) {
+
+        modalShippingPhone.textContent =
+            order.shipping_phone ||
+            "—";
+
+    }
+
+
+    if (modalShippingAddress) {
+
+        modalShippingAddress.textContent =
+            order.shipping_address ||
+            "—";
+
+    }
+
+
+    /* -----------------------------------------
+       Date
+    ----------------------------------------- */
+
+    if (modalCreatedAt) {
+
+        modalCreatedAt.textContent =
+            formatDateTime(
+                order.created_at
+            );
+
+    }
+
+
+    /* -----------------------------------------
+       Payment information
+    ----------------------------------------- */
+
+    const paymentBox =
+        document.getElementById(
+            "modalPaymentStatus"
+        );
+
+
+    if (paymentBox) {
+
+        paymentBox.textContent =
+            getPaymentStatusLabel(
+                paymentStatus
+            );
+
+        paymentBox.className =
+            `payment-status ${paymentStatus}`;
+    }
+
+
+    /* -----------------------------------------
+       Open modal
+    ----------------------------------------- */
+
+    if (orderDetailModal) {
+
+        orderDetailModal.hidden =
+            false;
+
+        document.body.style.overflow =
+            "hidden";
+
+    }
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function hideOrderDetail() {
+
+    if (orderDetailModal) {
+
+        orderDetailModal.hidden =
+            true;
+
+    }
+
+    selectedOrder =
+        null;
+
+    document.body.style.overflow =
+        "";
+}
+
+
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
+
+function setupEvents() {
+
+    /* Retry */
+
+    if (ordersRetryBtn) {
+
+        ordersRetryBtn.addEventListener(
+            "click",
+            loadPage
+        );
+
+    }
+
+
+    /* Order list delegation */
+
+    if (ordersList) {
+
+        ordersList.addEventListener(
+            "click",
+            event => {
+
+                const button =
+                    event.target.closest(
+                        ".orders-view-button"
+                    );
+
+
+                if (!button) {
+                    return;
+                }
+
+
+                showOrderDetail(
+                    button.dataset.orderId
                 );
             }
         );
     }
 
 
-    /* Summary */
+    /* Close */
 
-    modalSubtotal.textContent =
-        formatPrice(
-            order.subtotal
+    if (closeOrderModal) {
+
+        closeOrderModal.addEventListener(
+            "click",
+            hideOrderDetail
         );
 
-    modalShipping.textContent =
-        formatPrice(
-            order.shipping
-        );
-
-    modalTax.textContent =
-        formatPrice(
-            order.tax
-        );
-
-    modalDiscount.textContent =
-        order.discount > 0
-            ? `-${formatPrice(
-                order.discount
-            )}`
-            : formatPrice(0);
-
-    modalTotal.textContent =
-        formatPrice(
-            order.total
-        );
+    }
 
 
-    /* Shipping */
-
-    modalShippingName.textContent =
-        order.shipping_name ||
-        "—";
-
-    modalShippingPhone.textContent =
-        order.shipping_phone ||
-        "—";
-
-    modalShippingAddress.textContent =
-        order.shipping_address ||
-        "—";
-
-
-    /* Date */
-
-    modalCreatedAt.textContent =
-        formatDateTime(
-            order.created_at
-        );
-
-
-    /* Show */
-
-    orderDetailModal.hidden =
-        false;
-
-    document.body.style.overflow =
-        "hidden";
-}
-
-
-/* =========================================================
-   HIDE MODAL
-   ========================================================= */
-
-function hideOrderDetail() {
-
-    orderDetailModal.hidden =
-        true;
-
-    document.body.style.overflow =
-        "";
-}
-
-
-/* =========================================================
-   EVENTS
-   ========================================================= */
-
-function setupEvents() {
-
-    ordersList.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    ".order-view-button"
-                );
-
-            if (!button) {
-                return;
-            }
-
-            showOrderDetail(
-                button.dataset.orderId
-            );
-        }
-    );
-
-
-    closeOrderModal.addEventListener(
-        "click",
-        hideOrderDetail
-    );
-
+    /* Backdrop */
 
     document
         .querySelectorAll(
@@ -991,26 +1257,19 @@ function setupEvents() {
         );
 
 
-    if (ordersRetryBtn) {
-
-        ordersRetryBtn.addEventListener(
-            "click",
-            initOrders
-        );
-
-    }
-
+    /* Escape */
 
     document.addEventListener(
         "keydown",
         event => {
 
             if (
-                event.key === "Escape" &&
-                !orderDetailModal.hidden
+                event.key ===
+                "Escape"
             ) {
 
                 hideOrderDetail();
+
             }
 
         }
@@ -1019,12 +1278,13 @@ function setupEvents() {
 
 
 /* =========================================================
-   INIT
-   ========================================================= */
+   LOAD PAGE
+========================================================= */
 
-async function initOrders() {
+async function loadPage() {
 
     showLoading();
+
 
     try {
 
@@ -1050,47 +1310,27 @@ async function initOrders() {
 
         renderOrders();
 
-
-        setupEventsOnce();
-
-
         showContent();
+
 
     } catch (error) {
 
         console.error(
-            "Orders initialization failed:",
+            "Orders page error:",
             error
         );
 
+
         showError(
-            "خطا در بارگذاری سفارش‌ها."
+            "خطا در دریافت سفارش‌های شما. دوباره تلاش کنید."
         );
     }
 }
 
 
 /* =========================================================
-   EVENTS ONCE
-   ========================================================= */
-
-let eventsSetup = false;
-
-function setupEventsOnce() {
-
-    if (eventsSetup) {
-        return;
-    }
-
-    eventsSetup = true;
-
-    setupEvents();
-}
-
-
-/* =========================================================
-   AUTH LISTENER
-   ========================================================= */
+   AUTH STATE CHANGE
+========================================================= */
 
 supabase.auth.onAuthStateChange(
     (
@@ -1099,20 +1339,60 @@ supabase.auth.onAuthStateChange(
     ) => {
 
         if (
-            event === "SIGNED_OUT" ||
-            !session
+            event ===
+            "INITIAL_SESSION"
         ) {
-
-            window.location.href =
-                "login.html?redirect=orders.html";
+            return;
         }
 
+
+        setTimeout(
+            async () => {
+
+                currentUser =
+                    session?.user ||
+                    null;
+
+
+                if (!currentUser) {
+
+                    window.location.href =
+                        "login.html?redirect=orders.html";
+
+                    return;
+                }
+
+
+                try {
+
+                    await loadOrders();
+
+                    await loadOrderItems();
+
+                    await updateCartCount();
+
+                    renderOrders();
+
+                } catch (error) {
+
+                    console.error(
+                        "Auth state orders refresh failed:",
+                        error
+                    );
+
+                }
+
+            },
+            0
+        );
     }
 );
 
 
 /* =========================================================
    START
-   ========================================================= */
+========================================================= */
 
-initOrders();
+setupEvents();
+
+loadPage();
