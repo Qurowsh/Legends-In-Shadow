@@ -35,60 +35,185 @@ const bands = [
   { name: "Rage Against the Machine", image: "", quote: '"The anti-establishment rockers."', genre: "Alternative Rock", year: "Since 1991" },
 ];
 
-// ظرف نمایش گروه‌ها را از HTML پیدا می‌کند.
+// ظرف نمایش گروه‌ها
 const bandsContainer = document.getElementById("bands-container");
-// Fragment برای ساخت کارت‌ها بدون رندرهای اضافه.
-const fragment = document.createDocumentFragment();
-// تصویر جایگزین برای گروه‌هایی که تصویر ندارند.
-const placeholder = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%25" height="100%25" fill="%230a0a0a"/><text x="50%25" y="50%25" fill="%23ffffff" font-size="28" font-family="Arial" dominant-baseline="middle" text-anchor="middle">No Image</text></svg>';
 
-// نام گروه را برای مقایسه یکدست می‌کند.
-const normalizeBand = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+// Search input
+const searchInput = document.getElementById("bandSearch");
 
-// برای هر گروه یک کارت روی صفحه می‌سازد.
-bands.forEach((band) => {
-  // عنصر اصلی کارت را می‌سازد.
-  const newCard = document.createElement("div");
-  newCard.classList.add("card");
+// تصویر جایگزین برای گروه‌هایی که تصویر ندارند
+const placeholder =
+  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%25" height="100%25" fill="%230a0a0a"/><text x="50%25" y="50%25" fill="%23ffffff" font-size="28" font-family="Arial" dominant-baseline="middle" text-anchor="middle">No Image</text></svg>';
 
-  // تصویر گروه را می‌سازد.
-  const bandImage = document.createElement("img");
-  bandImage.classList.add("band-img");
-  bandImage.alt = band.name || "Band";
-  bandImage.decoding = "async";
-  bandImage.loading = "lazy";
-  // اگر تصویر موجود نباشد، تصویر جایگزین را نشان می‌دهد.
-  bandImage.src = band.image && band.image.trim() !== "" ? band.image : placeholder;
-  if (!band.image || band.image.trim() === "") bandImage.classList.add("no-image");
-  newCard.appendChild(bandImage);
+// یکدست کردن متن برای سرچ
+const normalizeBand = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 
-  // نام گروه را به کارت اضافه می‌کند.
-  const bandName = document.createElement("h3");
-  bandName.textContent = band.name;
-  newCard.appendChild(bandName);
 
-  // جمله معرفی گروه را اضافه می‌کند.
-  const bandQuote = document.createElement("p");
-  bandQuote.textContent = band.quote;
-  bandQuote.classList.add("quote");
-  newCard.appendChild(bandQuote);
+// ===============================
+// ساخت کارت‌های گروه
+// ===============================
 
-  // سبک و سال شروع گروه را نمایش می‌دهد.
-  const bandInfo = document.createElement("p");
-  bandInfo.textContent = `${band.genre} | ${band.year}`;
-  bandInfo.classList.add("info");
-  newCard.appendChild(bandInfo);
+function renderBands(bandsToRender) {
 
-  // لینک محصولات مرتبط با همین گروه را می‌سازد.
-  const shopLink = document.createElement("a");
-  shopLink.classList.add("Bio");
-  shopLink.href = `index-shop.html?band=${encodeURIComponent(band.name)}`;
-  shopLink.textContent = "Related Products";
-  newCard.appendChild(shopLink);
+  // پاک کردن کارت‌های قبلی
+  bandsContainer.innerHTML = "";
 
-  // کارت کامل را به Fragment اضافه می‌کند.
-  fragment.appendChild(newCard);
+  // اگر نتیجه‌ای وجود نداشت
+  if (bandsToRender.length === 0) {
+
+    const noResult = document.createElement("p");
+
+    noResult.textContent = "No band found.";
+
+    noResult.classList.add("no-results");
+
+    bandsContainer.appendChild(noResult);
+
+    return;
+  }
+
+
+  // Fragment برای عملکرد بهتر
+  const fragment = document.createDocumentFragment();
+
+
+  // ساخت کارت‌ها
+  bandsToRender.forEach((band) => {
+
+    // کارت اصلی
+    const newCard = document.createElement("div");
+    newCard.classList.add("card");
+
+
+    // ===============================
+    // IMAGE
+    // ===============================
+
+    const bandImage = document.createElement("img");
+
+    bandImage.classList.add("band-img");
+
+    bandImage.alt = band.name || "Band";
+
+    bandImage.decoding = "async";
+
+    bandImage.loading = "lazy";
+
+    bandImage.src =
+      band.image && band.image.trim() !== ""
+        ? band.image
+        : placeholder;
+
+    if (!band.image || band.image.trim() === "") {
+      bandImage.classList.add("no-image");
+    }
+
+    newCard.appendChild(bandImage);
+
+
+    // ===============================
+    // BAND NAME
+    // ===============================
+
+    const bandName = document.createElement("h3");
+
+    bandName.textContent = band.name;
+
+    newCard.appendChild(bandName);
+
+
+    // ===============================
+    // QUOTE
+    // ===============================
+
+    const bandQuote = document.createElement("p");
+
+    bandQuote.textContent = band.quote;
+
+    bandQuote.classList.add("quote");
+
+    newCard.appendChild(bandQuote);
+
+
+    // ===============================
+    // INFO
+    // ===============================
+
+    const bandInfo = document.createElement("p");
+
+    bandInfo.textContent = `${band.genre} | ${band.year}`;
+
+    bandInfo.classList.add("info");
+
+    newCard.appendChild(bandInfo);
+
+
+    // ===============================
+    // RELATED PRODUCTS
+    // ===============================
+
+    const shopLink = document.createElement("a");
+
+    shopLink.classList.add("Bio");
+
+    shopLink.href =
+      `index-shop.html?category=${encodeURIComponent(band.name)}`;
+
+    shopLink.textContent = "Related Products";
+
+    newCard.appendChild(shopLink);
+
+
+    // اضافه کردن کارت به Fragment
+    fragment.appendChild(newCard);
+  });
+
+
+  // اضافه کردن همه کارت‌ها به صفحه
+  bandsContainer.appendChild(fragment);
+}
+
+
+// ===============================
+// SEARCH
+// ===============================
+
+searchInput.addEventListener("input", () => {
+
+  // مقدار سرچ کاربر
+  const searchValue = normalizeBand(searchInput.value);
+
+
+  // اگر سرچ خالی بود، همه گروه‌ها را نشان بده
+  if (searchValue === "") {
+
+    renderBands(bands);
+
+    return;
+  }
+
+
+  // فیلتر کردن گروه‌ها
+  const filteredBands = bands.filter((band) => {
+
+    const bandName = normalizeBand(band.name);
+
+    return bandName.includes(searchValue);
+  });
+
+
+  // نمایش نتایج
+  renderBands(filteredBands);
 });
 
-// همه کارت‌ها را یک‌جا داخل صفحه قرار می‌دهد.
-bandsContainer.appendChild(fragment);
+
+// ===============================
+// INITIAL RENDER
+// ===============================
+
+// بار اول همه گروه‌ها نمایش داده شوند
+renderBands(bands);

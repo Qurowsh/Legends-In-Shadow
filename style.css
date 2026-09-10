@@ -670,6 +670,7 @@ body.bands-page::after {
     font-family:
         Arial,
         sans-serif;
+    font-size: 0.75rem;
 }
 
 
@@ -798,8 +799,8 @@ body.bands-page .shop-footer {
 ========================================================= */
 
 .hero {
-    min-height:
-        650px;
+    height:
+        500px;
 
     display:
         flex;
@@ -1211,6 +1212,8 @@ body.bands-page .shop-footer {
         border-color
         0.45s
         ease;
+        max-width: 300px;
+        max-height: 600px;
 }
 
 .card:nth-child(2) {
@@ -1901,13 +1904,65 @@ body.bands-page .shop-footer {
     letter-spacing:
         0.12em;
 }
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+}
 
+.input {
+  max-width: 190px;
+  height: 100%;
+  outline: none;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #070707;
+  caret-color: #f7f7f8;
+  color: #fff;
+  padding: 7px 10px;
+  border: 2px solid transparent;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+  margin-right: 1px;
+  transition: all .2s ease;
+}
 
+.input:hover {
+  border: 2px solid rgba(255, 255, 255, 0.16);
+}
+
+.input:focus {
+  border: 2px solid red;
+  background-color: #0e0e10;
+}
+
+.search__btn {
+  border: none;
+  cursor: pointer;
+  background-color: rgba(42, 42, 45, 1);
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  height: 100%;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search__btn:hover {
+  background-color: rgba(54, 54, 56, 1);
+}
 /* =========================================================
    RESPONSIVE HEADER / FOOTER
 ========================================================= */
 
 @media (max-width: 70em) {
+  section{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+  }
 
     .shop-header-inner {
         width:
@@ -1939,6 +1994,18 @@ body.bands-page .shop-footer {
             1fr
             1fr;
     }
+    a,button{
+      font-size: 0.5rem;
+    }
+    .hero {
+    height:
+        350px;
+
+    padding:
+        2em
+        1em;
+}
+
 
 }
 
@@ -2067,14 +2134,6 @@ body.bands-page .shop-footer {
             8.5em;
     }
 
-    .hero {
-        min-height:
-            500px;
-
-        padding:
-            2em
-            1em;
-    }
 
     .hero-title {
         font-size:
