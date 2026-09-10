@@ -1,107 +1,354 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta charset="UTF-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>NICHERZ</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="bands-fixes.css" />
-  <link rel="stylesheet" href="auth.css" />
-  <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
-  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
-  <style>
-    /* ظاهر اصلی صفحه بندها را یکدست نگه می‌دارد. */
-    body.bands-page { background: radial-gradient(circle at top, rgba(255,255,255,.06), transparent 26%), #000; }
-    /* نور متحرک پس‌زمینه را حفظ می‌کند. */
-    body.bands-page::before {
-      background: radial-gradient(circle at 50% 12%, rgba(255,255,255,.22), transparent 20%), radial-gradient(circle at 50% 35%, rgba(220,220,220,.14), transparent 30%), radial-gradient(circle at 80% 20%, rgba(255,255,255,.08), transparent 18%), linear-gradient(180deg, rgba(255,255,255,.05), transparent 36%);
-      top: 0; left: 0; width: 100%; height: 100%; animation: bandsAmbientGlow 4.6s ease-in-out infinite alternate; filter: blur(12px); opacity: .75; z-index: 0;
-    }
-    /* لایه دوم دود و نور را متحرک نگه می‌دارد. */
-    body.bands-page::after {
-      background: radial-gradient(circle at 15% 70%, rgba(255,255,255,.08), transparent 22%), radial-gradient(circle at 85% 25%, rgba(255,255,255,.06), transparent 20%);
-      top: 0; left: 0; width: 100%; height: 100%; animation: bandsSmokeMove 18s ease-in-out infinite alternate; filter: blur(35px); opacity: .7; z-index: 0;
-    }
-    /* انیمیشن نور پس‌زمینه را تعریف می‌کند. */
-    @keyframes bandsAmbientGlow { 0% { opacity: .45; filter: blur(12px); } 50% { opacity: .9; filter: blur(20px); } 100% { opacity: .65; filter: blur(15px); } }
-    /* حرکت نرم دود را تعریف می‌کند. */
-    @keyframes bandsSmokeMove { 0% { transform: translate(-3em, 2em) scale(1); } 50% { transform: translate(5em, -4em) scale(1.08); } 100% { transform: translate(-2em, -7em) scale(.96); } }
-    /* کارت بندها را با کارت‌های فروشگاه هماهنگ می‌کند. */
-    body.bands-page .card { background: rgba(1,1,1,.55); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.14); border-radius: 1.2em; box-shadow: 0 18px 35px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 1px rgba(255,255,255,.02); }
-    /* نور داخلی کارت را آماده هاور می‌کند. */
-    body.bands-page .card::before { border: 0; background: linear-gradient(135deg, rgba(255,255,255,.18), transparent 38%, rgba(255,255,255,.04)); opacity: 0; transition: opacity .35s ease; z-index: 0; }
-    /* حالت هاور کارت را حفظ می‌کند. */
-    body.bands-page .card:hover { transform: translateY(-16px) scale(1.025); border-color: rgba(255,255,255,.7); box-shadow: 0 20px 48px rgba(255,255,255,.12), 0 0 28px rgba(255,255,255,.18), 0 26px 60px rgba(0,0,0,.88), 0 0 24px rgba(255,255,255,.1); }
-    /* تصویر بند را بدون خط اضافی نگه می‌دارد. */
-    body.bands-page .band-img { border: 0; position: relative; z-index: 1; }
-    /* دکمه محصولات مرتبط را داخل خودش کلیپ می‌کند. */
-    body.bands-page .Bio { position: relative; overflow: hidden; z-index: 1; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.04); border-radius: 0; color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.05); }
-    /* حالت هاور دکمه را تنظیم می‌کند. */
-    body.bands-page .Bio:hover { background: #fff; color: #000; border-color: rgba(255,255,255,.7); text-shadow: none; box-shadow: 0 0 22px rgba(255,255,255,.24); transform: translateY(-3px) scale(1.02); }
-    /* محتوای صفحه را بالای نورهای تزئینی قرار می‌دهد. */
-    body.bands-page main, body.bands-page .shop-footer { position: relative; z-index: 1; }
-    /* هدر مشترک را همیشه بالای viewport نگه می‌دارد. */
-    body.bands-page .shop-header { position: fixed; top: 0; left: 0; width: 100%; margin: 0; z-index: 10; }
-    /* صفحه اصلی فضای لازم برای هدر ثابت را می‌گیرد. */
-    body.bands-page main { padding-top: 100px; }
-    /* حالت موبایل هاور کارت را جمع‌تر می‌کند. */
-    @media (max-width: 700px) { body.bands-page .card:hover { transform: translateY(-7px) scale(1.01); } }
-  </style>
+
+
+  <!-- Main styles -->
+
+  <link rel="stylesheet" href="style.css">
+
+
+  <link rel="stylesheet" href="auth.css">
+
+
+  <!-- Fonts -->
+
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+
+
+  <!-- Favicon -->
+
+  <link rel="icon" type="image/jpeg" href="./Images/logo.jpg">
+
+
 </head>
+
+
 <body class="bands-page">
+
+
+  <!-- =========================================
+         BACKGROUND
+    ========================================== -->
+
   <div class="smoke-background" aria-hidden="true">
+
     <div class="smoke smoke-one"></div>
+
     <div class="smoke smoke-two"></div>
+
     <div class="smoke smoke-three"></div>
+
   </div>
 
+
+
+  <!-- =========================================
+         HEADER
+    ========================================== -->
+
   <header class="shop-header">
+
     <div class="shop-header-inner">
+
+
+      <!-- BRAND -->
+
       <a href="index.html" class="brand-wrap" aria-label="NICHERZ home">
-        <div class="brand-mark"><img src="./Images/logo.jpg" alt="NICHERZ logo" /></div>
-        <div class="brand-copy"><span class="brand-name">NICHERZ</span><small>ARCHIVE</small></div>
+
+        <div class="brand-mark">
+
+          <img src="./Images/logo.jpg" alt="NICHERZ logo">
+
+        </div>
+
+
+        <div class="brand-copy">
+
+          <span class="brand-name">
+            NICHERZ
+          </span>
+
+          <small>
+            ARCHIVE
+          </small>
+
+        </div>
+
       </a>
+
+
+
+      <!-- NAVIGATION -->
+
       <nav class="header-nav" aria-label="Main navigation">
-        <a href="index.html" class="active-nav" aria-current="page">HOME</a>
-        <a href="index-shop.html">SHOP</a>
-        <a href="#gallery">BANDS</a>
-        <a href="#" class="disabled">APPAREL</a>
-        <a href="contact.html">CONTACT</a>
+
+        <a href="index.html" class="active-nav" aria-current="page">
+          HOME
+        </a>
+
+        <a href="index-shop.html">
+          SHOP
+        </a>
+
+        <a href="#gallery">
+          BANDS
+        </a>
+
+        <a href="#" class="disabled">
+          APPAREL
+        </a>
+
+        <a href="contact.html">
+          CONTACT
+        </a>
+
+
         <div id="auth-nav" class="auth-nav"></div>
+
       </nav>
-      <div class="header-actions"><a href="cart.html" class="cart-pill">CART <span id="cartHeaderCount">(0)</span></a></div>
+
+
+
+      <!-- CART -->
+
+      <div class="header-actions">
+
+        <a href="cart.html" class="cart-pill" aria-label="Shopping cart">
+
+          CART
+
+          <span id="cartHeaderCount">
+            (0)
+          </span>
+
+        </a>
+
+      </div>
+
+
     </div>
+
   </header>
 
+
+
+  <!-- =========================================
+         MAIN
+    ========================================== -->
+
   <main>
+
+
+    <!-- =====================================
+             HERO
+        ====================================== -->
+
     <section class="hero">
+
       <div class="hero-content">
-        <h1 class="hero-title">LEGENDS <span>IN SHADOWS</span></h1>
-        <p class="hero-subtitle">Where Metal Becomes A Legend</p>
+
+        <h1 class="hero-title">
+
+          LEGENDS
+
+          <span>
+            IN SHADOWS
+          </span>
+
+        </h1>
+
+
+        <p class="hero-subtitle">
+          Where Metal Becomes A Legend
+        </p>
+
       </div>
+
     </section>
+
+
+
+    <!-- =====================================
+             INTRO
+        ====================================== -->
+
     <section class="intro">
-      <h2>THE METAL ARCHIVE</h2>
-      <p>A dark archive dedicated to the legends, stories and sounds that shaped generations.</p>
+
+      <h2>
+        THE METAL ARCHIVE
+      </h2>
+
+      <p>
+        A dark archive dedicated to the legends,
+        stories and sounds that shaped generations.
+      </p>
+
     </section>
+
+
+
+    <!-- =====================================
+             BANDS
+        ====================================== -->
+
     <section class="bands-section" id="gallery">
-      <h2>FEATURED LEGENDS</h2>
+
+      <h2>
+        FEATURED LEGENDS
+      </h2>
+
+
       <div class="gallery" id="bands-container"></div>
+
     </section>
+
+
   </main>
 
+
+
+  <!-- =========================================
+         FOOTER
+    ========================================== -->
+
   <footer class="shop-footer">
+
     <div class="footer-grid">
-      <div class="footer-brand"><span class="footer-logo">N</span><div><h3>NICHERZ</h3><p>Curated chaos for the loudest souls.</p></div></div>
-      <div class="footer-links"><h4>SHOP</h4><a href="index-shop.html?category=band-merch">Band Merch</a><a href="index-shop.html?category=streetwear">Streetwear</a><a href="index-shop.html?category=accessories">Accessories</a></div>
-      <div class="footer-links"><h4>INFO</h4><a href="contact.html">Contact</a><a href="#">Shipping</a><a href="#">Support</a></div>
-      <div class="footer-links"><h4>FOLLOW</h4><a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a></div>
+
+
+      <!-- BRAND -->
+
+      <div class="footer-brand">
+
+        <span class="footer-logo">
+          N
+        </span>
+
+
+        <div>
+
+          <h3>
+            NICHERZ
+          </h3>
+
+          <p>
+            Curated chaos for the loudest souls.
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- SHOP -->
+
+      <div class="footer-links">
+
+        <h4>
+          SHOP
+        </h4>
+
+        <a href="index-shop.html?category=band-merch">
+          Band Merch
+        </a>
+
+        <a href="index-shop.html?category=streetwear">
+          Streetwear
+        </a>
+
+        <a href="index-shop.html?category=accessories">
+          Accessories
+        </a>
+
+      </div>
+
+
+
+      <!-- INFO -->
+
+      <div class="footer-links">
+
+        <h4>
+          INFO
+        </h4>
+
+        <a href="contact.html">
+          Contact
+        </a>
+
+        <a href="#">
+          Shipping
+        </a>
+
+        <a href="#">
+          Support
+        </a>
+
+      </div>
+
+
+
+      <!-- SOCIAL -->
+
+      <div class="footer-links">
+
+        <h4>
+          FOLLOW
+        </h4>
+
+        <a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">
+          Instagram
+        </a>
+
+        <a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">
+          Telegram
+        </a>
+
+      </div>
+
+
     </div>
-    <div class="footer-bottom"><span>© 2026 NICHERZ</span><span>WEAR THE LEGEND</span></div>
+
+
+
+    <!-- FOOTER BOTTOM -->
+
+    <div class="footer-bottom">
+
+      <span>
+        © 2026 NICHERZ
+      </span>
+
+      <span>
+        WEAR THE LEGEND
+      </span>
+
+    </div>
+
   </footer>
 
+
+
+  <!-- =========================================
+         SCRIPTS
+    ========================================== -->
+
   <script src="script.js"></script>
+
   <script type="module" src="header-auth.js"></script>
+
+
 </body>
+
 </html>
