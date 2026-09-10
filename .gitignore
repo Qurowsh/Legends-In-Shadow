@@ -19,3 +19,5 @@ Thumbs.db
 # Logs
 *.log
 /node_moduleslocal_backup.sql
+node_modules/
+local_backup.sql
