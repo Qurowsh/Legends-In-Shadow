@@ -184,3 +184,43 @@
     max-width: min(20rem, 94vw);
   }
 }
+
+/* Final overrides: keep the cart inside the header instead of fixed to the viewport. */
+.bands-page .cart-pill {
+  position: relative !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+}
+
+@media (max-width: 820px) {
+  .bands-page .shop-header-inner {
+    width: min(94%, 90rem);
+  }
+
+  .bands-page .brand-wrap {
+    position: static !important;
+    left: auto !important;
+  }
+
+  .bands-page .header-actions {
+    position: static !important;
+    margin-left: auto;
+  }
+
+  .bands-page .header-nav {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 480px) {
+  .bands-page .header-nav > .container {
+    width: min(22rem, calc(100vw - 1.5rem));
+    max-width: min(22rem, calc(100vw - 1.5rem));
+  }
+
+  .bands-page .header-nav > .container .input {
+    font-size: 0.72rem;
+  }
+}
