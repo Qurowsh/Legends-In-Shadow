@@ -1681,6 +1681,9 @@ body.bands-page .shop-footer {
     gap:
         1em;
 }
+.footer-info{
+    color: blue;
+}
 
 .footer-logo {
     width:
@@ -1993,13 +1996,13 @@ body.bands-page .shop-footer {
             1em;
     }
 
-    .footer-grid {
+    /* .footer-grid {
         grid-template-columns:
             1.4fr
             1fr
             1fr
             1fr;
-    }
+    } */
     a,button{
       font-size: 0.5rem;
     }
@@ -2037,6 +2040,7 @@ body.bands-page .shop-footer {
     .brand-wrap {
         order:
             1;
+        left: 20px;
     }
 
     .header-actions {
@@ -2066,12 +2070,12 @@ body.bands-page .shop-footer {
             8.8em;
     }
 
-    .footer-grid {
+    /* .footer-grid {
         grid-template-columns:
             1fr
             1fr;
     }
-
+ */
 }
 
 
@@ -2133,6 +2137,8 @@ body.bands-page .shop-footer {
 
         font-size:
             0.56em;
+        position: fixed;
+        right: 0;
     }
 
     body.bands-page main {
@@ -2238,21 +2244,13 @@ body.bands-page .shop-footer {
             scale(1.01);
     }
 
-    .footer-grid {
-        grid-template-columns:
-            1fr;
-
-        gap:
-            1.8em;
-
-        padding:
-            2.2em
-            0;
-    }
-
+    .footer-container {
+        min-width: 100px;
+        font-size: 0.80em;
     .footer-brand {
         max-width:
             30em;
+    
     }
 
     .footer-bottom {
@@ -2309,4 +2307,5 @@ button:focus-visible {
             0.01ms !important;
     }
 
+}
 }
