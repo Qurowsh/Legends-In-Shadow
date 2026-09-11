@@ -2,93 +2,18 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NICHERZ</title>
 
-  <!-- Main styles -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="auth.css">
-
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/jpeg" href="./Images/logo.jpg">
-
-  <!-- Mobile layout: keep the original card dimensions and only change the grid layout. -->
-  <style>
-    @media (max-width: 700px) {
-      .shop-header-inner {
-        width: 94%;
-        min-height: 0;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: auto auto;
-        align-items: center;
-        column-gap: 0.8em;
-        row-gap: 0.7em;
-      }
-
-      .brand-wrap {
-        grid-column: 1;
-        grid-row: 1;
-        justify-self: start;
-        min-width: 0;
-      }
-
-      .header-actions {
-        grid-column: 2;
-        grid-row: 1;
-        justify-self: end;
-      }
-
-      .header-nav {
-        grid-column: 1 / -1;
-        grid-row: 2;
-        width: 100%;
-        min-width: 0;
-        justify-content: center;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
-
-      .header-nav::-webkit-scrollbar {
-        display: none;
-      }
-
-      .gallery {
-        width: max-content;
-        max-width: none;
-        grid-template-columns: repeat(3, minmax(260px, 1fr));
-        gap: 25px;
-        padding-left: 0;
-        padding-right: 0;
-      }
-
-      .bands-section {
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
-
-      .bands-section::-webkit-scrollbar {
-        display: none;
-      }
-
-      .gallery .card {
-        width: 100%;
-        min-height: 450px;
-      }
-    }
-  </style>
-
 </head>
 
 <body class="bands-page">
-
   <div class="smoke-background" aria-hidden="true">
     <div class="smoke smoke-one"></div>
     <div class="smoke smoke-two"></div>
@@ -97,27 +22,21 @@
 
   <header class="shop-header">
     <div class="shop-header-inner">
-
       <a href="index.html" class="brand-wrap" aria-label="NICHERZ home">
-        <div class="brand-mark">
-          <img src="./Images/logo.jpg" alt="NICHERZ logo">
-        </div>
-        <div class="brand-copy">
-          <span class="brand-name">NICHERZ</span>
-          <small>ARCHIVE</small>
-        </div>
+        <div class="brand-mark"><img src="./Images/logo.jpg" alt="NICHERZ logo"></div>
+        <div class="brand-copy"><span class="brand-name">NICHERZ</span><small>ARCHIVE</small></div>
       </a>
 
       <nav class="header-nav" aria-label="Main navigation">
         <a href="index.html" class="active-nav" aria-current="page">HOME</a>
         <a href="index-shop.html">SHOP</a>
-        <a href="#gallery">BANDS</a>
-        <a href="contact.html">CONTACT</a>
-        <div id="auth-nav" class="auth-nav"></div>
+        <a href="index.html#gallery">GALLERY</a>
+        <a href="account.html">ACCOUNT</a>
+        <a href="login.html">LOGIN</a>
         <div class="container">
           <input type="text" id="bandSearch" name="text" class="input" placeholder="Search the band name" autocomplete="off">
-          <button type="button" class="search__btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
+          <button type="button" class="search__btn" aria-label="Search bands">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
               <path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 16.0247 16.0247L16.0247 15.8748Z" fill="#efeff1"></path>
             </svg>
           </button>
@@ -125,22 +44,15 @@
       </nav>
 
       <div class="header-actions">
-        <a href="cart.html" class="cart-pill" aria-label="Shopping cart">
-          CART <span id="cartHeaderCount">(0)</span>
-        </a>
+        <a href="cart.html" class="cart-pill" aria-label="Shopping cart">CART <span id="cartHeaderCount">(0)</span></a>
       </div>
-
     </div>
   </header>
 
   <main>
-
     <section class="hero">
       <div class="hero-content">
-        <h1 class="hero-title">
-          LEGENDS
-          <span>IN SHADOWS</span>
-        </h1>
+        <h1 class="hero-title">LEGENDS <span>IN SHADOWS</span></h1>
         <p class="hero-subtitle">Where Metal Becomes A Legend</p>
       </div>
     </section>
@@ -154,17 +66,13 @@
       <h2>FEATURED LEGENDS</h2>
       <div class="gallery" id="bands-container"></div>
     </section>
-
   </main>
 
   <footer class="shop-footer">
     <div class="footer-grid">
       <div class="footer-brand">
         <span class="footer-logo">N</span>
-        <div>
-          <h3>NICHERZ</h3>
-          <p>Curated chaos for the loudest souls.</p>
-        </div>
+        <div><h3>NICHERZ</h3><p>Curated chaos for the loudest souls.</p></div>
       </div>
 
       <div class="footer-links">
@@ -188,14 +96,10 @@
       </div>
     </div>
 
-    <div class="footer-bottom">
-      <span>© 2026 NICHERZ</span>
-      <span>WEAR THE LEGEND</span>
-    </div>
+    <div class="footer-bottom"><span>© 2026 NICHERZ</span><span>WEAR THE LEGEND</span></div>
   </footer>
 
   <script src="script.js"></script>
   <script type="module" src="header-auth.js"></script>
-
 </body>
 </html>
