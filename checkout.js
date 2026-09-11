@@ -1,5 +1,6 @@
 import { supabase } from "./js/supabase.js";
 
+const SHIPPING_COST = 150000;
 let currentUser = null;
 let cart = null;
 let cartItems = [];
@@ -52,8 +53,8 @@ function getImage(path) {
     if (!path) return "";
     const raw = String(path).trim();
     if (/^https?:\/\//i.test(raw)) return raw;
-    const clean = raw.replace(/^\/+/, "").replace(/^product-images\//, "");
-    return supabase.storage.from("product-images").getPublicUrl(clean).data?.publicUrl || "";
+    const clean = raw.replace(/^\/+/, "").replace(/^product-images\//i, "").replace(/^product_image\//i, "");
+    return supabase.storage.from("product_image").getPublicUrl(clean).data?.publicUrl || "";
 }
 
 async function loadCart() {
@@ -106,9 +107,9 @@ function renderItems() {
 function renderSummary() {
     const sub = subtotal();
     const discount = Math.min(Number(promo?.discount_amount)||0, sub);
-    const total = Math.max(0, sub - discount);
+    const total = Math.max(0, sub + SHIPPING_COST - discount);
     if ($("checkoutSubtotal")) $("checkoutSubtotal").textContent = money(sub);
-    if ($("checkoutShipping")) $("checkoutShipping").textContent = money(0);
+    if ($("checkoutShipping")) $("checkoutShipping").textContent = money(SHIPPING_COST);
     if ($("checkoutTax")) $("checkoutTax").textContent = money(0);
     if ($("checkoutDiscount")) $("checkoutDiscount").textContent = discount ? `-${money(discount)}` : money(0);
     if ($("checkoutTotal")) $("checkoutTotal").textContent = money(total);
@@ -127,15 +128,13 @@ async function placeOrder(event) {
         await refreshPromo();
         const { data: orderId, error } = await supabase.rpc("create_order_from_cart", {
             p_shipping_name:shipping.name, p_shipping_phone:shipping.phone, p_shipping_address:shipping.address,
-            p_promo_code:promo?.code || null, p_shipping:0, p_tax:0
+            p_promo_code:promo?.code || null, p_shipping:SHIPPING_COST, p_tax:0
         });
         if (error) throw error;
         if (!orderId) throw new Error("Order ID was not returned");
         sessionStorage.setItem("lastOrderId", String(orderId));
         if (text) text.textContent = "در حال آماده‌سازی پرداخت...";
-        const { data: paymentId, error: paymentError } = await supabase.rpc("create_payment", {
-            p_order_id:Number(orderId), p_gateway:"card_to_card"
-        });
+        const { data: paymentId, error: paymentError } = await supabase.rpc("create_payment", { p_order_id:Number(orderId), p_gateway:"card_to_card" });
         if (paymentError) throw paymentError;
         if (!paymentId) throw new Error("Payment ID was not returned");
         sessionStorage.setItem("lastPaymentId", String(paymentId));
