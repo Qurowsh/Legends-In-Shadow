@@ -307,17 +307,29 @@ async function handleAuthAction(event) {
 document.addEventListener("click", handleAuthAction);
 
 // دکمه Related Products روی کارت هر بند باید فقط محصولات همان بند را باز کند.
+function normalizeRelatedProductLinks(root = document) {
+  root.querySelectorAll("a.Bio[href*='category=']").forEach((link) => {
+    const url = new URL(link.href, window.location.href);
+    const band = url.searchParams.get("category");
+    if (!band) return;
+
+    url.searchParams.delete("category");
+    url.searchParams.set("band", band);
+    link.href = url.toString();
+  });
+}
+
+normalizeRelatedProductLinks();
+const bandsContainer = document.getElementById("bands-container");
+if (bandsContainer) {
+  new MutationObserver(() => normalizeRelatedProductLinks(bandsContainer))
+    .observe(bandsContainer, { childList: true, subtree: true });
+}
+
 document.addEventListener("click", (event) => {
   const link = event.target.closest("a.Bio[href*='category=']");
   if (!link) return;
-
-  const url = new URL(link.href, window.location.href);
-  const band = url.searchParams.get("category");
-  if (!band) return;
-
-  url.searchParams.delete("category");
-  url.searchParams.set("band", band);
-  link.href = url.toString();
+  normalizeRelatedProductLinks(link.parentElement || document);
 });
 
 rebuildFooter();
