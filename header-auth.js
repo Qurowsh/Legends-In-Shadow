@@ -30,7 +30,6 @@ shellStyle.textContent = `
     background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.72) 49%,rgba(255,255,255,.95) 50%,rgba(255,255,255,.72) 51%,transparent 65%) !important;
     transform:translateX(-125%) rotate(14deg) !important;
     animation:nicherzHeaderShimmer 7s cubic-bezier(.4,0,.2,1) infinite !important;
-    opacity:0 !important;
   }
   .shop-header .brand-mark img { position:relative !important; z-index:1 !important; }
   @keyframes nicherzHeaderShimmer {
@@ -46,7 +45,6 @@ shellStyle.textContent = `
     background:linear-gradient(120deg,transparent 39%,rgba(255,255,255,.45) 48%,rgba(255,255,255,.9) 50%,rgba(255,255,255,.45) 52%,transparent 61%) !important;
     transform:translateX(-125%) rotate(14deg) !important;
     animation:nicherzProductShimmer 7s cubic-bezier(.4,0,.2,1) infinite !important;
-    opacity:0 !important;
   }
   @keyframes nicherzProductShimmer {
     0%,58% { transform:translateX(-125%) rotate(14deg); opacity:0; }
