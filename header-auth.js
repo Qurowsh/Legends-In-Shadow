@@ -46,7 +46,11 @@ shellStyle.textContent = `
     content: none !important;
   }
 
-  /* رنگ تمام متن‌های فوتر سفید می‌ماند. */
+  /* فوتر فقط برند، INFO و FOLLOW دارد و همه رنگ‌ها سفید هستند. */
+  .shop-footer .footer-grid {
+    grid-template-columns: 1.5fr 1fr 1fr !important;
+  }
+
   .shop-footer,
   .shop-footer .footer-links a,
   .shop-footer .footer-links h4,
@@ -104,6 +108,15 @@ shellStyle.textContent = `
 
     .shop-header .header-nav::-webkit-scrollbar {
       display: none !important;
+    }
+
+    .shop-footer .footer-grid {
+      grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* چیدمان قدیمی کارت‌های Home برمی‌گردد؛ سه‌تایی اجباری نیست. */
+    .bands-page .gallery {
+      grid-template-columns: 1fr !important;
     }
   }
 `;
