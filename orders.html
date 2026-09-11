@@ -1,561 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>My Orders | NICHERZ</title>
-
-    <link rel="stylesheet" href="style-shop.css">
-
-    <link rel="stylesheet" href="orders.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
-
-    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders | NICHERZ</title>
+  <link rel="stylesheet" href="style-shop.css">
+  <link rel="stylesheet" href="orders.css">
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/jpeg" href="./Images/logo.jpg">
 </head>
-
 <body>
+  <div class="smoke-background" aria-hidden="true"><div class="smoke smoke-one"></div><div class="smoke smoke-two"></div><div class="smoke smoke-three"></div></div>
 
-    <div class="smoke-background" aria-hidden="true">
-        <div class="smoke smoke-one"></div>
-        <div class="smoke smoke-two"></div>
-        <div class="smoke smoke-three"></div>
+  <header class="shop-header">
+    <div class="shop-header-inner">
+      <a href="index.html" class="brand-wrap" aria-label="NICHERZ home">
+        <div class="brand-mark"><img src="./Images/logo.jpg" alt="NICHERZ logo"></div>
+        <div class="brand-copy"><span class="brand-name">NICHERZ</span><small>ARCHIVE</small></div>
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="index.html">HOME</a>
+        <a href="index-shop.html">SHOP</a>
+        <a href="index.html#gallery">GALLERY</a>
+        <a href="account.html">ACCOUNT</a>
+        <a href="login.html">LOGIN</a>
+      </nav>
+      <div class="header-actions"><a href="cart.html" class="cart-pill">CART <span id="ordersCartCount">(0)</span></a></div>
     </div>
+  </header>
 
+  <main class="orders-page">
+    <section class="orders-hero"><h1 class="orders-title">MY ORDERS</h1><p class="orders-subtitle">YOUR ORDER HISTORY</p></section>
 
-    <!-- HEADER -->
-    <header class="shop-header">
+    <section id="ordersLoading" class="orders-loading"></section>
 
-        <div class="shop-header-inner">
+    <section id="ordersError" class="orders-error" hidden>
+      <div class="orders-error-icon">!</div>
+      <h2>SOMETHING WENT WRONG</h2>
+      <p id="ordersErrorText">Unable to load orders.</p>
+      <button id="ordersRetryBtn" type="button" class="orders-button">TRY AGAIN</button>
+    </section>
 
-            <div class="brand-wrap">
-
-                <div class="brand-mark">
-                    <img src="./Images/logo.jpg" alt="NICHERZ logo" class="footer-logo">
-                </div>
-
-                <div class="brand-copy">
-
-                    <span class="brand-name">
-                        NICHERZ
-                    </span>
-
-                    <small>
-                        ARCHIVE
-                    </small>
-
-                </div>
-
-            </div>
-
-
-            <nav class="header-nav" aria-label="Main navigation">
-
-                <a href="index.html">
-                    HOME
-                </a>
-
-                <a href="index-shop.html">
-                    SHOP
-                </a>
-
-                <a href="index.html#gallery">
-                    GALLERY
-                </a>
-
-                <a href="contact.html">
-                    CONTACT
-                </a>
-
-            </nav>
-
-
-            <div class="header-actions">
-
-                <a href="cart.html" class="cart-pill">
-                    CART
-                    <span id="ordersCartCount">
-                        (0)
-                    </span>
-                </a>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <!-- MAIN -->
-    <main class="orders-page">
-
-        <section class="orders-hero">
-
-            <h1 class="orders-title">
-                MY ORDERS
-            </h1>
-
-            <p class="orders-subtitle">
-                YOUR ORDER HISTORY
-            </p>
-
+    <section id="ordersContent" class="orders-layout" hidden>
+      <div class="orders-main">
+        <section class="orders-card">
+          <div class="orders-card-header">
+            <div class="orders-section-number">01</div>
+            <div><h2>ORDER HISTORY</h2><p>ALL YOUR ORDERS</p></div>
+          </div>
+          <div id="ordersList" class="orders-list"></div>
+          <div id="ordersEmpty" class="orders-empty" hidden>
+            <div class="orders-empty-icon">—</div>
+            <h3>NO ORDERS YET</h3>
+            <p>هنوز سفارشی ثبت نکرده‌اید.</p>
+            <a href="index-shop.html" class="orders-button orders-shop-button">START SHOPPING</a>
+          </div>
         </section>
+      </div>
 
-
-        <!-- LOADING -->
-        <section id="ordersLoading" class="orders-loading">
-
-
-
+      <aside class="orders-sidebar">
+        <section class="orders-card orders-menu-card">
+          <div class="orders-card-header">
+            <div class="orders-section-number">02</div>
+            <div><h2>ACCOUNT</h2><p>QUICK ACCESS</p></div>
+          </div>
+          <div class="orders-menu">
+            <a href="account.html" class="orders-menu-item"><span>PROFILE</span><span>→</span></a>
+            <a href="orders.html" class="orders-menu-item active"><span>MY ORDERS</span><span>→</span></a>
+            <a href="cart.html" class="orders-menu-item"><span>CART</span><span>→</span></a>
+          </div>
         </section>
-
-
-        <!-- ERROR -->
-        <section id="ordersError" class="orders-error" hidden>
-
-            <div class="orders-error-icon">
-                !
-            </div>
-
-            <h2>
-                SOMETHING WENT WRONG
-            </h2>
-
-            <p id="ordersErrorText">
-                Unable to load orders.
-            </p>
-
-            <button id="ordersRetryBtn" type="button" class="orders-button">
-                TRY AGAIN
-            </button>
-
-        </section>
-
-
-        <!-- CONTENT -->
-        <section id="ordersContent" class="orders-layout" hidden>
-
-            <!-- ORDER LIST -->
-            <div class="orders-main">
-
-                <section class="orders-card">
-
-                    <div class="orders-card-header">
-
-                        <div class="orders-section-number">
-                            01
-                        </div>
-
-                        <div>
-
-                            <h2>
-                                ORDER HISTORY
-                            </h2>
-
-                            <p>
-                                ALL YOUR ORDERS
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div id="ordersList" class="orders-list"></div>
-
-
-                    <div id="ordersEmpty" class="orders-empty" hidden>
-
-                        <div class="orders-empty-icon">
-                            —
-                        </div>
-
-                        <h3>
-                            NO ORDERS YET
-                        </h3>
-
-                        <p>
-                            هنوز سفارشی ثبت نکرده‌اید.
-                        </p>
-
-                        <a href="index-shop.html" class="orders-button orders-shop-button">
-                            START SHOPPING
-                        </a>
-
-                    </div>
-
-                </section>
-
-            </div>
-
-
-            <!-- SIDEBAR -->
-            <aside class="orders-sidebar">
-
-                <section class="orders-card orders-menu-card">
-
-                    <div class="orders-card-header">
-
-                        <div class="orders-section-number">
-                            02
-                        </div>
-
-                        <div>
-
-                            <h2>
-                                ACCOUNT
-                            </h2>
-
-                            <p>
-                                QUICK ACCESS
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="orders-menu">
-
-                        <a href="account.html" class="orders-menu-item">
-                            <span>
-                                PROFILE
-                            </span>
-
-                            <span>
-                                →
-                            </span>
-                        </a>
-
-
-                        <a href="orders.html" class="orders-menu-item active">
-                            <span>
-                                MY ORDERS
-                            </span>
-
-                            <span>
-                                →
-                            </span>
-                        </a>
-
-
-                        <a href="cart.html" class="orders-menu-item">
-                            <span>
-                                CART
-                            </span>
-
-                            <span>
-                                →
-                            </span>
-                        </a>
-
-                    </div>
-
-                </section>
-
-
-                <div class="orders-brand">
-
-                    <div class="orders-brand-symbol">
-                        N
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            NICHERZ
-                        </strong>
-
-                        <span>
-                            ARCHIVE
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </aside>
-
-        </section>
-
-    </main>
-
-
-    <!-- ORDER DETAIL MODAL -->
-    <div id="orderDetailModal" class="order-modal" hidden>
-
-        <div class="order-modal-backdrop" data-close-order-modal></div>
-
-        <div class="order-modal-box">
-
-            <button id="closeOrderModal" type="button" class="order-modal-close" aria-label="Close">
-                ×
-            </button>
-
-
-            <div class="order-modal-top">
-
-                <div>
-
-                    <div class="order-modal-label">
-                        ORDER DETAILS
-                    </div>
-
-                    <h2 id="modalOrderTitle">
-                        ORDER #—
-                    </h2>
-
-                </div>
-
-                <span id="modalOrderStatus" class="order-status">
-                    PENDING
-                </span>
-
-            </div>
-
-
-            <div id="modalOrderItems" class="modal-order-items"></div>
-
-
-            <div class="modal-divider"></div>
-
-
-            <div class="modal-summary">
-
-                <div class="modal-summary-row">
-
-                    <span>
-                        SUBTOTAL
-                    </span>
-
-                    <strong id="modalSubtotal">
-                        ۰ تومان
-                    </strong>
-
-                </div>
-
-
-                <div class="modal-summary-row">
-
-                    <span>
-                        SHIPPING
-                    </span>
-
-                    <strong id="modalShipping">
-                        ۰ تومان
-                    </strong>
-
-                </div>
-
-
-                <div class="modal-summary-row">
-
-                    <span>
-                        TAX
-                    </span>
-
-                    <strong id="modalTax">
-                        ۰ تومان
-                    </strong>
-
-                </div>
-
-
-                <div class="modal-summary-row">
-
-                    <span>
-                        DISCOUNT
-                    </span>
-
-                    <strong id="modalDiscount">
-                        ۰ تومان
-                    </strong>
-
-                </div>
-
-
-                <div class="modal-divider"></div>
-
-
-                <div class="modal-total-row">
-
-                    <span>
-                        TOTAL
-                    </span>
-
-                    <strong id="modalTotal">
-                        ۰ تومان
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="modal-shipping">
-
-                <div class="modal-block-title">
-                    SHIPPING INFORMATION
-                </div>
-
-
-                <div class="modal-info-row">
-
-                    <span>
-                        NAME
-                    </span>
-
-                    <strong id="modalShippingName">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="modal-info-row">
-
-                    <span>
-                        PHONE
-                    </span>
-
-                    <strong id="modalShippingPhone">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="modal-info-row">
-
-                    <span>
-                        ADDRESS
-                    </span>
-
-                    <strong id="modalShippingAddress">
-                        —
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="modal-created">
-
-                <span>
-                    ORDERED
-                </span>
-
-                <strong id="modalCreatedAt">
-                    —
-                </strong>
-
-            </div>
-
-        </div>
-
+        <div class="orders-brand"><div class="orders-brand-symbol">N</div><div><strong>NICHERZ</strong><span>ARCHIVE</span></div></div>
+      </aside>
+    </section>
+  </main>
+
+  <div id="orderDetailModal" class="order-modal" hidden>
+    <div class="order-modal-backdrop" data-close-order-modal></div>
+    <div class="order-modal-box">
+      <button id="closeOrderModal" type="button" class="order-modal-close" aria-label="Close">×</button>
+      <div class="order-modal-top"><div><div class="order-modal-label">ORDER DETAILS</div><h2 id="modalOrderTitle">ORDER #—</h2></div><span id="modalOrderStatus" class="order-status">PENDING</span></div>
+      <div id="modalOrderItems" class="modal-order-items"></div>
+      <div class="modal-divider"></div>
+      <div class="modal-summary">
+        <div class="modal-summary-row"><span>SUBTOTAL</span><strong id="modalSubtotal">۰ تومان</strong></div>
+        <div class="modal-summary-row"><span>SHIPPING</span><strong id="modalShipping">۰ تومان</strong></div>
+        <div class="modal-summary-row"><span>TAX</span><strong id="modalTax">۰ تومان</strong></div>
+        <div class="modal-summary-row"><span>DISCOUNT</span><strong id="modalDiscount">۰ تومان</strong></div>
+        <div class="modal-divider"></div>
+        <div class="modal-total-row"><span>TOTAL</span><strong id="modalTotal">۰ تومان</strong></div>
+      </div>
+      <div class="modal-shipping">
+        <div class="modal-block-title">SHIPPING INFORMATION</div>
+        <div class="modal-info-row"><span>NAME</span><strong id="modalShippingName">—</strong></div>
+        <div class="modal-info-row"><span>PHONE</span><strong id="modalShippingPhone">—</strong></div>
+        <div class="modal-info-row"><span>ADDRESS</span><strong id="modalShippingAddress">—</strong></div>
+      </div>
+      <div class="modal-created"><span>ORDERED</span><strong id="modalCreatedAt">—</strong></div>
     </div>
+  </div>
 
+  <footer class="shop-footer">
+    <div class="footer-grid">
+      <div class="footer-brand"><span class="footer-logo">N</span><div><h3>NICHERZ</h3><p>Curated chaos for the loudest souls.</p></div></div>
+      <div class="footer-links"><h4>SHOP</h4><a href="index-shop.html">Shop</a><a href="cart.html">Cart</a></div>
+      <div class="footer-links"><h4>ACCOUNT</h4><a href="account.html">Profile</a><a href="orders.html">Orders</a></div>
+      <div class="footer-links"><h4>INFO</h4><a href="contact.html">Contact</a><a href="#">Shipping</a></div>
+      <div class="footer-links"><h4>FOLLOW</h4><a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 NICHERZ</span><span>WEAR THE LEGEND</span></div>
+  </footer>
 
-    <!-- FOOTER -->
-    <footer class="shop-footer">
-
-        <div class="footer-grid">
-
-            <div class="footer-brand">
-
-                <span class="footer-logo">
-                    N
-                </span>
-
-                <div>
-
-                    <h3>
-                        NICHERZ
-                    </h3>
-
-                    <p>
-                        Curated chaos for the loudest souls.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="footer-links">
-
-                <h4>
-                    SHOP
-                </h4>
-
-                <a href="index-shop.html">
-                    Shop
-                </a>
-
-                <a href="cart.html">
-                    Cart
-                </a>
-
-            </div>
-
-
-            <div class="footer-links">
-
-                <h4>
-                    ACCOUNT
-                </h4>
-
-                <a href="account.html">
-                    Profile
-                </a>
-
-                <a href="orders.html">
-                    Orders
-                </a>
-
-            </div>
-
-
-            <div class="footer-links">
-
-                <h4>
-                    INFO
-                </h4>
-
-                <a href="contact.html">
-                    Contact
-                </a>
-
-                <a href="#">
-                    Shipping
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <div class="footer-bottom">
-
-            <span>
-                © 2026 NICHERZ
-            </span>
-
-            <span>
-                WEAR THE LEGEND
-            </span>
-
-        </div>
-
-    </footer>
-
-
-    <script type="module" src="orders.js"></script>
-
+  <script type="module" src="orders.js"></script>
+  <script type="module" src="header-auth.js"></script>
 </body>
-
 </html>
