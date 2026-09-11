@@ -53,6 +53,7 @@ shellStyle.textContent = `
   }
 
   .cart-page { padding-top:1.6em !important; }
+  .continue-shopping-link { display:inline-block !important; margin-top:1.2em !important; }
 
   .shop-footer .footer-grid { grid-template-columns:1.5fr 1fr 1fr !important; }
   .shop-footer,
