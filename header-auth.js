@@ -11,10 +11,21 @@ shellStyle.textContent = `
   .brand-wrap { order: 1 !important; margin-right: auto !important; }
   .header-actions { order: 3 !important; margin-left: auto !important; }
   .header-nav { order: 2 !important; }
-  .header-nav .container { display: none !important; }
+  .shop-header .header-nav > a,
+  .shop-header .brand-name,
+  .shop-header .brand-copy small,
+  .shop-header .cart-pill {
+    font-family: "Metal Mania", cursive !important;
+  }
+  .shop-header .header-nav > a::before,
+  .shop-header .header-nav > a::after,
+  .shop-header .auth-nav a::before,
+  .shop-header .auth-nav a::after { display: none !important; }
   .shop-footer .footer-links a,
   .shop-footer .footer-links h4,
   .shop-footer .footer-brand,
+  .shop-footer .footer-brand h3,
+  .shop-footer .footer-brand p,
   .shop-footer .footer-bottom { color: #fff !important; }
   .shop-footer .footer-links a:visited,
   .shop-footer .footer-links a:link { color: #fff !important; }
@@ -54,7 +65,7 @@ function rebuildHeader() {
 
   if (isHomePage() && search) {
     nav.appendChild(search);
-    search.style.display = "flex";
+    search.style.setProperty("display", "flex", "important");
   }
 
   const currentPath = window.location.pathname.split("/").pop() || "index.html";
@@ -89,7 +100,6 @@ function cleanFooter() {
 rebuildHeader();
 cleanFooter();
 
-// Keep the existing auth session listener available to the rest of the site.
 supabase.auth.onAuthStateChange(() => {
   rebuildHeader();
   cleanFooter();
