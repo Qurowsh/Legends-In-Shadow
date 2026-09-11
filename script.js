@@ -1,219 +1,137 @@
-// اطلاعات گروه‌هایی که روی صفحه اصلی نمایش داده می‌شوند.
-const bands = [
-  // هر آبجکت نام، تصویر، توضیح، سبک و سال شروع گروه را نگه می‌دارد.
-  { name: "Metallica", image: "Images/14.jpg", quote: '"The music is our sacred ritual."', genre: "Thrash Metal", year: "Since 1981" },
-  { name: "Slayer", image: "Images/3.jpg", quote: '"Riffs that cut like blades."', genre: "Thrash Metal", year: "Since 1981" },
-  { name: "Death", image: "Images/13.png", quote: '"The sound of rebellion."', genre: "Death Metal", year: "Since 1983" },
-  { name: "Iron Maiden", image: "Images/20.jpg", quote: '"The legends of heavy metal."', genre: "Heavy Metal", year: "Since 1980" },
-  { name: "Black Sabbath", image: "Images/4.jpg", quote: '"The pioneers of darkness."', genre: "Heavy Metal", year: "Since 1968" },
-  { name: "Judas Priest", image: "Images/22.jpeg", quote: '"The metal gods."', genre: "Heavy Metal", year: "Since 1969" },
-  { name: "Pantera", image: "Images/5.jpg", quote: '"The groove of aggression."', genre: "Groove Metal", year: "Since 1986" },
-  { name: "Megadeth", image: "Images/16.jpg", quote: '"The thrash titans."', genre: "Thrash Metal", year: "Since 1983" },
-  { name: "Slipknot", image: "Images/6.jpeg", quote: '"The masked chaos."', genre: "Nu Metal", year: "Since 1995" },
-  { name: "Korn", image: "Images/17.jpg", quote: '"The pioneers of nu metal."', genre: "Nu Metal", year: "Since 1995" },
-  { name: "Rammstein", image: "Images/21.jpg", quote: '"The industrial fire."', genre: "Industrial Metal", year: "Since 1994" },
-  { name: "System of a Down", image: "Images/18.jpg", quote: '"The political metal."', genre: "Alternative Metal", year: "Since 1994" },
-  { name: "Avenged Sevenfold", image: "Images/7.jpeg", quote: '"The melodic metal."', genre: "Alternative Metal", year: "Since 1999" },
-  { name: "Tool", image: "Images/8.png", quote: '"The progressive metal."', genre: "Progressive Metal", year: "Since 1990" },
-  { name: "Opeth", image: "Images/19.jpg", quote: '"The masters of progressive death metal."', genre: "Progressive Death Metal", year: "Since 1990" },
-  { name: "Dream Theater", image: "Images/9.png", quote: '"The virtuosos of progressive metal."', genre: "Progressive Metal", year: "Since 1985" },
-  { name: "Linkin Park", image: "Images/10.jpeg", quote: '"The nu metal revolution."', genre: "Nu Metal", year: "Since 1996" },
-  { name: "Radiohead", image: "Images/20.jpg", quote: '"The experimental rockers."', genre: "Alternative Rock", year: "Since 1989" },
-  { name: "Nirvana", image: "Images/11.png", quote: '"The grunge pioneers."', genre: "Grunge", year: "Since 1987" },
-  { name: "Pearl Jam", image: "", quote: '"The voice of a generation."', genre: "Grunge", year: "Since 1990" },
-  { name: "The Beatles", image: "", quote: '"The legends of rock."', genre: "Rock", year: "Since 1960" },
-  { name: "Queen", image: "", quote: '"The champions of rock."', genre: "Rock", year: "Since 1970" },
-  { name: "Led Zeppelin", image: "", quote: '"The gods of rock."', genre: "Rock", year: "Since 1968" },
-  { name: "AC/DC", image: "", quote: '"The rock legends."', genre: "Hard Rock", year: "Since 1973" },
-  { name: "Guns N' Roses", image: "Images/12.png", quote: '"The rock rebels."', genre: "Hard Rock", year: "Since 1985" },
-  { name: "Foo Fighters", image: "", quote: '"The rock survivors."', genre: "Alternative Rock", year: "Since 1994" },
-  { name: "The Rolling Stones", image: "", quote: '"The rock legends."', genre: "Rock", year: "Since 1962" },
-  { name: "Deep Purple", image: "", quote: '"The pioneers of hard rock."', genre: "Hard Rock", year: "Since 1968" },
-  { name: "Deftones", image: "", quote: '"The alternative rockers."', genre: "Alternative Rock", year: "Since 1990" },
-  { name: "The Who", image: "", quote: '"The rock legends."', genre: "Rock", year: "Since 1964" },
-  { name: "The Doors", image: "", quote: '"The psychedelic rockers."', genre: "Psychedelic Rock", year: "Since 1965" },
-  { name: "Rage Against the Machine", image: "", quote: '"The anti-establishment rockers."', genre: "Alternative Rock", year: "Since 1991" },
-];
+import { supabase } from "./js/supabase.js";
 
-// ظرف نمایش گروه‌ها
 const bandsContainer = document.getElementById("bands-container");
-
-// Search input
 const searchInput = document.getElementById("bandSearch");
 
-// تصویر جایگزین برای گروه‌هایی که تصویر ندارند
 const placeholder =
   'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="100%25" height="100%25" fill="%230a0a0a"/><text x="50%25" y="50%25" fill="%23ffffff" font-size="28" font-family="Arial" dominant-baseline="middle" text-anchor="middle">No Image</text></svg>';
 
-// یکدست کردن متن برای سرچ
+let bands = [];
+
 const normalizeBand = (value) =>
   String(value || "")
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
 
+function getBandImageUrl(imageUrl) {
+  if (!imageUrl) return "";
 
-// ===============================
-// ساخت کارت‌های گروه
-// ===============================
+  const raw = String(imageUrl).trim();
+  if (!raw) return "";
+
+  if (/^https?:\/\//i.test(raw) || raw.startsWith("data:")) {
+    return raw;
+  }
+
+  return raw;
+}
 
 function renderBands(bandsToRender) {
-
-  // پاک کردن کارت‌های قبلی
   bandsContainer.innerHTML = "";
 
-  // اگر نتیجه‌ای وجود نداشت
   if (bandsToRender.length === 0) {
-
     const noResult = document.createElement("p");
-
     noResult.textContent = "No band found.";
-
     noResult.classList.add("no-results");
-
     bandsContainer.appendChild(noResult);
-
     return;
   }
 
-
-  // Fragment برای عملکرد بهتر
   const fragment = document.createDocumentFragment();
 
-
-  // ساخت کارت‌ها
   bandsToRender.forEach((band) => {
-
-    // کارت اصلی
     const newCard = document.createElement("div");
     newCard.classList.add("card");
 
-
-    // ===============================
-    // IMAGE
-    // ===============================
-
     const bandImage = document.createElement("img");
-
     bandImage.classList.add("band-img");
-
     bandImage.alt = band.name || "Band";
-
     bandImage.decoding = "async";
-
     bandImage.loading = "lazy";
+    bandImage.src = getBandImageUrl(band.image_url) || placeholder;
 
-    bandImage.src =
-      band.image && band.image.trim() !== ""
-        ? band.image
-        : placeholder;
-
-    if (!band.image || band.image.trim() === "") {
+    if (!band.image_url) {
       bandImage.classList.add("no-image");
     }
 
+    bandImage.addEventListener("error", () => {
+      if (bandImage.src !== placeholder) {
+        bandImage.src = placeholder;
+        bandImage.classList.add("no-image");
+      }
+    });
+
     newCard.appendChild(bandImage);
 
-
-    // ===============================
-    // BAND NAME
-    // ===============================
-
     const bandName = document.createElement("h3");
-
-    bandName.textContent = band.name;
-
+    bandName.textContent = band.name || "Unnamed Band";
     newCard.appendChild(bandName);
 
-
-    // ===============================
-    // QUOTE
-    // ===============================
-
     const bandQuote = document.createElement("p");
-
-    bandQuote.textContent = band.quote;
-
+    bandQuote.textContent = band.quote ? `"${band.quote.replace(/^"|"$/g, "")}"` : "";
     bandQuote.classList.add("quote");
-
     newCard.appendChild(bandQuote);
 
-
-    // ===============================
-    // INFO
-    // ===============================
-
     const bandInfo = document.createElement("p");
-
-    bandInfo.textContent = `${band.genre} | ${band.year}`;
-
+    const genre = band.genre || "";
+    const year = band.founded_year ? `Since ${band.founded_year}` : "";
+    bandInfo.textContent = [genre, year].filter(Boolean).join(" | ");
     bandInfo.classList.add("info");
-
     newCard.appendChild(bandInfo);
 
-
-    // ===============================
-    // RELATED PRODUCTS
-    // ===============================
-
     const shopLink = document.createElement("a");
-
     shopLink.classList.add("Bio");
-
-    shopLink.href =
-      `index-shop.html?category=${encodeURIComponent(band.name)}`;
-
+    shopLink.href = `index-shop.html?category=${encodeURIComponent(band.name || "")}`;
     shopLink.textContent = "Related Products";
-
     newCard.appendChild(shopLink);
 
-
-    // اضافه کردن کارت به Fragment
     fragment.appendChild(newCard);
   });
 
-
-  // اضافه کردن همه کارت‌ها به صفحه
   bandsContainer.appendChild(fragment);
 }
 
+async function loadBands() {
+  bandsContainer.innerHTML = "<p class=\"no-results\">Loading bands...</p>";
 
-// ===============================
-// SEARCH
-// ===============================
+  const { data, error } = await supabase
+    .from("bands")
+    .select("id, name, slug, description, image_url, quote, genre, founded_year, is_featured, sort_order")
+    .eq("is_featured", true)
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
 
-searchInput.addEventListener("input", () => {
+  if (error) {
+    console.error("Failed to load bands:", error);
+    bandsContainer.innerHTML = "";
 
-  // مقدار سرچ کاربر
-  const searchValue = normalizeBand(searchInput.value);
-
-
-  // اگر سرچ خالی بود، همه گروه‌ها را نشان بده
-  if (searchValue === "") {
-
-    renderBands(bands);
-
+    const errorMessage = document.createElement("p");
+    errorMessage.classList.add("no-results");
+    errorMessage.textContent = "Unable to load bands.";
+    bandsContainer.appendChild(errorMessage);
     return;
   }
 
+  bands = data || [];
+  renderBands(bands);
+}
 
-  // فیلتر کردن گروه‌ها
-  const filteredBands = bands.filter((band) => {
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    const searchValue = normalizeBand(searchInput.value);
 
-    const bandName = normalizeBand(band.name);
+    if (searchValue === "") {
+      renderBands(bands);
+      return;
+    }
 
-    return bandName.includes(searchValue);
+    const filteredBands = bands.filter((band) =>
+      normalizeBand(band.name).includes(searchValue)
+    );
+
+    renderBands(filteredBands);
   });
+}
 
-
-  // نمایش نتایج
-  renderBands(filteredBands);
-});
-
-
-// ===============================
-// INITIAL RENDER
-// ===============================
-
-// بار اول همه گروه‌ها نمایش داده شوند
-renderBands(bands);
+loadBands();
