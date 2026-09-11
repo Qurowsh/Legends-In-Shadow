@@ -1,13 +1,5 @@
 import { supabase } from "./js/supabase.js";
-
-// Keep the account page aligned with the shared site layout.
-if (!document.querySelector('link[data-ui-fixes]')) {
-  const uiFixes = document.createElement("link");
-  uiFixes.rel = "stylesheet";
-  uiFixes.href = "ui-fixes.css";
-  uiFixes.dataset.uiFixes = "true";
-  document.head.appendChild(uiFixes);
-}
+import "./header-auth.js";
 
 let currentUser = null;
 const $ = (id) => document.getElementById(id);
