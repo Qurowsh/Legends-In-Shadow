@@ -1,58 +1,96 @@
 import { supabase } from "./js/supabase.js";
 
-// Load the shared visual patch once so all auth-enabled pages use the same layout rules.
-if (!document.querySelector('link[data-ui-fixes]')) {
-    const uiFixes = document.createElement("link");
-    uiFixes.rel = "stylesheet";
-    uiFixes.href = "ui-fixes.css";
-    uiFixes.dataset.uiFixes = "true";
-    document.head.appendChild(uiFixes);
-}
-
-const authNav = document.getElementById("auth-nav");
-
-async function updateAuthNav() {
-    if (!authNav) return;
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-        authNav.innerHTML = `
-            <a href="account.html" class="auth-link">ACCOUNT</a>
-            <button type="button" id="logoutBtn" class="auth-link auth-button">
-                LOGOUT
-            </button>
-        `;
-
-        const logoutBtn = document.getElementById("logoutBtn");
-
-        logoutBtn.addEventListener("click", async () => {
-            logoutBtn.disabled = true;
-            logoutBtn.textContent = "LOGGING OUT...";
-
-            const { error } = await supabase.auth.signOut();
-
-            if (error) {
-                console.error(error);
-                logoutBtn.disabled = false;
-                logoutBtn.textContent = "LOGOUT";
-                return;
-            }
-
-            window.location.href = "index-shop.html";
-        });
-
-    } else {
-        authNav.innerHTML = `
-            <a href="login.html" class="auth-link">LOGIN</a>
-        `;
+// Shared header/footer rules for all customer-facing pages.
+const shellStyle = document.createElement("style");
+shellStyle.textContent = `
+  .shop-header-inner {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  .brand-wrap { order: 1 !important; margin-right: auto !important; }
+  .header-actions { order: 3 !important; margin-left: auto !important; }
+  .header-nav { order: 2 !important; }
+  .header-nav .container { display: none !important; }
+  .shop-footer .footer-links a,
+  .shop-footer .footer-links h4,
+  .shop-footer .footer-brand,
+  .shop-footer .footer-bottom { color: #fff !important; }
+  .shop-footer .footer-links a:visited,
+  .shop-footer .footer-links a:link { color: #fff !important; }
+  @media (max-width: 700px) {
+    .shop-header-inner {
+      width: 94% !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-rows: auto auto !important;
+      column-gap: .8em !important;
+      row-gap: .7em !important;
     }
+    .brand-wrap { grid-column: 1 !important; grid-row: 1 !important; justify-self: start !important; }
+    .header-actions { grid-column: 2 !important; grid-row: 1 !important; justify-self: end !important; }
+    .header-nav { grid-column: 1 / -1 !important; grid-row: 2 !important; width: 100% !important; justify-content: center !important; flex-wrap: nowrap !important; overflow-x: auto !important; }
+  }
+`;
+document.head.appendChild(shellStyle);
+
+function isHomePage() {
+  const path = window.location.pathname.split("/").pop() || "index.html";
+  return path === "index.html" || path === "";
 }
 
-updateAuthNav();
+function rebuildHeader() {
+  const nav = document.querySelector(".shop-header .header-nav");
+  if (!nav) return;
 
+  const search = nav.querySelector(".container");
+  nav.innerHTML = `
+    <a href="index.html">HOME</a>
+    <a href="index-shop.html">SHOP</a>
+    <a href="index.html#gallery">GALLERY</a>
+    <a href="account.html">ACCOUNT</a>
+    <a href="login.html">LOGIN</a>
+  `;
+
+  if (isHomePage() && search) {
+    nav.appendChild(search);
+    search.style.display = "flex";
+  }
+
+  const currentPath = window.location.pathname.split("/").pop() || "index.html";
+  nav.querySelectorAll("a").forEach((link) => {
+    const href = link.getAttribute("href");
+    if (href === currentPath || (currentPath === "" && href === "index.html")) {
+      link.classList.add("active-nav");
+      link.setAttribute("aria-current", "page");
+    }
+  });
+}
+
+function cleanFooter() {
+  document.querySelectorAll(".shop-footer .footer-links").forEach((section) => {
+    const title = section.querySelector("h4")?.textContent.trim().toUpperCase();
+    if (title === "SHOP") {
+      section.remove();
+      return;
+    }
+    if (title === "INFO") {
+      section.querySelectorAll("a").forEach((link) => {
+        if (link.textContent.trim().toLowerCase() === "shipping") link.remove();
+      });
+    }
+  });
+
+  document.querySelectorAll(".shop-footer a").forEach((link) => {
+    link.style.color = "#fff";
+  });
+}
+
+rebuildHeader();
+cleanFooter();
+
+// Keep the existing auth session listener available to the rest of the site.
 supabase.auth.onAuthStateChange(() => {
-    updateAuthNav();
+  rebuildHeader();
+  cleanFooter();
 });
