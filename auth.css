@@ -15,9 +15,12 @@ body {
 .shop-header .auth-nav a,
 .shop-header .auth-link,
 .shop-header .auth-button,
-.shop-header .cart-pill {
+.shop-header {
   font-family: "Metal Mania", cursive;
   text-decoration: none !important;
+  color: white;
+  background: none;
+  border: none;
 }
 
 .shop-header .header-nav > a::before,

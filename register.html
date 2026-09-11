@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,8 +9,9 @@
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="toast.css" />
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
+  <link rel="icon" type="image/jpeg" href="./Images/logo.webp" />
 </head>
+
 <body>
   <div class="smoke-background" aria-hidden="true">
     <div class="smoke smoke-one"></div>
@@ -20,7 +22,7 @@
   <header class="shop-header">
     <div class="shop-header-inner">
       <a class="brand-wrap auth-brand" href="index.html" aria-label="NICHERZ home">
-        <div class="brand-mark"><img src="./Images/logo.jpg" alt="NICHERZ logo" /></div>
+        <div class="brand-mark"><img src="./Images/logo.webp" alt="NICHERZ logo" /></div>
         <div class="brand-copy"><span class="brand-name">NICHERZ</span><small>ARCHIVE</small></div>
       </a>
       <nav class="header-nav" aria-label="Main navigation">
@@ -30,7 +32,8 @@
         <a href="account.html">ACCOUNT</a>
         <a href="login.html">LOGIN</a>
       </nav>
-      <div class="header-actions"><a href="cart.html" class="cart-pill">CART <span id="cartHeaderCount">(0)</span></a></div>
+      <div class="header-actions"><a href="cart.html" class="cart-pill">CART <span id="cartHeaderCount">(0)</span></a>
+      </div>
     </div>
   </header>
 
@@ -43,9 +46,11 @@
         <label for="email">EMAIL</label>
         <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
         <label for="password">PASSWORD</label>
-        <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters" />
+        <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required
+          placeholder="At least 6 characters" />
         <label for="confirmPassword">CONFIRM PASSWORD</label>
-        <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Repeat your password" />
+        <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="6"
+          required placeholder="Repeat your password" />
         <button id="registerBtn" type="submit" class="auth-submit">CREATE ACCOUNT</button>
       </form>
       <p class="auth-switch">ALREADY A MEMBER? <a href="login.html">ENTER HERE</a></p>
@@ -61,4 +66,5 @@
   <script type="module" src="auth.js"></script>
   <script type="module" src="header-auth.js"></script>
 </body>
+
 </html>

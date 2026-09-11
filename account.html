@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style-shop.css">
     <link rel="stylesheet" href="account.css">
     <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/jpeg" href="./Images/logo.jpg">
+    <link rel="icon" type="image/jpeg" href="./Images/logo.webp">
 </head>
 
 <body>
@@ -22,7 +22,7 @@
         <div class="shop-header-inner">
             <a href="index.html" class="brand-wrap" aria-label="NICHERZ home">
                 <div class="brand-mark">
-                    <img src="./Images/logo.jpg" alt="NICHERZ logo">
+                    <img src="./Images/logo.webp" alt="NICHERZ logo">
                 </div>
                 <div class="brand-copy">
                     <span class="brand-name">NICHERZ</span>
@@ -79,17 +79,20 @@
 
                         <div class="account-field">
                             <label for="fullName">FULL NAME</label>
-                            <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120" placeholder="نام و نام خانوادگی">
+                            <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120"
+                                placeholder="نام و نام خانوادگی">
                         </div>
 
                         <div class="account-field">
                             <label for="phone">PHONE NUMBER</label>
-                            <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="09xxxxxxxxx">
+                            <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30"
+                                placeholder="09xxxxxxxxx">
                         </div>
 
                         <div class="account-field">
                             <label for="address">ADDRESS</label>
-                            <textarea id="address" name="address" autocomplete="street-address" maxlength="500" rows="5" placeholder="آدرس کامل"></textarea>
+                            <textarea id="address" name="address" autocomplete="street-address" maxlength="500" rows="5"
+                                placeholder="آدرس کامل"></textarea>
                         </div>
 
                         <button id="saveProfileBtn" class="account-save-button" type="submit">
@@ -114,7 +117,8 @@
                         <a href="account.html" class="account-menu-item active"><span>PROFILE</span><span>→</span></a>
                         <a href="orders.html" class="account-menu-item"><span>MY ORDERS</span><span>→</span></a>
                         <a href="cart.html" class="account-menu-item"><span>CART</span><span>→</span></a>
-                        <button id="logoutBtn" type="button" class="account-menu-item account-logout"><span>LOGOUT</span><span>→</span></button>
+                        <button id="logoutBtn" type="button"
+                            class="account-menu-item account-logout"><span>LOGOUT</span><span>→</span></button>
                     </div>
                 </section>
 
@@ -178,4 +182,5 @@
     <script type="module" src="account.js"></script>
     <script type="module" src="header-auth.js"></script>
 </body>
+
 </html>

@@ -518,10 +518,9 @@ body.bands-page::after {
 
     gap:
         0.3em 1.35em;
-
+    flex-direction: row;
     min-width:
-        0;
-}
+        0;}
 
 .header-nav > a {
     position:
@@ -744,6 +743,8 @@ body.bands-page::after {
         all
         0.22s
         ease;
+    position: fixed;
+    right: 50px;
 }
 
 .cart-pill:hover {
