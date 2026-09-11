@@ -1,6 +1,6 @@
 import { supabase } from "./js/supabase.js";
 
-// این استایل مشترک ظاهر هدر و فوتر را در همه صفحه‌ها یکسان نگه می‌دارد.
+// این فایل پوسته مشترک هدر و فوتر را روی همه صفحه‌ها یکسان نگه می‌دارد.
 const shellStyle = document.createElement("style");
 shellStyle.textContent = `
   .shop-header-inner {
@@ -37,7 +37,13 @@ shellStyle.textContent = `
     font-family: "Metal Mania", cursive !important;
   }
 
-  /* هدر فقط همین پنج گزینه را نشان می‌دهد و هیچ خط زیر لینک‌ها ندارد. */
+  /* فقط دکمه Login/Logout کادر سفید دارد. */
+  .shop-header .auth-action {
+    border: 1px solid #fff !important;
+    padding: .45em .7em !important;
+  }
+
+  /* زیر هیچ لینک هدر خط یا pseudo-element اضافی باقی نمی‌ماند. */
   .shop-header .header-nav > a::before,
   .shop-header .header-nav > a::after,
   .shop-header .auth-nav a::before,
@@ -45,6 +51,57 @@ shellStyle.textContent = `
     display: none !important;
     content: none !important;
   }
+
+  /* Shimmer مشترک لوگو و Cart؛ آرام‌تر و نرم‌تر از قبل. */
+  .shop-header .brand-mark,
+  .shop-header .cart-pill {
+    overflow: hidden !important;
+  }
+
+  .shop-header .brand-mark::after,
+  .shop-header .cart-pill::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: -35% -60% !important;
+    pointer-events: none !important;
+    z-index: 5 !important;
+    background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.48) 50%, transparent 65%) !important;
+    transform: translateX(-120%) rotate(14deg) !important;
+    animation: nicherzHeaderShimmer 6.5s cubic-bezier(.4,0,.2,1) infinite !important;
+  }
+
+  .shop-header .brand-mark img {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes nicherzHeaderShimmer {
+    0%, 52% { transform: translateX(-120%) rotate(14deg); opacity: 0; }
+    62% { opacity: .9; }
+    80%, 100% { transform: translateX(120%) rotate(14deg); opacity: 0; }
+  }
+
+  /* همان shimmer فقط روی کارت‌های محصول صفحه Product. */
+  .shop-page .product-card::after {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(120deg, transparent 42%, rgba(255,255,255,.22) 50%, transparent 58%);
+    transform: translateX(-120%) rotate(14deg);
+    opacity: 0;
+    animation: nicherzProductShimmer 6.5s cubic-bezier(.4,0,.2,1) infinite;
+  }
+
+  @keyframes nicherzProductShimmer {
+    0%, 55% { transform: translateX(-120%) rotate(14deg); opacity: 0; }
+    65% { opacity: .8; }
+    82%, 100% { transform: translateX(120%) rotate(14deg); opacity: 0; }
+  }
+
+  /* فاصله کوچک بین Header و عنوان سبد خرید. */
+  .cart-page { padding-top: 4em !important; }
 
   /* فوتر فقط برند، INFO و FOLLOW دارد و همه رنگ‌ها سفید هستند. */
   .shop-footer .footer-grid {
@@ -110,11 +167,19 @@ shellStyle.textContent = `
       display: none !important;
     }
 
+    /* سه بلوک فوتر در یک ردیف؛ اندازه فونت دست‌نخورده می‌ماند. */
     .shop-footer .footer-grid {
-      grid-template-columns: 1fr 1fr !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 1em !important;
+      align-items: start !important;
     }
 
-    /* چیدمان قدیمی کارت‌های Home برمی‌گردد؛ سه‌تایی اجباری نیست. */
+    .shop-footer .footer-brand,
+    .shop-footer .footer-links {
+      min-width: 0 !important;
+    }
+
+    /* چیدمان قدیمی کارت‌های Home حفظ می‌شود. */
     .bands-page .gallery {
       grid-template-columns: 1fr !important;
     }
@@ -127,21 +192,34 @@ function isHomePage() {
   return path === "index.html" || path === "";
 }
 
-// هدر همه صفحه‌ها را از یک منوی مشترک می‌سازیم.
-function rebuildHeader() {
+async function getSession() {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) {
+    console.error("Could not read auth session:", error);
+    return null;
+  }
+
+  return data?.session || null;
+}
+
+// هدر همه صفحه‌ها را با پنج گزینه ثابت می‌سازیم.
+async function rebuildHeader() {
   const header = document.querySelector(".shop-header");
   const nav = header?.querySelector(".header-nav");
   if (!nav) return;
 
   // سرچ فقط در Home نگه داشته می‌شود.
   const search = nav.querySelector(".container");
+  const session = await getSession();
+  const authLabel = session ? "LOGOUT" : "LOGIN";
 
   nav.innerHTML = `
     <a href="index.html">HOME</a>
-    <a href="index-shop.html">SHOP</a>
+    <a href="index-shop.html">PRODUCT</a>
     <a href="index.html#gallery">GALLERY</a>
     <a href="account.html">ACCOUNT</a>
-    <a href="login.html">LOGIN</a>
+    <a href="${session ? "#logout" : "login.html"}" class="auth-action" data-auth-action>${authLabel}</a>
   `;
 
   if (isHomePage() && search) {
@@ -150,7 +228,7 @@ function rebuildHeader() {
   }
 
   const currentPath = window.location.pathname.split("/").pop() || "index.html";
-  nav.querySelectorAll("a").forEach((link) => {
+  nav.querySelectorAll("a:not(.auth-action)").forEach((link) => {
     const href = link.getAttribute("href");
     if (href === currentPath || (currentPath === "" && href === "index.html")) {
       link.classList.add("active-nav");
@@ -208,8 +286,42 @@ function rebuildFooter() {
   });
 }
 
-rebuildHeader();
+async function handleAuthAction(event) {
+  const link = event.target.closest("[data-auth-action]");
+  if (!link) return;
+
+  const session = await getSession();
+  if (!session) return;
+
+  event.preventDefault();
+
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Logout failed:", error);
+    return;
+  }
+
+  await rebuildHeader();
+}
+
+document.addEventListener("click", handleAuthAction);
+
+// دکمه Related Products روی کارت هر بند باید فقط محصولات همان بند را باز کند.
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("a.Bio[href*='category=']");
+  if (!link) return;
+
+  const url = new URL(link.href, window.location.href);
+  const band = url.searchParams.get("category");
+  if (!band) return;
+
+  url.searchParams.delete("category");
+  url.searchParams.set("band", band);
+  link.href = url.toString();
+});
+
 rebuildFooter();
+rebuildHeader();
 
 supabase.auth.onAuthStateChange(() => {
   rebuildHeader();
