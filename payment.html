@@ -14,69 +14,26 @@
 <header class="shop-header">
     <div class="shop-header-inner">
         <div class="brand-wrap"><div class="brand-mark"><img src="./Images/logo.jpg" alt="NICHERZ logo" class="footer-logo"></div><div class="brand-copy"><span class="brand-name">NICHERZ</span><small>ARCHIVE</small></div></div>
-        <nav class="header-nav" aria-label="Main navigation"><a href="index.html">HOME</a><a href="index-shop.html">SHOP</a><a href="index.html#gallery">GALLERY</a><a href="contact.html">CONTACT</a></nav>
-        <div class="header-actions"><a href="orders.html" class="cart-pill">MY ORDERS</a></div>
+        <nav class="header-nav" aria-label="Main navigation"><a href="index.html">HOME</a><a href="index-shop.html">SHOP</a><a href="index.html#gallery">GALLERY</a><a href="account.html">ACCOUNT</a><a href="login.html">LOGIN</a></nav>
+        <div class="header-actions"><a href="cart.html" class="cart-pill">CART <span id="cartHeaderCount">(0)</span></a></div>
     </div>
 </header>
 
 <main class="payment-page">
-    <section class="payment-hero">
-        <span class="payment-kicker">ORDER #<strong id="paymentOrderId">—</strong></span>
-        <h1>COMPLETE YOUR PAYMENT</h1>
-        <p>برای تکمیل سفارش، مبلغ دقیق را کارت‌به‌کارت کنید و تصویر رسید را همین‌جا ارسال کنید.</p>
-    </section>
-
+    <section class="payment-hero"><span class="payment-kicker">ORDER #<strong id="paymentOrderId">—</strong></span><h1>COMPLETE YOUR PAYMENT</h1><p>برای تکمیل سفارش، مبلغ دقیق را کارت‌به‌کارت کنید و تصویر رسید را همین‌جا ارسال کنید.</p></section>
     <section id="paymentLoading" class="payment-state">در حال بارگذاری اطلاعات پرداخت...</section>
-    <section id="paymentError" class="payment-state payment-state-error" hidden>
-        <h2>پرداخت پیدا نشد</h2>
-        <p id="paymentErrorText">اطلاعات پرداخت قابل دریافت نیست.</p>
-        <a href="orders.html" class="payment-outline-btn">مشاهده سفارش‌ها</a>
-    </section>
-
+    <section id="paymentError" class="payment-state payment-state-error" hidden><h2>پرداخت پیدا نشد</h2><p id="paymentErrorText">اطلاعات پرداخت قابل دریافت نیست.</p><a href="orders.html" class="payment-outline-btn">مشاهده سفارش‌ها</a></section>
     <section id="paymentContent" class="payment-layout" hidden>
         <div class="payment-main">
-            <div class="payment-steps">
-                <div class="payment-step active"><span>01</span><div><strong>مبلغ را بررسی کنید</strong><small>همین مبلغ را دقیقاً واریز کنید.</small></div></div>
-                <div class="payment-step"><span>02</span><div><strong>کارت‌به‌کارت کنید</strong><small>از طریق اپ بانکی یا ATM پرداخت کنید.</small></div></div>
-                <div class="payment-step"><span>03</span><div><strong>رسید را ارسال کنید</strong><small>عکس رسید را انتخاب و ارسال کنید.</small></div></div>
-            </div>
-
-            <section class="payment-card payment-bank-card">
-                <div class="payment-card-heading"><span class="payment-icon">₿</span><div><span>TRANSFER TO</span><h2>اطلاعات کارت</h2></div></div>
-                <div id="paymentDetails" class="payment-details"></div>
-                <div class="payment-amount-box"><span>مبلغ قابل پرداخت</span><strong id="paymentAmount">۰ تومان</strong></div>
-                <div class="payment-warning">قبل از ارسال رسید، نام صاحب کارت و مبلغ را با اطلاعات انتقال خود تطبیق دهید.</div>
-            </section>
-
-            <section class="payment-card payment-receipt-card">
-                <div class="payment-card-heading"><span class="payment-icon">↥</span><div><span>FINAL STEP</span><h2>ارسال رسید پرداخت</h2></div></div>
-                <label class="receipt-drop" for="paymentReceiptInput">
-                    <input id="paymentReceiptInput" type="file" accept="image/jpeg,image/png,image/webp">
-                    <span class="receipt-drop-icon">↑</span>
-                    <strong>تصویر رسید را انتخاب کنید</strong>
-                    <small>JPG / PNG / WEBP — حداکثر ۵ مگابایت</small>
-                </label>
-                <div id="receiptPreview" class="receipt-preview" hidden></div>
-                <button id="submitReceiptBtn" class="payment-submit-btn" type="button" disabled>ارسال رسید و تکمیل پرداخت <span>→</span></button>
-                <p id="paymentStatus" class="payment-status info">بعد از واریز، رسید را بارگذاری کنید.</p>
-            </section>
+            <div class="payment-steps"><div class="payment-step active"><span>01</span><div><strong>مبلغ را بررسی کنید</strong><small>همین مبلغ را دقیقاً واریز کنید.</small></div></div><div class="payment-step"><span>02</span><div><strong>کارت‌به‌کارت کنید</strong><small>از طریق اپ بانکی یا ATM پرداخت کنید.</small></div></div><div class="payment-step"><span>03</span><div><strong>رسید را ارسال کنید</strong><small>عکس رسید را انتخاب و ارسال کنید.</small></div></div></div>
+            <section class="payment-card payment-bank-card"><div class="payment-card-heading"><span class="payment-icon">₿</span><div><span>TRANSFER TO</span><h2>اطلاعات کارت</h2></div></div><div id="paymentDetails" class="payment-details"></div><div class="payment-amount-box"><span>مبلغ قابل پرداخت</span><strong id="paymentAmount">۰ تومان</strong></div><div class="payment-warning">قبل از ارسال رسید، نام صاحب کارت و مبلغ را با اطلاعات انتقال خود تطبیق دهید.</div></section>
+            <section class="payment-card payment-receipt-card"><div class="payment-card-heading"><span class="payment-icon">↥</span><div><span>FINAL STEP</span><h2>ارسال رسید پرداخت</h2></div></div><label class="receipt-drop" for="paymentReceiptInput"><input id="paymentReceiptInput" type="file" accept="image/jpeg,image/png,image/webp"><span class="receipt-drop-icon">↑</span><strong>تصویر رسید را انتخاب کنید</strong><small>JPG / PNG / WEBP — حداکثر ۵ مگابایت</small></label><div id="receiptPreview" class="receipt-preview" hidden></div><button id="submitReceiptBtn" class="payment-submit-btn" type="button" disabled>ارسال رسید و تکمیل پرداخت <span>→</span></button><p id="paymentStatus" class="payment-status info">بعد از واریز، رسید را بارگذاری کنید.</p></section>
         </div>
-
-        <aside class="payment-side">
-            <section class="payment-card order-summary-card">
-                <div class="payment-card-heading"><span>ORDER SUMMARY</span><h2>خلاصه سفارش</h2></div>
-                <div class="summary-line"><span>شماره سفارش</span><strong id="summaryOrderId">—</strong></div>
-                <div class="summary-line"><span>مبلغ سفارش</span><strong id="summaryTotal">۰ تومان</strong></div>
-                <div class="summary-line"><span>وضعیت</span><strong id="summaryStatus">در انتظار پرداخت</strong></div>
-                <a href="orders.html" class="payment-text-link">مشاهده سفارش در حساب کاربری ←</a>
-            </section>
-            <section class="payment-note"><strong>نکته</strong><p>رسید توسط مدیریت بررسی می‌شود. تا زمان تأیید، وضعیت پرداخت سفارش «در انتظار بررسی» خواهد بود.</p></section>
-        </aside>
+        <aside class="payment-side"><section class="payment-card order-summary-card"><div class="payment-card-heading"><span>ORDER SUMMARY</span><h2>خلاصه سفارش</h2></div><div class="summary-line"><span>شماره سفارش</span><strong id="summaryOrderId">—</strong></div><div class="summary-line"><span>مبلغ سفارش</span><strong id="summaryTotal">۰ تومان</strong></div><div class="summary-line"><span>وضعیت</span><strong id="summaryStatus">در انتظار پرداخت</strong></div><a href="orders.html" class="payment-text-link">مشاهده سفارش در حساب کاربری ←</a></section><section class="payment-note"><strong>نکته</strong><p>رسید توسط مدیریت بررسی می‌شود. تا زمان تأیید، وضعیت پرداخت سفارش «در انتظار بررسی» خواهد بود.</p></section></aside>
     </section>
 </main>
-
 <footer class="shop-footer"><div class="footer-grid"><div class="footer-brand"><span class="footer-logo">N</span><div><h3>NICHERZ</h3><p>Curated chaos for the loudest souls.</p></div></div><div class="footer-links"><h4>SHOP</h4><a href="index-shop.html">Shop</a><a href="cart.html">Cart</a></div><div class="footer-links"><h4>INFO</h4><a href="contact.html">Contact</a><a href="orders.html">Orders</a></div><div class="footer-links"><h4>FOLLOW</h4><a href="https://instagram.com/nicherzz" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://t.me/nicherz" target="_blank" rel="noopener noreferrer">Telegram</a></div></div><div class="footer-bottom"><span>© 2026 NICHERZ</span><span>WEAR THE LEGEND</span></div></footer>
-
 <script type="module" src="payment.js"></script>
+<script type="module" src="header-auth.js"></script>
 </body>
 </html>
