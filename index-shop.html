@@ -5,26 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shop | NICHERZ</title>
   <link rel="stylesheet" href="style-shop.css" />
-  <link rel="stylesheet" href="shop-fixes.css" />
   <link rel="stylesheet" href="toast.css" />
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/jpeg" href="./Images/logo.jpg" />
   <link rel="stylesheet" href="auth.css">
 </head>
 <body>
-  <!-- دود متحرک پس‌زمینه -->
   <div class="smoke-background" aria-hidden="true">
     <div class="smoke smoke-one"></div>
     <div class="smoke smoke-two"></div>
     <div class="smoke smoke-three"></div>
   </div>
 
-  <!-- هدر فروشگاه -->
   <header class="shop-header">
     <div class="shop-header-inner">
       <div class="brand-wrap" aria-label="Brand logo">
         <div class="brand-mark">
-          <img src="./Images/logo.jpg" alt="NICHERZ logo" style="width:100%;height:100%;object-fit:cover;border-radius:2px;" />
+          <img src="./Images/logo.jpg" alt="NICHERZ logo" />
         </div>
         <div class="brand-copy">
           <span class="brand-name">NICHERZ</span>
@@ -42,20 +39,18 @@
       </nav>
 
       <div class="header-actions">
-        <a href="cart.html" class="cart-pill">CART (0)</a>
+        <a href="cart.html" class="cart-pill" aria-label="Shopping cart">CART <span id="cartHeaderCount">(0)</span></a>
       </div>
     </div>
   </header>
 
   <main class="shop-page">
-    <!-- معرفی آرشیو -->
     <section class="shop-hero">
       <h1 class="shop-title">THE ARCHIVE</h1>
       <p class="shop-subtitle">Wear The Legend</p>
     </section>
 
     <section class="products-section">
-      <!-- همه دسته‌های اصلی فروشگاه دوباره در دسترس هستند -->
       <nav class="shop-categories" aria-label="Product categories">
         <button type="button" class="category-btn active" data-category="all">ALL</button>
         <button type="button" class="category-btn" data-category="band-merch">BAND MERCH</button>
@@ -75,7 +70,6 @@
   </main>
 
   <footer class="shop-footer">
-    <!-- فوتر فروشگاه -->
     <div class="footer-grid">
       <div class="footer-brand">
         <span class="footer-logo">N</span>
@@ -112,7 +106,6 @@
   <script type="module" src="shop.js"></script>
   <script type="module" src="header-auth.js"></script>
   <script>
-    // دسته‌ای که از لینک فوتر یا URL آمده را بعد از آماده شدن فروشگاه انتخاب می‌کند.
     window.setTimeout(() => {
       const category = new URLSearchParams(window.location.search).get("category");
       if (!category || category === "all") return;
