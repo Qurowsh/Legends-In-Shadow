@@ -1,0 +1,45 @@
+/* Home header: use the same Metal Mania typography as the Shop header. */
+body.bands-page .shop-header,
+body.bands-page .shop-header a,
+body.bands-page .shop-header button,
+body.bands-page .shop-header .auth-nav,
+body.bands-page .shop-header .brand-copy,
+body.bands-page .shop-header .brand-copy small {
+  font-family: "Metal Mania", cursive;
+}
+
+/* The site does not use text underlines as part of the navigation design. */
+body.bands-page a,
+body.bands-page a:hover,
+body.bands-page a:focus,
+body.bands-page a:visited {
+  text-decoration: none !important;
+}
+
+/* Remove the active/hover line that was built with a pseudo-element. */
+body.bands-page .header-nav > a::after,
+body.bands-page .header-nav > a:hover::after,
+body.bands-page .header-nav > a.active-nav::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Make only the Home header more glass-like while keeping its existing animations. */
+body.bands-page .shop-header {
+  background: rgba(5, 5, 5, 0.64);
+  backdrop-filter: blur(20px) saturate(115%);
+  -webkit-backdrop-filter: blur(20px) saturate(115%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Keep the header readable on narrow screens without changing its layout. */
+@media (max-width: 760px) {
+  body.bands-page .shop-header {
+    background: rgba(5, 5, 5, 0.72);
+    backdrop-filter: blur(18px) saturate(110%);
+    -webkit-backdrop-filter: blur(18px) saturate(110%);
+  }
+}
