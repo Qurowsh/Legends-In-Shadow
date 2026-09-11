@@ -3,20 +3,14 @@ import { supabase } from "./js/supabase.js";
 // Shared header/footer rules for all customer-facing pages.
 const shellStyle = document.createElement("style");
 shellStyle.textContent = `
-  .shop-header-inner {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-  }
+  .shop-header-inner { display: flex !important; align-items: center !important; justify-content: space-between !important; }
   .brand-wrap { order: 1 !important; margin-right: auto !important; }
   .header-actions { order: 3 !important; margin-left: auto !important; }
   .header-nav { order: 2 !important; }
   .shop-header .header-nav > a,
   .shop-header .brand-name,
   .shop-header .brand-copy small,
-  .shop-header .cart-pill {
-    font-family: "Metal Mania", cursive !important;
-  }
+  .shop-header .cart-pill { font-family: "Metal Mania", cursive !important; }
   .shop-header .header-nav > a::before,
   .shop-header .header-nav > a::after,
   .shop-header .auth-nav a::before,
@@ -30,14 +24,7 @@ shellStyle.textContent = `
   .shop-footer .footer-links a:visited,
   .shop-footer .footer-links a:link { color: #fff !important; }
   @media (max-width: 700px) {
-    .shop-header-inner {
-      width: 94% !important;
-      display: grid !important;
-      grid-template-columns: minmax(0, 1fr) auto !important;
-      grid-template-rows: auto auto !important;
-      column-gap: .8em !important;
-      row-gap: .7em !important;
-    }
+    .shop-header-inner { width: 94% !important; display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; grid-template-rows: auto auto !important; column-gap: .8em !important; row-gap: .7em !important; }
     .brand-wrap { grid-column: 1 !important; grid-row: 1 !important; justify-self: start !important; }
     .header-actions { grid-column: 2 !important; grid-row: 1 !important; justify-self: end !important; }
     .header-nav { grid-column: 1 / -1 !important; grid-row: 2 !important; width: 100% !important; justify-content: center !important; flex-wrap: nowrap !important; overflow-x: auto !important; }
@@ -81,7 +68,7 @@ function rebuildHeader() {
 function cleanFooter() {
   document.querySelectorAll(".shop-footer .footer-links").forEach((section) => {
     const title = section.querySelector("h4")?.textContent.trim().toUpperCase();
-    if (title === "SHOP") {
+    if (title === "SHOP" || title === "ACCOUNT") {
       section.remove();
       return;
     }
