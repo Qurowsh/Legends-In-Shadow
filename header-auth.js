@@ -2,7 +2,7 @@ import { supabase } from "./js/supabase.js";
 
 const shellStyle = document.createElement("style");
 shellStyle.textContent = `
-  .shop-header-inner { display:flex !important; align-items:center !important; justify-content:space-between !important; width:min(94%,90em) !important; }
+  .shop-header-inner { display:flex !important; align-items:center !important; justify-content:space-between !important; width:min(94%,90em) !important; position:relative !important; }
   .shop-header .brand-wrap { order:1 !important; margin-right:auto !important; margin-left:0 !important; justify-self:start !important; }
   .shop-header .header-nav { order:2 !important; flex:1 1 auto !important; justify-content:center !important; }
   .shop-header .header-actions { order:3 !important; margin-left:auto !important; margin-right:0 !important; justify-self:end !important; }
@@ -16,38 +16,45 @@ shellStyle.textContent = `
   .shop-header .auth-nav a::before,
   .shop-header .auth-nav a::after { display:none !important; content:none !important; }
 
+  .shop-header-inner > .container {
+    position:absolute !important; left:50% !important; top:50% !important;
+    transform:translate(-50%,-50%) !important; z-index:4 !important;
+  }
+
   .shop-header .brand-mark,
   .shop-header .cart-pill { position:relative !important; overflow:hidden !important; }
   .shop-header .brand-mark::after,
   .shop-header .cart-pill::before {
     content:"" !important; position:absolute !important; inset:-35% -60% !important;
     pointer-events:none !important; z-index:5 !important;
-    background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.48) 50%,transparent 65%) !important;
-    transform:translateX(-120%) rotate(14deg) !important;
-    animation:nicherzHeaderShimmer 8s cubic-bezier(.4,0,.2,1) infinite !important;
+    background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.72) 49%,rgba(255,255,255,.95) 50%,rgba(255,255,255,.72) 51%,transparent 65%) !important;
+    transform:translateX(-125%) rotate(14deg) !important;
+    animation:nicherzHeaderShimmer 7s cubic-bezier(.4,0,.2,1) infinite !important;
+    opacity:0 !important;
   }
   .shop-header .brand-mark img { position:relative !important; z-index:1 !important; }
   @keyframes nicherzHeaderShimmer {
-    0%,55% { transform:translateX(-120%) rotate(14deg); opacity:0; }
-    65% { opacity:.85; }
-    82%,100% { transform:translateX(120%) rotate(14deg); opacity:0; }
+    0%,58% { transform:translateX(-125%) rotate(14deg); opacity:0; }
+    68% { opacity:.95; }
+    82%,100% { transform:translateX(125%) rotate(14deg); opacity:0; }
   }
 
   .shop-page .product-card { position:relative !important; overflow:hidden !important; }
   .shop-page .product-card::after {
-    content:"" !important; position:absolute !important; inset:-35% !important; z-index:20 !important;
+    content:"" !important; position:absolute !important; inset:-45% !important; z-index:20 !important;
     pointer-events:none !important;
-    background:linear-gradient(120deg,transparent 42%,rgba(255,255,255,.22) 50%,transparent 58%) !important;
-    transform:translateX(-120%) rotate(14deg) !important; opacity:0 !important;
-    animation:nicherzProductShimmer 8s cubic-bezier(.4,0,.2,1) infinite !important;
+    background:linear-gradient(120deg,transparent 39%,rgba(255,255,255,.45) 48%,rgba(255,255,255,.9) 50%,rgba(255,255,255,.45) 52%,transparent 61%) !important;
+    transform:translateX(-125%) rotate(14deg) !important;
+    animation:nicherzProductShimmer 7s cubic-bezier(.4,0,.2,1) infinite !important;
+    opacity:0 !important;
   }
   @keyframes nicherzProductShimmer {
-    0%,55% { transform:translateX(-120%) rotate(14deg); opacity:0; }
-    65% { opacity:.8; }
-    82%,100% { transform:translateX(120%) rotate(14deg); opacity:0; }
+    0%,58% { transform:translateX(-125%) rotate(14deg); opacity:0; }
+    68% { opacity:.8; }
+    82%,100% { transform:translateX(125%) rotate(14deg); opacity:0; }
   }
 
-  .cart-page { padding-top:1.25em !important; }
+  .cart-page { padding-top:1.6em !important; }
 
   .shop-footer .footer-grid { grid-template-columns:1.5fr 1fr 1fr !important; }
   .shop-footer,
@@ -55,9 +62,14 @@ shellStyle.textContent = `
   .shop-footer .footer-links h4,
   .shop-footer .footer-brand,
   .shop-footer .footer-brand h3,
-  .shop-footer .footer-brand p,
   .shop-footer .footer-bottom,
   .shop-footer .footer-bottom span { color:#fff !important; }
+  .shop-footer .footer-brand { display:block !important; }
+  .shop-footer .footer-logo { display:none !important; }
+  .shop-footer .footer-brand p {
+    color:#e1bd2b !important;
+    margin:0 !important;
+  }
   .shop-footer .footer-links a:visited,
   .shop-footer .footer-links a:link,
   .shop-footer .footer-links a:hover,
@@ -66,17 +78,36 @@ shellStyle.textContent = `
   @media (max-width:700px) {
     .shop-header-inner {
       width:94% !important; min-height:0 !important; display:grid !important;
-      grid-template-columns:minmax(0,1fr) auto !important;
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) !important;
       grid-template-rows:auto auto !important; align-items:center !important;
-      column-gap:.8em !important; row-gap:.7em !important;
+      column-gap:.45em !important; row-gap:.7em !important;
     }
-    .shop-header .brand-wrap { grid-column:1 !important; grid-row:1 !important; justify-self:start !important; margin:0 !important; }
-    .shop-header .header-actions { grid-column:2 !important; grid-row:1 !important; justify-self:end !important; margin:0 !important; }
+    .shop-header .brand-wrap {
+      grid-column:1 !important; grid-row:1 !important;
+      justify-self:start !important; margin:0 !important;
+    }
+    .shop-header .header-actions {
+      grid-column:3 !important; grid-row:1 !important;
+      justify-self:end !important; margin:0 !important;
+    }
     .shop-header .header-nav {
-      grid-column:1 / -1 !important; grid-row:2 !important; width:100% !important; min-width:0 !important;
-      justify-content:center !important; flex-wrap:nowrap !important; overflow-x:auto !important; scrollbar-width:none !important;
+      grid-column:1 / -1 !important; grid-row:2 !important;
+      width:100% !important; min-width:0 !important;
+      display:flex !important; justify-content:center !important;
+      flex-wrap:nowrap !important; overflow-x:auto !important;
+      scrollbar-width:none !important; gap:.75em !important;
     }
     .shop-header .header-nav::-webkit-scrollbar { display:none !important; }
+    .shop-header .header-nav > a { flex:0 0 auto !important; }
+    .shop-header-inner > .container {
+      position:static !important; grid-column:2 !important; grid-row:1 !important;
+      justify-self:center !important; align-self:center !important;
+      transform:none !important; width:min(100%,14em) !important;
+      min-width:0 !important; margin:0 !important;
+    }
+    .shop-header-inner > .container input {
+      width:100% !important; box-sizing:border-box !important;
+    }
     .shop-footer .footer-grid {
       grid-template-columns:minmax(0,1.35fr) minmax(0,.825fr) minmax(0,.825fr) !important;
       gap:.55em !important; align-items:start !important; width:100% !important;
@@ -105,9 +136,10 @@ async function getSession() {
 async function rebuildHeader() {
   const header = document.querySelector(".shop-header");
   const nav = header?.querySelector(".header-nav");
-  if (!nav) return;
+  const inner = header?.querySelector(".shop-header-inner");
+  if (!nav || !inner) return;
 
-  const search = nav.querySelector(".container");
+  const search = inner.querySelector(".container") || nav.querySelector(".container");
   const session = await getSession();
   const authLabel = session ? "LOGOUT" : "LOGIN";
 
@@ -119,9 +151,9 @@ async function rebuildHeader() {
     <a href="${session ? "#logout" : "login.html"}" class="auth-action" data-auth-action>${authLabel}</a>
   `;
 
-  if (isHomePage() && search) {
-    nav.appendChild(search);
-    search.style.setProperty("display", "flex", "important");
+  if (search) {
+    inner.appendChild(search);
+    search.style.setProperty("display", isHomePage() ? "flex" : "none", "important");
   }
 
   const currentPath = window.location.pathname.split("/").pop() || "index.html";
@@ -147,7 +179,6 @@ function rebuildFooter() {
 
     grid.innerHTML = `
       <div class="footer-brand">
-        <span class="footer-logo">N</span>
         <div><h3>NICHERZ</h3><p>Curated chaos for the loudest souls.</p></div>
       </div>
       <div class="footer-links">
