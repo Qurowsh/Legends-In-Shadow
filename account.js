@@ -1,5 +1,14 @@
 import { supabase } from "./js/supabase.js";
 
+// Keep the account page aligned with the shared site layout.
+if (!document.querySelector('link[data-ui-fixes]')) {
+  const uiFixes = document.createElement("link");
+  uiFixes.rel = "stylesheet";
+  uiFixes.href = "ui-fixes.css";
+  uiFixes.dataset.uiFixes = "true";
+  document.head.appendChild(uiFixes);
+}
+
 let currentUser = null;
 const $ = (id) => document.getElementById(id);
 const accountLoading = $("accountLoading");
@@ -23,25 +32,21 @@ function showLoading() {
   if (accountContent) accountContent.hidden = true;
   if (accountError) accountError.hidden = true;
 }
-
 function showContent() {
   if (accountLoading) accountLoading.hidden = true;
   if (accountError) accountError.hidden = true;
   if (accountContent) accountContent.hidden = false;
 }
-
 function showPageError(message) {
   if (accountLoading) accountLoading.hidden = true;
   if (accountContent) accountContent.hidden = true;
   if (accountError) accountError.hidden = false;
   if (accountErrorText) accountErrorText.textContent = message;
 }
-
 function showProfileError(message) {
   if (profileErrorText) profileErrorText.textContent = message;
   if (profileErrorModal) profileErrorModal.hidden = false;
 }
-
 function hideProfileError() {
   if (profileErrorModal) profileErrorModal.hidden = true;
 }
@@ -49,13 +54,7 @@ function hideProfileError() {
 async function loadProfile() {
   if (!currentUser) return;
   if (accountEmail) accountEmail.value = currentUser.email || "";
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("full_name,phone,address")
-    .eq("id", currentUser.id)
-    .maybeSingle();
-
+  const { data, error } = await supabase.from("profiles").select("full_name,phone,address").eq("id", currentUser.id).maybeSingle();
   if (error) throw error;
   if (fullName) fullName.value = data?.full_name || "";
   if (phone) phone.value = data?.phone || "";
@@ -68,7 +67,6 @@ async function saveProfile(event) {
   saveProfileBtn.disabled = true;
   const saveText = saveProfileBtn.querySelector(".save-text");
   if (saveText) saveText.textContent = "SAVING...";
-
   try {
     const { error } = await supabase.from("profiles").upsert({
       id: currentUser.id,
@@ -90,22 +88,12 @@ async function saveProfile(event) {
 
 async function updateCartCount() {
   if (!currentUser || !accountCartCount) return;
-  const { data: cart, error } = await supabase
-    .from("carts")
-    .select("id")
-    .eq("user_id", currentUser.id)
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+  const { data: cart, error } = await supabase.from("carts").select("id").eq("user_id", currentUser.id).order("created_at", { ascending: true }).limit(1).maybeSingle();
   if (error || !cart) {
     accountCartCount.textContent = "(0)";
     return;
   }
-
-  const { data: items, error: itemsError } = await supabase
-    .from("cart_items")
-    .select("quantity")
-    .eq("cart_id", cart.id);
+  const { data: items, error: itemsError } = await supabase.from("cart_items").select("quantity").eq("cart_id", cart.id);
   if (itemsError) {
     accountCartCount.textContent = "(0)";
     return;
@@ -158,6 +146,5 @@ async function initAccount() {
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_OUT" || !session) window.location.href = "login.html?redirect=account.html";
 });
-
 setupEvents();
 initAccount();
