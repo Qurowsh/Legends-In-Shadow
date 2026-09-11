@@ -1,5 +1,14 @@
 import { supabase } from "./js/supabase.js";
 
+// Load the shared visual patch once so all auth-enabled pages use the same layout rules.
+if (!document.querySelector('link[data-ui-fixes]')) {
+    const uiFixes = document.createElement("link");
+    uiFixes.rel = "stylesheet";
+    uiFixes.href = "ui-fixes.css";
+    uiFixes.dataset.uiFixes = "true";
+    document.head.appendChild(uiFixes);
+}
+
 const authNav = document.getElementById("auth-nav");
 
 async function updateAuthNav() {
