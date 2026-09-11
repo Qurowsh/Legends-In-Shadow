@@ -16,7 +16,6 @@ shellStyle.textContent = `
   .shop-header .auth-nav a::before,
   .shop-header .auth-nav a::after { display:none !important; content:none !important; }
 
-  /* Home search is a direct child of the header shell so mobile can place it in the center block. */
   .shop-header-inner > .container {
     position:absolute !important;
     left:50% !important;
@@ -26,7 +25,6 @@ shellStyle.textContent = `
     display:flex !important;
   }
 
-  /* Header shimmer: the effect stays clipped inside the logo/cart boxes. */
   .shop-header .brand-mark,
   .shop-header .cart-pill {
     position:relative !important;
@@ -53,10 +51,7 @@ shellStyle.textContent = `
     82%,100% { transform:translateX(135%) rotate(14deg); opacity:0; }
   }
 
-  /* Product shimmer: only the product cards on Product/Shop receive it. */
-  .shop-page .product-card,
-  .shop-page .product-card > * { position:relative !important; }
-  .shop-page .product-card { overflow:hidden !important; isolation:isolate !important; }
+  .shop-page .product-card { position:relative !important; overflow:hidden !important; isolation:isolate !important; }
   .shop-page .product-card::after {
     content:"" !important;
     position:absolute !important;
@@ -78,7 +73,6 @@ shellStyle.textContent = `
   .cart-page { padding-top:1.6em !important; }
   .continue-shopping-link { display:inline-block !important; margin-top:1.6em !important; }
 
-  /* Footer is rebuilt by JS, but these rules also guarantee the final appearance. */
   .shop-footer .footer-grid { grid-template-columns:1.5fr 1fr 1fr !important; }
   .shop-footer,
   .shop-footer .footer-links a,
@@ -89,10 +83,7 @@ shellStyle.textContent = `
   .shop-footer .footer-bottom span { color:#fff !important; }
   .shop-footer .footer-brand { display:block !important; }
   .shop-footer .footer-logo { display:none !important; }
-  .shop-footer .footer-brand p {
-    color:#e1bd2b !important;
-    margin:0 !important;
-  }
+  .shop-footer .footer-brand p { color:#e1bd2b !important; margin:0 !important; }
   .shop-footer .footer-links a:visited,
   .shop-footer .footer-links a:link,
   .shop-footer .footer-links a:hover,
@@ -109,18 +100,8 @@ shellStyle.textContent = `
       column-gap:.45em !important;
       row-gap:.7em !important;
     }
-    .shop-header .brand-wrap {
-      grid-column:1 !important;
-      grid-row:1 !important;
-      justify-self:start !important;
-      margin:0 !important;
-    }
-    .shop-header .header-actions {
-      grid-column:3 !important;
-      grid-row:1 !important;
-      justify-self:end !important;
-      margin:0 !important;
-    }
+    .shop-header .brand-wrap { grid-column:1 !important; grid-row:1 !important; justify-self:start !important; margin:0 !important; }
+    .shop-header .header-actions { grid-column:3 !important; grid-row:1 !important; justify-self:end !important; margin:0 !important; }
     .shop-header .header-nav {
       grid-column:1 / -1 !important;
       grid-row:2 !important;
@@ -146,10 +127,7 @@ shellStyle.textContent = `
       min-width:0 !important;
       margin:0 !important;
     }
-    .shop-header-inner > .container input {
-      width:100% !important;
-      box-sizing:border-box !important;
-    }
+    .shop-header-inner > .container input { width:100% !important; box-sizing:border-box !important; }
     .shop-footer .footer-grid {
       grid-template-columns:minmax(0,1.35fr) minmax(0,.825fr) minmax(0,.825fr) !important;
       gap:.55em !important;
@@ -182,14 +160,9 @@ function placeHomeSearch() {
   const nav = header?.querySelector(".header-nav");
   const inner = header?.querySelector(".shop-header-inner");
   if (!nav || !inner || !isHomePage()) return;
-
   const search = inner.querySelector(".container") || nav.querySelector(".container");
   if (!search) return;
-
-  if (search.parentElement !== inner) {
-    inner.appendChild(search);
-  }
-
+  if (search.parentElement !== inner) inner.appendChild(search);
   search.style.setProperty("display", "flex", "important");
 }
 
@@ -265,17 +238,12 @@ function rebuildFooter() {
   });
 }
 
-function sanitizeFooter() {
-  rebuildFooter();
-}
-
 async function handleAuthAction(event) {
   const link = event.target.closest("[data-auth-action]");
   if (!link) return;
   const session = await getSession();
   if (!session) return;
   event.preventDefault();
-
   const { error } = await supabase.auth.signOut();
   if (error) {
     console.error("Logout failed:", error);
@@ -304,11 +272,11 @@ if (bandsContainer) {
 }
 
 function bootShell() {
-  sanitizeFooter();
+  rebuildFooter();
   rebuildHeader();
   requestAnimationFrame(() => {
     placeHomeSearch();
-    sanitizeFooter();
+    rebuildFooter();
   });
 }
 
@@ -318,10 +286,7 @@ if (document.readyState === "loading") {
   bootShell();
 }
 
-const footerObserver = new MutationObserver(() => sanitizeFooter());
-footerObserver.observe(document.body, { childList:true, subtree:true });
-
 supabase.auth.onAuthStateChange(() => {
   rebuildHeader();
-  sanitizeFooter();
+  rebuildFooter();
 });
