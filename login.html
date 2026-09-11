@@ -20,23 +20,17 @@
   <header class="shop-header">
     <div class="shop-header-inner">
       <a class="brand-wrap auth-brand" href="index.html" aria-label="NICHERZ home">
-        <div class="brand-mark">
-          <img src="./Images/logo.jpg" alt="NICHERZ logo" />
-        </div>
-        <div class="brand-copy">
-          <span class="brand-name">NICHERZ</span>
-          <small>ARCHIVE</small>
-        </div>
+        <div class="brand-mark"><img src="./Images/logo.jpg" alt="NICHERZ logo" /></div>
+        <div class="brand-copy"><span class="brand-name">NICHERZ</span><small>ARCHIVE</small></div>
       </a>
       <nav class="header-nav" aria-label="Main navigation">
         <a href="index.html">HOME</a>
         <a href="index-shop.html">SHOP</a>
-        <a href="index.html#gallery">BANDS</a>
-        <a href="contact.html">CONTACT</a>
+        <a href="index.html#gallery">GALLERY</a>
+        <a href="account.html">ACCOUNT</a>
+        <a href="login.html" class="active-nav" aria-current="page">LOGIN</a>
       </nav>
-      <div class="header-actions">
-        <a href="cart.html" class="cart-pill">CART (0)</a>
-      </div>
+      <div class="header-actions"><a href="cart.html" class="cart-pill">CART <span id="cartHeaderCount">(0)</span></a></div>
     </div>
   </header>
 
@@ -45,30 +39,24 @@
       <p class="auth-kicker">NICHERZ / ARCHIVE</p>
       <h1>WELCOME BACK</h1>
       <p class="auth-subtitle">Enter the archive.</p>
-
       <form id="loginForm" class="auth-form">
         <label for="email">EMAIL</label>
         <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
-
         <label for="password">PASSWORD</label>
         <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
-
         <button id="loginBtn" type="submit" class="auth-submit">ENTER ARCHIVE</button>
       </form>
-
       <p class="auth-switch">DON'T HAVE AN ACCOUNT? <a href="register.html">CREATE ONE</a></p>
       <p id="authMessage" class="auth-message" role="status"></p>
     </section>
   </main>
 
   <footer class="shop-footer auth-footer">
-    <div class="footer-bottom">
-      <span>© 2026 NICHERZ</span>
-      <span>WEAR THE LEGEND</span>
-    </div>
+    <div class="footer-bottom"><span>© 2026 NICHERZ</span><span>WEAR THE LEGEND</span></div>
   </footer>
 
   <script src="toast.js"></script>
   <script type="module" src="auth.js"></script>
+  <script type="module" src="header-auth.js"></script>
 </body>
 </html>
