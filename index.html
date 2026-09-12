@@ -11,6 +11,85 @@
   <link rel="stylesheet" href="auth.css">
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
   <link rel="icon" type="image/jpeg" href="./Images/logo.webp">
+  <style>
+    /* Keep Home footer identical to the shared footer used by the other pages. */
+    body.bands-page .shop-footer {
+      width: 100% !important;
+      margin-top: 2em !important;
+      background: rgba(4, 4, 4, 0.96) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow: 0 -18px 45px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    body.bands-page .shop-footer .footer-grid {
+      width: min(94%, 90em) !important;
+      margin: 0 auto !important;
+      padding: 3em 0 !important;
+      display: grid !important;
+      grid-template-columns: 1.5fr 1fr 1fr !important;
+      gap: 2em !important;
+      align-items: start !important;
+    }
+
+    body.bands-page .shop-footer .footer-brand,
+    body.bands-page .shop-footer .footer-links {
+      min-width: 0 !important;
+    }
+
+    body.bands-page .shop-footer .footer-brand {
+      display: block !important;
+    }
+
+    body.bands-page .shop-footer .footer-brand h3,
+    body.bands-page .shop-footer .footer-links h4,
+    body.bands-page .shop-footer .footer-links a,
+    body.bands-page .shop-footer .footer-bottom,
+    body.bands-page .shop-footer .footer-bottom span {
+      font-family: "Metal Mania", cursive !important;
+    }
+
+    body.bands-page .shop-footer .footer-brand h3 {
+      margin: 0 !important;
+      font-size: 1.1em !important;
+      letter-spacing: 0.16em !important;
+    }
+
+    body.bands-page .shop-footer .footer-brand p {
+      margin: 0.55em 0 0 !important;
+      color: #e1bd2b !important;
+      font-size: 0.68em !important;
+      line-height: 1.7 !important;
+    }
+
+    body.bands-page .shop-footer .footer-links h4 {
+      margin: 0 0 0.9em !important;
+      font-size: 0.65em !important;
+      letter-spacing: 0.16em !important;
+    }
+
+    body.bands-page .shop-footer .footer-links a {
+      margin: 0.28em 0 !important;
+      font-size: 0.63em !important;
+      line-height: 1.5 !important;
+      text-decoration: none !important;
+    }
+
+    body.bands-page .shop-footer .footer-bottom {
+      width: min(94%, 90em) !important;
+      margin: 0 auto !important;
+      padding: 1.1em 0 1.5em !important;
+      font-size: 0.58em !important;
+      letter-spacing: 0.12em !important;
+    }
+
+    @media (max-width: 700px) {
+      body.bands-page .shop-footer .footer-grid {
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, .825fr) minmax(0, .825fr) !important;
+        gap: .55em !important;
+        padding: 2em 0 !important;
+      }
+    }
+  </style>
 </head>
 
 <body class="bands-page">
@@ -36,7 +115,7 @@
           <input type="text" id="bandSearch" name="text" class="input" placeholder="Search the band name" autocomplete="off">
           <button type="button" class="search__btn" aria-label="Search bands">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-              <path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 16.6168 18.031 18.031L16.6168 16.6168Z" fill="#efeff1"></path>
+              <path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 18.031L16.6168 16.6168Z" fill="#efeff1"></path>
             </svg>
           </button>
         </div>
