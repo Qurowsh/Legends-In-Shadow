@@ -99,6 +99,8 @@ async function submitReceipt() {
         $("summaryStatus").textContent = "در انتظار بررسی";
         input.disabled = true;
         btn.textContent = "رسید ارسال شد ✓";
+        sessionStorage.setItem("receiptSubmitted", "1");
+        window.location.href = "orders.html";
     } catch (e) {
         console.error(e);
         btn.disabled = false;
