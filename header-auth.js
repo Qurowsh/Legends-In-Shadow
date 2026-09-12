@@ -297,7 +297,7 @@ function normalizeRelatedProductLinks(root = document) {
 normalizeRelatedProductLinks();
 const bandsContainer = document.getElementById("bands-container");
 if (bandsContainer) {
-  new MutationObserver(() => normalizeRelatedProductLinks(bandsContainer)).observe(bandsContainer, { childList:true, subtree:true });
+  new MutationObserver(() => normalizeRelatedProductLinks(bandsContainer)).observe(bandsContainer, { childList: true, subtree: true });
 }
 
 function bootShell() {
@@ -310,7 +310,7 @@ function bootShell() {
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", bootShell, { once:true });
+  document.addEventListener("DOMContentLoaded", bootShell, { once: true });
 } else {
   bootShell();
 }
