@@ -19,22 +19,43 @@ function createPayButton(orderId) {
     return button;
 }
 
-function injectPaymentButtons() {
+async function hasSubmittedReceipt(orderId) {
+    const { data, error } = await supabase
+        .from("payments")
+        .select("id,receipt_path,status,created_at")
+        .eq("order_id", Number(orderId))
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+    if (error) {
+        console.error("Failed to check payment receipt:", error);
+        return false;
+    }
+
+    const payment = data?.[0];
+    return Boolean(payment?.receipt_path) || payment?.status === "paid";
+}
+
+async function injectPaymentButtons() {
     if (!ordersList) return;
 
-    ordersList.querySelectorAll(".order-card").forEach((card) => {
-        if (!isPayableCard(card)) return;
-        if (card.querySelector(".orders-pay-button")) return;
+    const cards = [...ordersList.querySelectorAll(".order-card")];
+
+    for (const card of cards) {
+        if (!isPayableCard(card)) continue;
+        if (card.querySelector(".orders-pay-button")) continue;
 
         const action = card.querySelector(".order-card-action");
         const viewButton = card.querySelector(".orders-view-button");
         const orderId = viewButton?.dataset.orderId;
 
-        if (!action || !orderId) return;
+        if (!action || !orderId) continue;
+
+        if (await hasSubmittedReceipt(orderId)) continue;
 
         const button = createPayButton(orderId);
         action.appendChild(button);
-    });
+    }
 }
 
 async function startPayment(orderId, button) {
@@ -71,6 +92,10 @@ async function startPayment(orderId, button) {
 
         if (["cancelled"].includes(String(order.status).toLowerCase())) {
             throw new Error("این سفارش لغو شده و امکان پرداخت آن وجود ندارد.");
+        }
+
+        if (await hasSubmittedReceipt(numericOrderId)) {
+            throw new Error("رسید این سفارش قبلاً ارسال شده و منتظر تأیید مدیریت است.");
         }
 
         let payment = null;
