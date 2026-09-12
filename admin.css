@@ -15,6 +15,12 @@
     min-height: 100vh;
 }
 
+.header-nav{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
 
 /* =========================================================
    HERO
