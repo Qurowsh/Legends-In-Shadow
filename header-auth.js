@@ -12,9 +12,30 @@ shellStyle.textContent = `
   .shop-header .cart-pill { font-family:"Metal Mania",cursive !important; }
   .shop-header .auth-action { border:1px solid #fff !important; padding:.45em .7em !important; }
   .shop-header .header-nav > a::before,
-  .shop-header .header-nav > a::after,
-  .shop-header .auth-nav a::before,
-  .shop-header .auth-nav a::after { display:none !important; content:none !important; }
+  .shop-header .auth-nav a::before { display:none !important; content:none !important; }
+
+  /* Restore the interactive header motion used by the original design. */
+  .shop-header .header-nav > a,
+  .shop-header .cart-pill,
+  .shop-header .brand-wrap { position:relative !important; transition:color .25s ease, transform .25s ease, text-shadow .25s ease, border-color .25s ease, box-shadow .25s ease !important; }
+  .shop-header .header-nav > a::after {
+    content:"" !important;
+    display:block !important;
+    position:absolute !important;
+    left:50% !important;
+    bottom:-.35em !important;
+    width:0 !important;
+    height:1px !important;
+    background:#e1bd2b !important;
+    transform:translateX(-50%) !important;
+    transition:width .25s ease !important;
+  }
+  .shop-header .header-nav > a:hover,
+  .shop-header .cart-pill:hover,
+  .shop-header .brand-wrap:hover { color:#e1bd2b !important; transform:translateY(-2px) !important; text-shadow:0 0 12px rgba(225,189,43,.42) !important; }
+  .shop-header .header-nav > a:hover::after { width:75% !important; }
+  .shop-header .cart-pill:hover { border-color:#e1bd2b !important; box-shadow:0 0 18px rgba(225,189,43,.2) !important; }
+  .shop-header .brand-wrap:hover .brand-name { color:#e1bd2b !important; }
 
   .shop-header-inner > .container {
     position:absolute !important;
@@ -71,23 +92,29 @@ shellStyle.textContent = `
   }
 
   .cart-page { padding-top:1.6em !important; }
-  .continue-shopping-link { display:inline-block !important; margin-top:1.6em !important; }
+  .continue-shopping-link { display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:.45em !important; margin-top:1.6em !important; padding:.7em 1.05em !important; border:1px solid rgba(225,189,43,.45) !important; border-radius:.55em !important; color:#e1bd2b !important; background:rgba(225,189,43,.045) !important; text-decoration:none !important; font-family:"Metal Mania",cursive !important; letter-spacing:.06em !important; transition:all .28s ease !important; }
+  .continue-shopping-link:hover,
+  .continue-shopping-link:focus-visible { color:#fff !important; background:rgba(225,189,43,.14) !important; border-color:#e1bd2b !important; transform:translateY(-2px) !important; box-shadow:0 0 18px rgba(225,189,43,.18) !important; }
 
-  .shop-footer .footer-grid { grid-template-columns:1.5fr 1fr 1fr !important; }
-  .shop-footer,
-  .shop-footer .footer-links a,
-  .shop-footer .footer-links h4,
-  .shop-footer .footer-brand,
-  .shop-footer .footer-brand h3,
-  .shop-footer .footer-bottom,
-  .shop-footer .footer-bottom span { color:#fff !important; }
-  .shop-footer .footer-brand { display:block !important; }
+  /* One shared Home-style footer layout and typography for every page. */
+  .shop-footer { width:100% !important; margin-top:2em !important; background:rgba(5,5,5,.96) !important; border-top:1px solid rgba(255,255,255,.14) !important; box-shadow:0 -12px 35px rgba(0,0,0,.3) !important; }
+  .shop-footer .footer-grid { width:min(94%,90em) !important; margin:0 auto !important; padding:3em 0 2.4em !important; display:grid !important; grid-template-columns:1.5fr 1fr 1fr !important; gap:2em !important; align-items:start !important; }
+  .shop-footer .footer-brand { display:block !important; min-width:0 !important; }
   .shop-footer .footer-logo { display:none !important; }
-  .shop-footer .footer-brand p { color:#e1bd2b !important; margin:0 !important; }
-  .shop-footer .footer-links a:visited,
+  .shop-footer .footer-brand h3,
+  .shop-footer .footer-links h4,
+  .shop-footer .footer-links a,
+  .shop-footer .footer-bottom,
+  .shop-footer .footer-bottom span { font-family:"Metal Mania",cursive !important; }
+  .shop-footer .footer-brand h3 { margin:0 0 .35em !important; color:#fff !important; font-size:1.35em !important; letter-spacing:.08em !important; }
+  .shop-footer .footer-brand p { margin:0 !important; color:#e1bd2b !important; font-family:Arial,sans-serif !important; font-size:.72em !important; line-height:1.5 !important; }
+  .shop-footer .footer-links { display:flex !important; flex-direction:column !important; gap:.45em !important; min-width:0 !important; }
+  .shop-footer .footer-links h4 { margin:0 0 .35em !important; color:#fff !important; font-size:.78em !important; letter-spacing:.1em !important; }
+  .shop-footer .footer-links a,
   .shop-footer .footer-links a:link,
-  .shop-footer .footer-links a:hover,
-  .shop-footer .footer-links a:focus { color:#fff !important; }
+  .shop-footer .footer-links a:visited { color:#fff !important; font-size:.72em !important; text-decoration:none !important; transition:color .2s ease, transform .2s ease !important; }
+  .shop-footer .footer-links a:hover { color:#e1bd2b !important; transform:translateX(3px) !important; }
+  .shop-footer .footer-bottom { width:min(94%,90em) !important; margin:0 auto !important; padding:1em 0 1.35em !important; display:flex !important; justify-content:space-between !important; gap:1em !important; color:rgba(255,255,255,.62) !important; font-size:.62em !important; letter-spacing:.06em !important; border-top:1px solid rgba(255,255,255,.08) !important; }
 
   @media (max-width:700px) {
     .shop-header-inner {
@@ -132,11 +159,13 @@ shellStyle.textContent = `
       grid-template-columns:minmax(0,1.35fr) minmax(0,.825fr) minmax(0,.825fr) !important;
       gap:.55em !important;
       align-items:start !important;
-      width:100% !important;
+      width:94% !important;
+      padding:2.2em 0 1.6em !important;
     }
     .shop-footer .footer-brand,
     .shop-footer .footer-links { min-width:0 !important; }
     .shop-footer .footer-links h4 { white-space:nowrap !important; }
+    .shop-footer .footer-bottom { width:94% !important; font-size:.58em !important; }
   }
 `;
 document.head.appendChild(shellStyle);
